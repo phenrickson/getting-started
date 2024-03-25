@@ -1,0 +1,191 @@
+---
+title: "Overview"
+author: "Phil Henrickson"
+format: html
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+
+## Important
+
+::: {.callout-caution collapse="false"}
+## How to clone a Github repo
+
+1.  Make sure you have a GitHub account!
+
+2.  Navigate to <https://github.com/phenrickson/getting-started>
+
+3.  Click on the green "Code" button and copy the url under the HTTPS tab <https://github.com/phenrickson/getting-started>
+
+4.  In RStudio, use File \> New Project \> Version Control \> From Git \> and then paste the URL into the source repo box and then click enter!
+
+:::
+
+## New Page
+
+::: {.incremental}
+
+- First item
+- Second item
+
+:::
+
+## Bullets
+
+When you click the **Render** button a document will be generated that includes:
+
+-   Content authored with markdown
+-   Output from executable code
+-   oooh
+
+## Code
+
+When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+```{r}
+#| output-location: column
+#| label: fig-airquality
+#| fig-cap: Temperature and ozone level.
+#| warning: false
+#| message: false
+
+library(ggplot2)
+
+ggplot(airquality, aes(Temp, Ozone)) + 
+  geom_point() + 
+  geom_smooth(method = "loess"
+)
+```
+. . .
+
+Showing data
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: fenced
+
+mtcars |>
+  dplyr::filter(mpg > 20)
+
+```
+
+## Mermaid
+
+```{mermaid}
+graph TD;
+
+    A[Main Branch] --> B1[Jim's Feature Branch]
+    A --> B2[Phil's Feature Branch]
+    B1 --> C1{Work on Feature}
+    B2 --> C2{Work on Feature}
+    C1 --> D1[Commit Changes]
+    C2 --> D2[Commit Changes]
+    D1 --> E1[Push Changes to Jim's Feature Branch]
+    D2 --> E2[Push Changes to Phil's Feature Branch]
+    E1 --> F1[Create Pull Request]
+    E2 --> F2[Create Pull Request]
+    F1 --> G1[Review Code]
+    F2 --> G2[Review Code]
+    G1 --> H1[Approve Changes]
+    G2 --> H2[Approve Changes]
+    H1 --> I1[Merge Pull Request]
+    H2 --> I2[Merge Pull Request]
+    I1 --> J1[Delete Jim's Feature Branch]
+    I2 --> J2[Delete Phil's Feature Branch]
+
+```
+
+## Fragments
+
+::: {.fragment}
+Fade in
+:::
+
+::: {.fragment .fade-out}
+Fade out
+:::
+
+::: {.fragment .highlight-red}
+Highlight red
+:::
+
+::: {.fragment .fade-in-then-out}
+Fade in, then out
+:::
+
+## *Advanced* Fragments
+
+::: {.fragment .fade-in}
+::: {.fragment .highlight-red}
+::: {.fragment .semi-fade-out}
+Fade in > Turn red > Semi fade out
+:::
+:::
+:::
+
+# How to order fragments
+
+::: {.fragment fragment-index=3}
+Appears last
+:::
+
+::: {.fragment fragment-index=1}
+Appears first
+:::
+
+::: {.fragment fragment-index=2}
+Appears second
+:::
+
+##
+
+::: {.r-fit-text}
+But!
+:::
+
+::: {.fragment fragment-index=2}
+And that's a big but.
+:::
+
+::: {.fragment fragment-index=3}
+And I cannot lie.
+:::
+
+## Tabsets
+
+::: {.panel-tabset}
+
+## Element 1
+
+```{r}
+#| fig-cap: Temperature and ozone level.
+#| warning: false
+#| message: false
+ggplot(airquality, aes(Temp, Ozone)) + 
+  geom_point() + 
+  geom_smooth(method = "loess"
+)
+```
+
+
+## Element 2
+
+```{r}
+#| fig-cap: Wind and ozone level.
+#| warning: false
+#| message: false
+ggplot(airquality, aes(Wind, Ozone)) + 
+  geom_point() + 
+  geom_smooth(method = "loess"
+)
+```
+
+
+:::

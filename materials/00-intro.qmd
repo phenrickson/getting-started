@@ -1,0 +1,239 @@
+---
+title: "What They Didn't Teach You <br> About Data Science"
+subtitle: "Or, How I Learned to Stop Worrying and Love the Git"
+format:
+  revealjs:
+    slide-number: c/t
+    width: 1600
+    height: 900
+    css: ["theme/theme.css"]
+    theme: simple
+    highlight-style: github
+    code-block-border-left: "#4f6952"
+    code-block-bg: true
+    code-link: true
+editor: source
+---
+
+```{r setup, include = F}
+library(tidyverse)
+library(fontawesome)
+library(quarto)
+```
+
+
+# {background-image="images/everything_is_fine.webp" background-position="center" background-color="#4f6952" background-size="cover"}
+
+## Goals
+
+The goal of this workshop is to gain familiarity and experience with tools that will enable version control, pipeline open-source data science development and collaboration.
+
+This workshop leans heavily on R/RStudio and the Posit ecosystem, but the principles we will cover apply to Python and R.
+
+::: {.incremental}
+
+- Yes, 
+- Second item
+
+:::
+
+## Topics
+
+Our goal is to create consistent patterns for data science project development, iteration, and delivery. To this end, we are going to cover three main topics:
+
+- Git (and Github)
+- [renv](https://rstudio.github.io/renv/index.html)
+- [targets](https://docs.ropensci.org/targets/)
+
+## I'm assuming
+
+`r fa("r-project")` You know R
+
+You have RStudio installed.
+
+`r fa("github")` You have a Github Account
+
+
+<img src="https://raw.githubusercontent.com/quarto-dev/quarto-web/main/favicon.png" style="display: inline-block; margin: 0; margin-bottom: -2px; height: 35px;"/></img> You want to learn about Quarto, the next-generation of RMarkdown
+
+. . .
+
+<h2>We'll cover</h2>
+
+A crash course in version control and Git
+
+Project and code dependencies with renv
+
+Pipelines with targets
+
+## 
+::: {.r-fit-text}
+CAVEATS
+:::
+
+::: {.incremental}
+
+- I am **NOT** a software engineer. 
+- Like, at all. Everything we will cover in these workshops comes from my experiences as a consultant in data science.
+- We will only be covering a small portion of these topics - our goal is not to become experts in Git, but to learn the little bit of Git that will help us be better data scientists. 
+- The DevOps folks will surely judge us all for not being experts in their craft. This is fine. We will accept this and move on. It's fine.
+- It's fine.
+
+:::
+
+
+## Let's start at the end goal
+
+
+## 
+> reveal.js is an open source HTML presentation framework. It's a tool that enables anyone with a web browser to create fully-featured and beautiful presentations for free.
+
+. . .
+
+-   `revealjs` for Quarto is a framework for turning Pandoc-friendly markdown + code into beautiful slides
+
+-   User guide: <https://quarto.org/docs/presentations/revealjs/>
+
+## So, what is Git? {background-color="black"}
+
+<br>
+
+. . .
+
+<br>
+
+[Time for a super dramatic reveal.]{style="font-size: 100px;"}
+
+. . .
+
+[For **everyone.**]{style="font-size: 300px;"}
+
+## References
+
+ I highly recommend checking out each of following materials:
+ 
+ - H
+
+# Background
+
+## Caveats
+
+::: {.incremental}
+
+- 
+- Second item
+
+:::
+
+```{r}
+library(ggplot2)
+```
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: fenced
+
+mtcars |>
+  dplyr::filter(mpg > 20)
+
+```
+
+## Mermaid
+
+```{mermaid}
+graph TD;
+
+    A[Main Branch] --> B1[Jim's Feature Branch]
+    A --> B2[Phil's Feature Branch]
+    B1 --> C1{Work on Feature}
+    B2 --> C2{Work on Feature}
+    C1 --> D1[Commit Changes]
+    C2 --> D2[Commit Changes]
+    D1 --> E1[Push Changes to Jim's Feature Branch]
+    D2 --> E2[Push Changes to Phil's Feature Branch]
+    E1 --> F1[Create Pull Request]
+    E2 --> F2[Create Pull Request]
+    F1 --> G1[Review Code]
+    F2 --> G2[Review Code]
+    G1 --> H1[Approve Changes]
+    G2 --> H2[Approve Changes]
+    H1 --> I1[Merge Pull Request]
+    H2 --> I2[Merge Pull Request]
+    I1 --> J1[Delete Jim's Feature Branch]
+    I2 --> J2[Delete Phil's Feature Branch]
+
+```
+
+## Fragments
+
+::: {.fragment}
+Fade in
+:::
+
+::: {.fragment .fade-out}
+Fade out
+:::
+
+::: {.fragment .highlight-red}
+Highlight red
+:::
+
+::: {.fragment .fade-in-then-out}
+Fade in, then out
+:::
+
+## *Advanced* Fragments
+
+::: {.fragment .fade-in}
+::: {.fragment .highlight-red}
+::: {.fragment .semi-fade-out}
+Fade in > Turn red > Semi fade out
+:::
+:::
+:::
+
+# How to order fragments
+
+::: {.fragment fragment-index=3}
+Appears last
+:::
+
+::: {.fragment fragment-index=1}
+Appears first
+:::
+
+::: {.fragment fragment-index=2}
+Appears second
+:::
+
+##
+
+::: {.r-fit-text}
+But!
+:::
+
+::: {.fragment fragment-index=2}
+And that's a big but.
+:::
+
+::: {.fragment fragment-index=3}
+And I cannot lie.
+:::
+
+## Tabsets
+
+::: {.panel-tabset}
+
+## Element 1
+
+```{r}
+#| fig-cap: Temperature and ozone level.
+#| warning: false
+#| message: false
+ggplot(airquality, aes(Temp, Ozone)) + 
+  geom_point() + 
+  geom_smooth(method = "loess"
+)
+```

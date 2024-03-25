@@ -1,0 +1,17 @@
+---
+format:
+  revealjs:
+    slide-number: c/t
+    width: 1600
+    height: 900
+    css: ["theme/theme.css"]
+    theme: simple
+    highlight-style: github
+    code-block-border-left: "#4f6952"
+    code-block-bg: true
+    code-link: true
+editor: source
+---
+
+# Getting to Know <br> Git and GitHub {background-image="images/dont_panic.png" background-size="contain" background-position="right" background-color="black"
+background-opacity=0.75}
