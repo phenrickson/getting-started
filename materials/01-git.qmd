@@ -10,8 +10,106 @@ format:
     code-block-border-left: "#4f6952"
     code-block-bg: true
     code-link: true
+    chalkboard: true
 editor: source
 ---
 
-# Getting to Know <br> Git and GitHub {background-image="images/dont_panic.png" background-size="contain" background-position="right" background-color="black"
+# Getting to Know <br> Git and GitHub {
+background-image="images/dont_panic.png" 
+background-size="contain" 
+background-position="right" 
+background-color="black"
 background-opacity=0.75}
+
+## Git Terms
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+:::{.fragment fragment-index=1}
+- Repository: A directory in which file history is preserved
+:::
+
+:::{.fragment fragment-index=2}
+- Clone: Downloading an existing repository
+:::
+
+:::
+
+::: {.column width="50%"}
+
+::: {.fragment fragment-index=1}
+![](images/git-repository.png){fig-align="center"}
+:::
+
+::: {.fragment fragment-index=2}
+![](images/git-clone.png){fig-align="center"}
+:::
+:::
+::::
+
+## Next Steps
+
+- Local: “on your personal machine”
+- Remote: “on the official server”
+- Branch: A version of the directory
+- Commit: A change made to a version of the directory
+- Push: Uploads your work to the ‘official’ remote server
+- Fetch/Pull: Checks for available updates on a remote
+- Switch/Checkout: Switches your local copy to a version of the directory
+- Pull Request: A request to merge one branch into another
+
+
+## Demo
+
+- Cloning a repo
+- Viewing repo organization
+- Fetch/pull
+- 
+Cloning
+Updating submodules
+Repo log
+Working tree changes
+Fetch / Pull
+SHAs
+Ref browser
+Comparing between branches / commits
+Switching between branches / commits
+
+##
+
+```{mermaid}
+graph TD;
+
+A[Remote Repo] --> B[Local Repo]
+
+
+
+```
+
+##
+
+```{mermaid}
+graph TD;
+
+    A[Main Branch] --> B1[Jim's Feature Branch]
+    A --> B2[Phil's Feature Branch]
+    B1 --> C1{Work on Feature}
+    B2 --> C2{Work on Feature}
+    C1 --> D1[Commit Changes]
+    C2 --> D2[Commit Changes]
+    D1 --> E1[Push Changes to Jim's Feature Branch]
+    D2 --> E2[Push Changes to Phil's Feature Branch]
+    E1 --> F1[Create Pull Request]
+    E2 --> F2[Create Pull Request]
+    F1 --> G1[Review Code]
+    F2 --> G2[Review Code]
+    G1 --> H1[Approve Changes]
+    G2 --> H2[Approve Changes]
+    H1 --> I1[Merge Pull Request]
+    H2 --> I2[Merge Pull Request]
+    I1 --> J1[Delete Jim's Feature Branch]
+    I2 --> J2[Delete Phil's Feature Branch]
+
+```
