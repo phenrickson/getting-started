@@ -12,6 +12,8 @@ format:
     code-block-border-left: "#4f6952"
     code-block-bg: true
     code-link: true
+    chalkboard:
+      src: drawings.json
 editor: source
 ---
 
@@ -21,21 +23,19 @@ library(fontawesome)
 library(quarto)
 ```
 
+# Background
 
-# {background-image="images/everything_is_fine.webp" background-position="center" background-color="#4f6952" background-size="cover"}
+## {background-image="images/everything_is_fine.webp" background-position="center" background-color="#4f6952" background-size="cover"}
 
 ## Goals
 
 The goal of this workshop is to gain familiarity and experience with tools that will enable version control, pipeline open-source data science development and collaboration.
 
-This workshop leans heavily on R/RStudio and the Posit ecosystem, but the principles we will cover apply to Python and R.
+. . . 
 
-::: {.incremental}
+This workshop leans heavily on R/RStudio and the Posit ecosystem, but the principles we will cover apply equally to Python and R.
 
-- Yes, 
-- Second item
-
-:::
+. . . 
 
 ## Topics
 
@@ -45,9 +45,28 @@ Our goal is to create consistent patterns for data science project development, 
 - [renv](https://rstudio.github.io/renv/index.html)
 - [targets](https://docs.ropensci.org/targets/)
 
+## References
+
+I am far from the first person to cover these topics. I highly recommend bookmarking each of the following resources, as we will be covering pieces of these throughout the workshop:
+
+. . . 
+
+- [Cookiecutter Data Science](https://drivendata.github.io/cookiecutter-data-science/) - a flexible, standardized project structure for organizing data science repositories
+
+- [Pro Git](https://git-scm.com/book/en/v2#_the_three_states)
+
+- [What They Forgot to Teach You About R](https://rstats.wtf)
+
+- [Happy Git and GitHub for the useR](https://happygitwithr.com/index.html)
+
+- [Functional Programming with R](https://adv-r.hadley.nz/fp.html)
+
+. . .
+
+
 ## I'm assuming
 
-`r fa("r-project")` You know R
+`r fa("r-project")` You are familiar with R.
 
 You have RStudio installed.
 
@@ -66,6 +85,8 @@ Project and code dependencies with renv
 
 Pipelines with targets
 
+#
+
 ## 
 ::: {.r-fit-text}
 CAVEATS
@@ -74,25 +95,81 @@ CAVEATS
 ::: {.incremental}
 
 - I am **NOT** a software engineer. 
-- Like, at all. Everything we will cover in these workshops comes from my experiences as a consultant in data science.
-- We will only be covering a small portion of these topics - our goal is not to become experts in Git, but to learn the little bit of Git that will help us be better data scientists. 
+- Like, at all. Everything we will cover in these workshops comes from my experiences, both good and bad, as a consultant in data science.
+- We will only be covering a small portion of these topics - our goal is not to become experts in Git, but to **learn the little bit of Git that will help us be better data scientists**. 
 - The DevOps folks will surely judge us all for not being experts in their craft. This is fine. We will accept this and move on. It's fine.
 - It's fine.
 
 :::
 
-
-## Let's start at the end goal
-
-
-## 
-> reveal.js is an open source HTML presentation framework. It's a tool that enables anyone with a web browser to create fully-featured and beautiful presentations for free.
+## A reminder
 
 . . .
 
--   `revealjs` for Quarto is a framework for turning Pandoc-friendly markdown + code into beautiful slides
+There is no simple, *you-won't-believe-how-easy-it-is*, ***experts-hate-him!*** trick that will make us experts in Git, CI/CD, DevOps, pipelines, etc.
 
--   User guide: <https://quarto.org/docs/presentations/revealjs/>
+. . .
+
+As with most things in life, the only way to get better is through **practice and repeated trial and error**.
+
+. . .
+
+But, if maximum likelihood and gradient boosting have taught us anything about learning:
+
+::: {.incremental}
+
+- **start somewhere**
+- [make mistakes]{.fragment .highlight-red}
+- learn from those mistakes
+- **do better the next time**
+
+:::
+
+## Let's start at the end: a data science project {background-color="black"}
+
+. . .
+
+I have a ridiculous, ever-evolving personal project: [predicting boardgames that I might want to add to my boardgame collection.]{.fragment .fade-in .highlight-red}
+
+
+## This is the pipeline that scrapes data from BoardGameGeek and populates a cloud data warehouse 
+
+## This is the code that creates a Shiny dashboard to look at and explore that data.
+
+## This is the pipeline that trains models to predict how the BoardGameGeek community is going to rate games
+
+## This is the repo that trains a user specific model and creates a report.
+
+## 
+::: {.incremental}
+
+Do these projects represent the height of data science maturity and sophistication? 
+
+*shrug emoji*
+
+Suppose I wanted you to take a look at something in my work and and see if you could create a better model. 
+
+Or maybe you could create a better report. 
+
+Or maybe you could do the whole thing differently and save me a ton of time and/or make better predictions.
+
+:::
+
+##
+
+::: {.fragment .highlight-red}
+
+How do I share my code with you, so that you can run my code, make changes, run experiments, etc > without breaking any of my ongoing work?
+:::
+
+How do I 
+
+
+## Challenge
+
+> Can we predict which board games Phil wants to buy? 
+
+> Find out next week on Dragon Ball Z
 
 ## So, what is Git? {background-color="black"}
 
