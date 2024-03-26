@@ -29,7 +29,11 @@ library(quarto)
 
 ## Goals
 
-The goal of this workshop is to gain familiarity and experience with tools that will enable version control, pipeline open-source data science development and collaboration.
+The aim of this workshop is to gain familiarity and experience with tools that will enable collaborative open-source data science development. 
+
+. . .
+
+Learning a little bit about version control package/environment management, and pipelines will go a long way towards solving the headaches of modern data science projects.
 
 . . . 
 
@@ -39,7 +43,7 @@ This workshop leans heavily on R/RStudio and the Posit ecosystem, but the princi
 
 ## Topics
 
-Our goal is to create consistent patterns for data science project development, iteration, and delivery. To this end, we are going to cover three main topics:
+Our goal is to create **consistent, repeatable** patterns for data science project development, iteration, and delivery. To this end, we are going to cover three main topics:
 
 - Git (and Github)
 - [renv](https://rstudio.github.io/renv/index.html)
@@ -92,15 +96,25 @@ Pipelines with targets
 CAVEATS
 :::
 
-::: {.incremental}
+. . .
 
 - I am **NOT** a software engineer. 
-- Like, at all. Everything we will cover in these workshops comes from my experiences, both good and bad, as a consultant in data science.
-- We will only be covering a small portion of these topics - our goal is not to become experts in Git, but to **learn the little bit of Git that will help us be better data scientists**. 
-- The DevOps folks will surely judge us all for not being experts in their craft. This is fine. We will accept this and move on. It's fine.
-- It's fine.
 
-:::
+. . .
+
+- Like, at all. Everything we will cover in these workshops comes from my experiences, both good and bad, as a consultant in data science. [**I have seen some shit.**]{.fragment .fade-in}
+
+. . .
+
+- We will only be covering a small portion of these topics - our goal is not to become experts in Git, but to **learn the little bit of Git that will help us be better data scientists**. 
+
+. . .
+
+- The DevOps folks will surely judge us all for not being experts in their craft. This is fine. We will accept this and move on. It's fine.
+
+. . .
+
+- It's fine.
 
 ## A reminder
 
