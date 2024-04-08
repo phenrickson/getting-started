@@ -11,8 +11,22 @@ format:
     code-block-bg: true
     code-link: true
     chalkboard: true
+    fig-align: center
 editor: source
 ---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+library(tidytext)
+
+knitr::opts_chunk$set(
+  comment = '#>', fig.width = 6, fig.height = 6
+)
+```
+
 
 # Getting to Know <br> Git and GitHub {
 background-image="images/dont_panic.png" 
@@ -27,9 +41,9 @@ background-opacity=0.75}
 
 Consider the following situations:
 
-- We've been working on a project for ages. We've gone through about 30 different iterations of writing a script and keep going back and forth on which approach we want to keep. We have multiple different versions of the script saved just so we can refer back to the different approaches we like and keep a record of how it's changed the results.
+- We've been working on a project for ages. We've gone through about 30 different iterations of writing a script and keep going back and forth on which approach we want to keep. We have different versions of the script saved just so we can refer back to the different approaches we like and keep a record of how it's changed the results.
 
-- We made a change to one of the core functions of our project and everything seemed to. be great. But two weeks later we discovered changing a helper function broke something in our monthly report. We're now trying to figure out what we changed and how to patch it, so we're digging through our old files to see if we can just go back to the piece we needed from functions_v1.R.
+- We made a change to one of the core functions of our project and everything seemed to be great. But two weeks later we discovered a change to a helper function broke something in our monthly report. We're now trying to figure out what we changed and how to patch it, so we're digging through our old files to see if we can just go back to the piece we needed from **functions_v1.R**.
 
 - Someone recently mentioned that lightgbm + linear trees offers a really nice improvement in both training time and performance over XGBoost. They want to test it in our project, and then evaluate whether this should become the new model. 
 
@@ -37,7 +51,7 @@ Consider the following situations:
 
 ## Version Control
 
-For each one of these scenarios, we intuitively wanted something resembling version control. We want to tinker with making a change, but we don't want that change to break the code. 
+For each one of these scenarios, we intuitively wanted something resembling version control. We want to tinker with making a change, but we don't want that change to overrwite or break our existing code. 
 
 . . .
 
@@ -48,7 +62,6 @@ For each one of these scenarios, we intuitively wanted something resembling vers
 We've all probably come up with some version of crazy, half-baked version syntax to control the various versions of projects/files. 
 
 . . . 
-
 
 ## So why Git?
 
@@ -77,13 +90,13 @@ I'm going to use Git.
 
 ##
 
-And about thirty minutes later it was so unclear how any of this would help you that you just punted and decided to keep working as you always have, warts and all, because Git clearly comes from The Bad Place.
+And about thirty minutes later it was so unclear how any of this would help you that you just punted and decided to keep working as you always have, warts and all, because Git clearly comes from **The Bad Place**.
 
 . . .
 
 ## The Reality
 
-So many of the frustrations with writing code, making changes, have been solved. 
+So many of the frustrations with writing code, making changes, and storing the history of your work go away once we implement version control.
 
 . . .
 
@@ -107,7 +120,7 @@ You have to learn how to use Git.
 [But it's worth it.]{style="font-size: 100px;"}
 
 
-## Why should we commit to this?
+## Why should we *commit* to this?
 
 . . .
 
@@ -130,11 +143,7 @@ From [Excuse Me, Do You Have a Moment to Talk About Version Control by Jennifer 
 
 > By using common mechanics across work modes (research, teaching, analysis), you achieve basic competence quickly and avoid the demoralizing forget-relearn cycle.
 
-. . .
-
 ## 
-
-. . .
 
 Despite this zeal, she does make an important note:
 
@@ -148,9 +157,235 @@ Git was not designed for data science projects. This will at times create slight
 
 . . .
 
-Those DevOps folks will, once again, laugh at us.
+Things get more complicated once we start trying to version control data/models, which is a whole topic in and of itself.
 
-## Dear Evan Hansen redux
+
+# With and Without Git: <br> An Example {
+background-image="images/starwars_luke.jpeg" 
+background-size="contain" 
+background-position="right" 
+background-color="black"
+background-opacity=0.75}
+
+## Was Luke Really That Whiny?
+
+. . .
+
+Suppose we have a project we are working on. We are interested in running text/sentiment analysis on the scripts of the original Star Wars trilogy. 
+. . .
+
+We want to know things such as, who are the most positive/negative characters in A New Hope? A lot of people have claimed Luke was really whiny; is that the case?
+
+. . .
+
+##
+
+So, naturally, we go and get the script from A New Hope in text form. 
+
+. . .
+
+```{r load and look at star wars text}
+#| echo: true
+#| eval: true
+#| message: false
+#| warning: false
+#| label: starwars-dialogue
+
+# load starwars
+starwars = read_csv(here::here('materials', 'data', 'starwars_text.csv'))
+
+# show first few lines of a new hope
+starwars |>
+  head(10) |>
+  select(document, character, dialogue) 
+
+```
+
+##
+
+We tokenize the data, remove stopwords, and then calculate sentiment in a pretty simple way.
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+#| message: false
+#| warning: false
+#| label: starwars-text
+#| 
+stop_words = tidytext::get_stopwords()
+
+starwars |>
+  head(1) |>
+  unnest_tokens(word, dialogue) |>
+  anti_join(stop_words, by = "word") |>
+  left_join(tidytext::get_sentiments("afinn"), by = "word")
+
+```
+
+## 
+
+We then calculate sentiment across all characters to get a sense of how negative Luke really was.
+
+. . .
+
+![](images/ep4_sentiment_by_character_1.png){fig-align="center"}
+
+. . .
+
+Apparently, pretty whiny.
+
+##
+
+This looks promising, so we save a script, called **sentiment.R**.
+
+. . .
+
+Then we think, maybe we should see what happens if we calculate sentiment in a different way. Even simple methods of sentiment can vary quite a bit depending on which lexicon you use, so we should try a couple.
+
+. . .
+
+But we might want to stick our first approach, so we copy  **sentiment.R** and then apply changes in a new script, **sentiment_bing.R**.
+
+. . .
+
+![](images/ep4_sentiment_by_character_2.png){fig-align="center"}
+
+
+## 
+
+We get a pretty similar result, so we're feeling okay about ourselves.
+
+. . .
+
+But then someone says, we shouldn't rely on such crude methods for calculating sentiment. We should use a more sophisticated method, via the *sentimentr* package.
+
+. . .
+
+So we go ahead and, once again, make a copy of our original **sentiment.R** script and then switch over to using this new package. This one forces us to add some new packages, and rewrite some of our visualization scripts to get the same type of visualization, so we create a new script, **sentiment_algorithm.R**.
+
+##
+
+We're also slightly worried that we've forgotten what we originally started with, so we're gonna make a **sentiment_original.R** file. Just so we have it.
+
+. . .
+
+But anyway, we'll rewrite our code for the third time and run it again.
+
+. . .
+
+![](images/ep4_sentiment_by_character_3.png){fig-align="center"}
+
+##
+
+This gives us very different results, so we really need to dive into the data bit here to figure out what's going on.
+
+. . .
+
+We compare how our original method (left) calculates sentiment for the entire script of A New Hope compared to **sentimentr** (right). That means we need to go add a visualization to each of our original scripts, so we go edit **sentiment_original.R** and **sentiment_algorithm.R**.
+
+. . .
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![](images/ep4_sentiment_by_line_1.png){fig-align="center"}
+:::
+
+::: {.column width="50%"}
+
+![](images/ep4_sentiment_by_line_3.png){fig-align="center"}
+
+:::
+:::
+
+## 
+
+These are very different, so now we go down a rabbit hole of digging into what we're getting out of the **sentimentr** package. We take a look at Luke's dialogue line by line.
+
+![](images/ep4_luke_sentiment.png){fig-align="center"}
+
+. . .
+
+## 
+
+We realize that we shouldn't be calculating sentiment at the line-level and then aggregating, because short positive statements end up getting as much weight as longer complaints.
+
+With this method we really should look at the estimated sentiment across a character's entire dialogue to get a sense of their tone.
+
+##
+
+So we implement a change, and we're running out of ideas with our naming convention, so we save this new one as **sentiment_algorithmic2.R**.
+
+. . .
+
+We then calculate the estimated sentiment across all characters.
+ 
+. . .
+
+![](images/ep4_estimated_sentiment.png){fig-align="center"}
+
+. . .
+
+Is Luke whiny? Well, it depends. [This is the type of hard hitting analysis that I deliver for my clients.]{.fragment}
+
+##
+
+What we are left with after a fairly simple analyses is a messy, entangled set of files with absolutely no sense of history or organization.
+
+. . .
+
+![](images/starwars_no_vc.png){fig-align="center"}
+
+. . .
+
+This is a mess for us to figure out, imagine if someone else is supposed to come along and work with this code. Where do they start?
+
+## 
+
+How would this look if we were using Git?
+
+The end result is a bit cleaner. We basically just have the one script to worry about. If we're really curious about what we need to do, we check the README (yes, you are expected to read these).
+
+![](images/starwars_folder.png){fig-align="center"}
+
+##
+
+The end result of our work is the **current state** of the project, which we store in a **repository**.
+
+![](images/starwars_repo.png){fig-align="center"}
+
+##
+
+If we want to see the work that we did up to this point, all we have to do is look at the history of that script and the various changes, or **commits**, we made to it.
+
+![](images/starwars_commits.png){fig-align="center"}
+
+## 
+
+This allows us to easily view how our script changed as we worked on it.
+
+![](images/starwars_compare.png){fig-align="center"}
+
+[Click to go to repo](https://github.com/phenrickson/starwars)
+
+## Why Go Through This Exercise
+
+In short, git is tremendously helpful even just for one individual.
+
+. . .
+
+It removes all of the mental baggage of trying to edit your code and come up with a crazy scheme for organizing it that you're eventually going to forget anyway. 
+
+. . .
+
+Where it starts to get even more helpful is for enabling collaboration within a team.
+
+. . .
+
+But in order to do that, we need to get comfortable with a few terms and concepts.
 
 # What We Need to Know About Git
 
@@ -248,3 +483,4 @@ graph TD;
     I2 --> J2[Delete Phil's Feature Branch]
 
 ```
+
