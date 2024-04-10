@@ -25,6 +25,31 @@ library(tidytext)
 knitr::opts_chunk$set(
   comment = '#>', fig.width = 6, fig.height = 6
 )
+
+#| include: false
+library(countdown)
+countdown_timer <- function(
+    minutes = 1, 
+    play_sound = TRUE, 
+    font_size = "2em", 
+    ...
+) {
+  countdown(
+    minutes = minutes,
+    # Fanfare when it's over
+    play_sound = play_sound,
+    # Set timer theme to match solarized colors
+    color_border              = "#404041",
+    color_text                = "white",
+    color_background = "#447099",
+    color_running_background  = "#72994E",
+    color_running_text        = "white",
+    color_finished_background = "#EE6331",
+    color_finished_text       = "white",
+    font_size = font_size,
+    ...
+  )
+}
 ```
 
 
@@ -83,10 +108,9 @@ I'm going to use Git.
 
 . . .
 
+## 
 
-##
-
-{{< video https://youtu.be/x_CNqKA2t9M?si=gFjkE4VeObGw_TK2&t=136 width = "640" aspect-ratio="16x9">}}
+{{< video https://youtu.be/x_CNqKA2t9M?si=gFjkE4VeObGw_TK2&t=136 >}}
 
 ##
 
@@ -110,7 +134,7 @@ You have to learn how to use Git.
 . . .
 
 
-[It's going to be painful.]{style="font-size: 80px;"}
+It's going to be painful.
 
 
 . . .
@@ -371,13 +395,22 @@ This allows us to easily view how our script changed as we worked on it.
 
 [Click to go to repo](https://github.com/phenrickson/starwars)
 
+##
+
+And, most importantly, we can view the history of our work in the approriate way...
+
+. . .
+
+
+[The Best and Only Way to View Your Project History](https://starlogs.dev/phenrickson/starwars){style="font-size: 120px;"}
+
 ## Why Go Through This Exercise
 
 In short, git is tremendously helpful even just for one individual.
 
 . . .
 
-It removes all of the mental baggage of trying to edit your code and come up with a crazy scheme for organizing it that you're eventually going to forget anyway. 
+It removes all of the mental baggage of trying to edit your code and come up with a crazy scheme for organization that you're eventually going to forget anyway. 
 
 . . .
 
@@ -431,12 +464,13 @@ But in order to do that, we need to get comfortable with a few terms and concept
 - Pull Request: A request to merge one branch into another
 
 
-## Demo
+# Demo
 
 - Cloning a repo
 - Viewing repo organization
 - Fetch/pull
-- 
+
+
 Cloning
 Updating submodules
 Repo log
@@ -447,7 +481,7 @@ Ref browser
 Comparing between branches / commits
 Switching between branches / commits
 
-##
+# 
 
 ```{mermaid}
 graph TD;
@@ -484,3 +518,25 @@ graph TD;
 
 ```
 
+
+# Github and RStudio
+
+## Cloning a Repo
+
+- Connect to 
+
+
+
+
+
+
+# `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
+
+- Go to 
+-   Try <kbd>`Ctrl + space`</kbd> to see the available YAML options
+-   Try out the tab-completion of any options you remember
+
+```{R}
+#| echo: false
+countdown_timer(10)
+```
