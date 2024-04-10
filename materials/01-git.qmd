@@ -1,17 +1,16 @@
 ---
 format:
   revealjs:
-    slide-number: c/t
+    slide-number: true
     width: 1600
     height: 900
     css: ["theme/theme.css"]
     theme: simple
-    highlight-style: github
-    code-block-border-left: "#4f6952"
-    code-block-bg: true
-    code-link: true
-    chalkboard: true
+    echo: false
     fig-align: center
+    fig-height: 6
+    fig-width: 10
+    fig-dpi: 400
 editor: source
 ---
 
@@ -21,13 +20,22 @@ editor: source
 
 library(tidyverse)
 library(tidytext)
+library(ggthemes)
+library(countdown)
+library(bggUtils)
+library(sentimentr)
+
+# set ggplot theme
+theme_set(
+  bggUtils::theme_bgg()+
+    theme(strip.text.x = element_text(size = 12)
+    )
+)
 
 knitr::opts_chunk$set(
   comment = '#>', fig.width = 6, fig.height = 6
 )
 
-#| include: false
-library(countdown)
 countdown_timer <- function(
     minutes = 1, 
     play_sound = TRUE, 
@@ -66,9 +74,9 @@ background-opacity=0.75}
 
 Consider the following situations:
 
-- We've been working on a project for ages. We've gone through about 30 different iterations of writing a script and keep going back and forth on which approach we want to keep. We have different versions of the script saved just so we can refer back to the different approaches we like and keep a record of how it's changed the results.
+- We've been working on a project for ages. We've gone through about 30 different iterations of writing a function and keep going back and forth on which approach we want to keep.
 
-- We made a change to one of the core functions of our project and everything seemed to be great. But two weeks later we discovered a change to a helper function broke something in our monthly report. We're now trying to figure out what we changed and how to patch it, so we're digging through our old files to see if we can just go back to the piece we needed from **functions_v1.R**.
+- We made a change to one of the core functions of our project and everything seemed to be great. But two weeks later we discovered a change to a helper function broke something in our monthly report. We're now trying to figure out what we changed and how to patch it.
 
 - Someone recently mentioned that lightgbm + linear trees offers a really nice improvement in both training time and performance over XGBoost. They want to test it in our project, and then evaluate whether this should become the new model. 
 
@@ -215,13 +223,26 @@ So, naturally, we go and get the script from A New Hope in text form.
 #| warning: false
 #| label: starwars-dialogue
 
+clean_starwars = function(data) {
+  
+  data |>
+    mutate(episode = case_when(document == 'a new hope' ~ 'iv',
+                               document == 'the empire strikes back' ~ 'v',
+                               document == 'return of the jedi' ~ 'vi')) |>
+    mutate(character = case_when(character == 'BERU' ~ 'AUNT BERU',
+                                 character == 'LURE' ~ 'LUKE',
+                                 TRUE ~ character)) |>
+    select(episode, everything())
+}
+
 # load starwars
-starwars = read_csv(here::here('materials', 'data', 'starwars_text.csv'))
+starwars = read_csv(here::here('materials', 'data', 'starwars_text.csv'))  |>
+  clean_starwars()
 
 # show first few lines of a new hope
 starwars |>
   head(10) |>
-  select(document, character, dialogue) 
+  select(episode, document, character, dialogue) 
 
 ```
 
@@ -237,14 +258,16 @@ We tokenize the data, remove stopwords, and then calculate sentiment in a pretty
 #| message: false
 #| warning: false
 #| label: starwars-text
-#| 
-stop_words = tidytext::get_stopwords()
 
-starwars |>
-  head(1) |>
+data("stop_words")
+
+starwars_tokenized =
+  starwars |>
   unnest_tokens(word, dialogue) |>
-  anti_join(stop_words, by = "word") |>
-  left_join(tidytext::get_sentiments("afinn"), by = "word")
+  anti_join(stop_words, by = "word")
+
+starwars_tokenized |>
+  inner_join(tidytext::get_sentiments("afinn"), by = "word")
 
 ```
 
@@ -254,32 +277,104 @@ We then calculate sentiment across all characters to get a sense of how negative
 
 . . .
 
-![](images/ep4_sentiment_by_character_1.png){fig-align="center"}
+```{r}
+#| fig-align: center
+#| fig-height: 6
+#| fig-width: 10
+#| fig-dpi: 300
 
-. . .
+starwars_tokenized |>
+  filter(document == 'a new hope') |>
+  inner_join(get_sentiments("afinn"), by = "word") |>
+  group_by(document, character) %>%
+  summarize(sentiment = sum(value), .groups = 'drop') |>
+  ggplot(aes(y=reorder(character, sentiment), x=sentiment, fill = sentiment))+
+  geom_col()+
+  scale_fill_gradient2_tableau(limits=c(-5, 2), oob = scales::squish)+
+  guides(fill = guide_colourbar(title = "sentiment",
+                                title.position = "top",
+                                barwidth=8,
+                                barheight=0.5))+
+  ylab("character")+
+  xlab("sentiment score")+
+  facet_wrap(document~.)
 
-Apparently, pretty whiny.
+```
 
 ##
 
-This looks promising, so we save a script, called **sentiment.R**.
+Apparently, pretty negative. Let's look at some dialogue.
+
+```{r}
+starwars_tokenized |>
+  filter(document == 'a new hope') |>
+  filter(character == 'LUKE') |>
+  inner_join(get_sentiments("afinn"), by = "word") |>
+  group_by(document, character, line_number) |>
+  summarize(value = sum(value),
+            .groups = 'drop') |>
+  left_join(
+    starwars,
+    by = join_by(document, character, line_number)
+  ) |>
+  arrange(value) |>
+  head(20) |>
+  select(document, character, line_number, value, dialogue) |>
+  group_by(document) |>
+  gt::gt()
+```
+
+
+##
+
+This is interesting enough, so we save the script, that produces this analysis, called **sentiment.R**.
 
 . . .
 
-Then we think, maybe we should see what happens if we calculate sentiment in a different way. Even simple methods of sentiment can vary quite a bit depending on which lexicon you use, so we should try a couple.
+Then we think, maybe we should see what happens if we calculate sentiment in a different way. Were Han and Ben really that negative? Even simple methods of sentiment can vary quite a bit depending on which lexicon you use, so we should try a couple.
 
 . . .
 
-But we might want to stick our first approach, so we copy  **sentiment.R** and then apply changes in a new script, **sentiment_bing.R**.
+##
+
+But we might want to stick our first approach, so we decide to write a whole new section to our code, or just add a new script entirely, **sentiment_bing.R**.
 
 . . .
 
-![](images/ep4_sentiment_by_character_2.png){fig-align="center"}
+```{r}
+#| fig-align: center
+#| fig-height: 6
+#| fig-width: 10
+#| fig-dpi: 300
 
+starwars_tokenized |>
+  filter(document == 'a new hope') |>
+  inner_join(get_sentiments("bing"), by = "word") |>
+  count(document, character, line_number, index = line_number %/% 8, sentiment) |>
+  arrange(index) |>
+  group_by(document, character, sentiment) |>
+  summarize(value = sum(n),
+            .groups = 'drop') |>
+  pivot_wider(names_from = c("sentiment"),
+              values_from = c("value"),
+              values_fill = 0) |>
+  mutate(sentiment = positive - negative) |>
+  ggplot(aes(y=reorder(character, sentiment), x=sentiment, fill = sentiment))+
+  geom_col()+
+  scale_fill_gradient2_tableau(limits=c(-5, 2), oob = scales::squish)+
+  guides(fill = guide_colourbar(title = "sentiment",
+                                title.position = "top",
+                                barwidth=8,
+                                barheight=0.5))+
+  ylab("character")+
+  xlab("sentiment score")+
+  facet_wrap(document~.)
+
+```
 
 ## 
 
-We get a pretty similar result, so we're feeling okay about ourselves.
+We get a pretty similar result, so we're feeling okay about ourselves and less okay about Luke.
 
 . . .
 
@@ -287,7 +382,7 @@ But then someone says, we shouldn't rely on such crude methods for calculating s
 
 . . .
 
-So we go ahead and, once again, make a copy of our original **sentiment.R** script and then switch over to using this new package. This one forces us to add some new packages, and rewrite some of our visualization scripts to get the same type of visualization, so we create a new script, **sentiment_algorithm.R**.
+So we want to edit our original **sentiment.R** script and switch over to using this new package. This one forces us to add some new packages, and rewrite some of our visualization scripts to get the same type of visualization, so we create a new script, **sentiment_algorithm.R**.
 
 ##
 
@@ -295,11 +390,52 @@ We're also slightly worried that we've forgotten what we originally started with
 
 . . .
 
-But anyway, we'll rewrite our code for the third time and run it again.
+But anyway, we'll edit our code for the third time and run it again.
 
-. . .
+```{r}
+#| fig-align: center
+#| fig-height: 6
+#| fig-width: 10
+#| fig-dpi: 300
 
-![](images/ep4_sentiment_by_character_3.png){fig-align="center"}
+starwars_sentimentr = 
+  starwars |>
+  get_sentences() |> 
+  sentiment_by(by = c('document', 'character', 'line_number')) |>
+  sentimentr::uncombine()
+
+starwars_sentimentr_summarized = 
+  starwars_sentimentr |>
+  group_by(document, character) |>
+  summarize(
+    word_count = sum(word_count, na.rm = T),
+    sum_sentiment = sum(sentiment, na.rm = T),
+    avg_sentiment = mean(sentiment, na.rm = T),
+    .groups = 'drop'
+  )
+
+starwars_sentimentr_summarized |>
+  filter(document == 'a new hope') |>
+  slice_max(word_count, n = 40) |>
+  ggplot(
+    aes(
+      x=sum_sentiment,
+      y=reorder(character, sum_sentiment),
+      fill = sum_sentiment
+    )
+  )+
+  geom_col()+
+  scale_fill_gradient2_tableau(limits=c(-5, 2), oob = scales::squish)+
+  guides(fill = guide_colourbar(title = "sentiment",
+                                title.position = "top",
+                                barwidth=8,
+                                barheight=0.5))+
+  ylab("character")+
+  xlab("sentiment score")+
+  facet_wrap(document~.)
+
+```
+
 
 ##
 
@@ -307,7 +443,7 @@ This gives us very different results, so we really need to dive into the data bi
 
 . . .
 
-We compare how our original method (left) calculates sentiment for the entire script of A New Hope compared to **sentimentr** (right). That means we need to go add a visualization to each of our original scripts, so we go edit **sentiment_original.R** and **sentiment_algorithm.R**.
+We decide to compare how our original method (left) calculates sentiment for the entire script of A New Hope compared to **sentimentr** (right). That means we need to go add a visualization to each of our original scripts, so we go edit **sentiment_original.R** and **sentiment_algorithm.R**.
 
 . . .
 
@@ -329,31 +465,189 @@ We compare how our original method (left) calculates sentiment for the entire sc
 
 These are very different, so now we go down a rabbit hole of digging into what we're getting out of the **sentimentr** package. We take a look at Luke's dialogue line by line.
 
-![](images/ep4_luke_sentiment.png){fig-align="center"}
-
 . . .
+
+```{r}
+#| fig-align: center
+#| fig-height: 6
+#| fig-width: 10
+#| fig-dpi: 300
+#| message: false
+#| warning: false
+
+plot_character_lines_with_sentiment = function(data,
+                                               character,
+                                               cutoff = .35,
+                                               ncol = 2) {
+  
+  data |>
+    group_by(episode, document, character) |>
+    arrange(line_number) |>
+    mutate(row_number = row_number()) |>
+    mutate(dialogue = as.character(dialogue)) |>
+    mutate(show= case_when(abs(sentiment) > cutoff ~ dialogue,
+                           TRUE ~ "")) |>
+    mutate(run_sentiment = cumsum(sentiment)) |>
+    ggplot(aes(x=row_number, y=run_sentiment, color = sentiment, label = show)) +
+    geom_step()+
+  #  geom_point(size = 0.5) +
+    ggrepel::geom_label_repel(size=2.5, max.overlaps=30)+
+    facet_wrap(episode + document+character~.,
+               ncol = ncol)+
+    xlab("line_number")+
+    ylab("running total of sentiment")+
+    guides(color = 'none')+
+    scale_color_gradient2_tableau(oob = scales::squish)
+  
+}
+
+starwars_sentimentr |>
+  filter(document == 'a new hope') |>
+  filter(character == 'LUKE') |>
+  plot_character_lines_with_sentiment()
+
+```
+
+##
+
+```{r}
+#| fig-align: center
+#| fig-height: 6
+#| fig-width: 10
+#| fig-dpi: 300
+#| message: false
+#| warning: false
+
+
+starwars_sentimentr |>
+  filter(document == 'the empire strikes back') |>
+  filter(character == 'LUKE') |>
+  plot_character_lines_with_sentiment()
+
+```
 
 ## 
 
-We realize that we shouldn't be calculating sentiment at the line-level and then aggregating, because short positive statements end up getting as much weight as longer complaints.
+```{r}
+#| fig-align: center
+#| fig-height: 6
+#| fig-width: 10
+#| fig-dpi: 300
+#| message: false
+#| warning: false
+
+
+starwars_sentimentr |>
+  filter(document == 'return of the jedi') |>
+  filter(character == 'LUKE') |>
+  plot_character_lines_with_sentiment()
+
+```
+
+##
+
+```{r}
+#| fig-align: center
+#| fig-height: 6
+#| fig-width: 10
+#| fig-dpi: 400
+#| message: false
+#| warning: false
+
+
+starwars_sentimentr |>
+  filter(document == 'return of the jedi') |>
+  filter(character == 'EMPEROR') |>
+  plot_character_lines_with_sentiment()
+
+```
+
+##
+
+We realize that we shouldn't be calculating sentiment at the line-level and then aggregating, because short positive statements potentially end up getting as much weight as longer complaints.
 
 With this method we really should look at the estimated sentiment across a character's entire dialogue to get a sense of their tone.
 
 ##
 
-So we implement a change, and we're running out of ideas with our naming convention, so we save this new one as **sentiment_algorithmic2.R**.
+So we implement a change, shifting away from aggregation by summing to using the average sentiment over all lines. We then calculate the estimated sentiment across all characters.
 
 . . .
 
-We then calculate the estimated sentiment across all characters.
- 
-. . .
+```{r}
+#| fig-align: center
+#| fig-height: 6
+#| fig-width: 10
+#| fig-dpi: 300
+#| message: false
+#| warning: false
 
-![](images/ep4_estimated_sentiment.png){fig-align="center"}
+plot_avg_sentiment = function(data,
+                              by = c("episode", "document", "character"),
+                              top_n = 30, 
+                              ncol = 2,
+                              scales = "free_x") {
+  
+  data |>
+    get_sentences() |>
+    sentiment_by(by = by) |>
+    group_by(episode, document) |>
+    slice_max(order_by = word_count,
+              n = top_n) |>
+    ggplot(aes(x=reorder_within(character, ave_sentiment, document),
+               y=ave_sentiment,
+               color = ave_sentiment,
+               ymin = ave_sentiment - 1.96 * sd,
+               ymax = ave_sentiment + 1.96*sd))+
+    geom_point(aes(size = word_count))+
+    geom_pointrange()+
+    coord_flip()+
+    facet_wrap(episode +document ~., ncol = ncol,
+               scales = scales)+
+    scale_color_gradient2_tableau(oob = scales::squish)+
+    guides(color = 'none')+
+    xlab('character')+
+    theme(panel.grid.major = element_blank(),
+          legend.title = element_text(size = 10))+
+    geom_hline(yintercept = 0, linetype = 'dotted')+
+    scale_x_reordered()
+  
+}
 
-. . .
+starwars |>
+  filter(document == 'a new hope') |>
+  plot_avg_sentiment(
+    top_n = 30,
+    scales = "free_y"
+  )
+
+```
+
+##
 
 Is Luke whiny? Well, it depends. [This is the type of hard hitting analysis that I deliver for my clients.]{.fragment}
+
+. . .
+
+```{r}
+#| fig-align: center
+#| fig-height: 6
+#| fig-width: 10
+#| fig-dpi: 300
+#| message: false
+#| warning: false
+
+starwars |>
+  filter(character %in% c('LUKE', 'HAN', 'LEIA')) |>
+  plot_avg_sentiment(
+    top_n = 30,
+    scales = "free_y",
+    ncol = 1
+  )+
+  guides(color = 'none')
+
+```
+
 
 ##
 
@@ -364,6 +658,8 @@ What we are left with after a fairly simple analyses is a messy, entangled set o
 ![](images/starwars_no_vc.png){fig-align="center"}
 
 . . .
+
+##
 
 This is a mess for us to figure out, imagine if someone else is supposed to come along and work with this code. Where do they start?
 
@@ -410,7 +706,7 @@ In short, git is tremendously helpful even just for one individual.
 
 . . .
 
-It removes all of the mental baggage of trying to edit your code and come up with a crazy scheme for organization that you're eventually going to forget anyway. 
+It removes the mental baggage of editing your code while trying to preserve a history of your work.
 
 . . .
 
@@ -497,24 +793,24 @@ A[Remote Repo] --> B[Local Repo]
 ```{mermaid}
 graph TD;
 
-    A[Main Branch] --> B1[Jim's Feature Branch]
-    A --> B2[Phil's Feature Branch]
-    B1 --> C1{Work on Feature}
-    B2 --> C2{Work on Feature}
-    C1 --> D1[Commit Changes]
-    C2 --> D2[Commit Changes]
-    D1 --> E1[Push Changes to Jim's Feature Branch]
-    D2 --> E2[Push Changes to Phil's Feature Branch]
-    E1 --> F1[Create Pull Request]
-    E2 --> F2[Create Pull Request]
-    F1 --> G1[Review Code]
-    F2 --> G2[Review Code]
-    G1 --> H1[Approve Changes]
-    G2 --> H2[Approve Changes]
-    H1 --> I1[Merge Pull Request]
-    H2 --> I2[Merge Pull Request]
-    I1 --> J1[Delete Jim's Feature Branch]
-    I2 --> J2[Delete Phil's Feature Branch]
+A[Main Branch] --> B1[Jim's Feature Branch]
+A --> B2[Phil's Feature Branch]
+B1 --> C1{Work on Feature}
+B2 --> C2{Work on Feature}
+C1 --> D1[Commit Changes]
+C2 --> D2[Commit Changes]
+D1 --> E1[Push Changes to Jim's Feature Branch]
+D2 --> E2[Push Changes to Phil's Feature Branch]
+E1 --> F1[Create Pull Request]
+E2 --> F2[Create Pull Request]
+F1 --> G1[Review Code]
+F2 --> G2[Review Code]
+G1 --> H1[Approve Changes]
+G2 --> H2[Approve Changes]
+H1 --> I1[Merge Pull Request]
+H2 --> I2[Merge Pull Request]
+I1 --> J1[Delete Jim's Feature Branch]
+I2 --> J2[Delete Phil's Feature Branch]
 
 ```
 
@@ -524,11 +820,6 @@ graph TD;
 ## Cloning a Repo
 
 - Connect to 
-
-
-
-
-
 
 # `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
 

@@ -139,31 +139,43 @@ But, if maximum likelihood and gradient boosting have taught us anything about l
 
 :::
 
-## Let's start at the end: a data science project {background-color="black"}
+## Let's start at the end: a (ridiculous) data science project {background-color="black"}
 
 . . .
 
 I have a ridiculous, ever-evolving personal project: [predicting boardgames that I might want to add to my boardgame collection.]{.fragment .fade-in .highlight-red}
 
-
 ## This is the pipeline that scrapes data from BoardGameGeek and populates a cloud data warehouse 
-
-## This is the code that creates a Shiny dashboard to look at and explore that data.
 
 ## This is the pipeline that trains models to predict how the BoardGameGeek community is going to rate games
 
-## This is the repo that trains a user specific model and creates a report.
+## This is the repo that trains a user specific model and creates a report with recommended games for their collection
 
-## 
-::: {.incremental}
+## Motivation
 
 Do these projects represent the height of data science maturity and sophistication? 
 
-*shrug emoji*
+## {background-image="images/shrug.png" background-position="center" background-color="#4f6952" background-size="cover"}
 
-Suppose I wanted you to take a look at something in my work and and see if you could create a better model. 
+## Motivation
+
+Do these projects represent the height of data science maturity and sophistication? 
+
+Not at all. But it will help illustrate the typical setting of data science projects.
+
+. . .
+
+Suppose I wanted you to take a look at something in my work and and see if you could write a more efficient function.
+
+. . .
+
+Or maybe you could train a better model.
+
+. . .
 
 Or maybe you could create a better report. 
+
+. . .
 
 Or maybe you could do the whole thing differently and save me a ton of time and/or make better predictions.
 
@@ -176,155 +188,11 @@ Or maybe you could do the whole thing differently and save me a ton of time and/
 How do I share my code with you, so that you can run my code, make changes, run experiments, etc > without breaking any of my ongoing work?
 :::
 
-How do I 
-
-
 ## Challenge
 
 > Can we predict which board games Phil wants to buy? 
 
+. . .
+
 > Find out next week on Dragon Ball Z
 
-## So, what is Git? {background-color="black"}
-
-<br>
-
-. . .
-
-<br>
-
-[Time for a super dramatic reveal.]{style="font-size: 100px;"}
-
-. . .
-
-[For **everyone.**]{style="font-size: 300px;"}
-
-## References
-
- I highly recommend checking out each of following materials:
- 
- - H
-
-# Background
-
-## Caveats
-
-::: {.incremental}
-
-- 
-- Second item
-
-:::
-
-```{r}
-library(ggplot2)
-```
-
-
-```{r}
-#| message: false
-#| warning: false
-#| echo: fenced
-
-mtcars |>
-  dplyr::filter(mpg > 20)
-
-```
-
-## Mermaid
-
-```{mermaid}
-graph TD;
-
-    A[Main Branch] --> B1[Jim's Feature Branch]
-    A --> B2[Phil's Feature Branch]
-    B1 --> C1{Work on Feature}
-    B2 --> C2{Work on Feature}
-    C1 --> D1[Commit Changes]
-    C2 --> D2[Commit Changes]
-    D1 --> E1[Push Changes to Jim's Feature Branch]
-    D2 --> E2[Push Changes to Phil's Feature Branch]
-    E1 --> F1[Create Pull Request]
-    E2 --> F2[Create Pull Request]
-    F1 --> G1[Review Code]
-    F2 --> G2[Review Code]
-    G1 --> H1[Approve Changes]
-    G2 --> H2[Approve Changes]
-    H1 --> I1[Merge Pull Request]
-    H2 --> I2[Merge Pull Request]
-    I1 --> J1[Delete Jim's Feature Branch]
-    I2 --> J2[Delete Phil's Feature Branch]
-
-```
-
-## Fragments
-
-::: {.fragment}
-Fade in
-:::
-
-::: {.fragment .fade-out}
-Fade out
-:::
-
-::: {.fragment .highlight-red}
-Highlight red
-:::
-
-::: {.fragment .fade-in-then-out}
-Fade in, then out
-:::
-
-## *Advanced* Fragments
-
-::: {.fragment .fade-in}
-::: {.fragment .highlight-red}
-::: {.fragment .semi-fade-out}
-Fade in > Turn red > Semi fade out
-:::
-:::
-:::
-
-# How to order fragments
-
-::: {.fragment fragment-index=3}
-Appears last
-:::
-
-::: {.fragment fragment-index=1}
-Appears first
-:::
-
-::: {.fragment fragment-index=2}
-Appears second
-:::
-
-##
-
-::: {.r-fit-text}
-But!
-:::
-
-::: {.fragment fragment-index=2}
-And that's a big but.
-:::
-
-::: {.fragment fragment-index=3}
-And I cannot lie.
-:::
-
-## Tabsets
-
-::: {.panel-tabset}
-
-## Element 1
-
-```{r}
-#| fig-cap: Temperature and ozone level.
-#| warning: false
-#| message: false
-ggplot(airquality, aes(Temp, Ozone)) + 
-  geom_point() + 
-  geom_smooth(method = "loess"
-)
-```
