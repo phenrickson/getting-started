@@ -1,16 +1,17 @@
 ---
 format:
   revealjs:
-    slide-number: true
+    slide-number: c/t
     width: 1600
     height: 900
     css: ["theme/theme.css"]
     theme: simple
-    echo: false
-    fig-align: center
-    fig-height: 6
-    fig-width: 10
-    fig-dpi: 400
+    highlight-style: github
+    code-block-border-left: "#4f6952"
+    code-block-bg: true
+    code-link: true
+    chalkboard:
+      src: drawings.json
 editor: source
 ---
 
@@ -74,7 +75,7 @@ background-opacity=0.75}
 
 Consider the following situations:
 
-- We've been working on a project for ages. We've gone through about 30 different iterations of writing a function and keep going back and forth on which approach we want to keep.
+- We've been working on a project for ages. We have a core, legacy script that has gone through about 30 different iterations with edits from dozens of people as the project has changed over the years. We need to audit how that script has changed over time.
 
 - We made a change to one of the core functions of our project and everything seemed to be great. But two weeks later we discovered a change to a helper function broke something in our monthly report. We're now trying to figure out what we changed and how to patch it.
 
@@ -84,11 +85,15 @@ Consider the following situations:
 
 ## Version Control
 
-For each one of these scenarios, we intuitively wanted something resembling version control. We want to tinker with making a change, but we don't want that change to overrwite or break our existing code. 
+For each one of these scenarios, we intuitively wanted something resembling version control. We want to tinker with making a change, but we don't want that change to overwrite or break our existing code. 
 
 . . .
 
-[So we make a copy of the original, then create a new copy that we begin to edit and work on without breaking the original source.]{.fragment .highlight-red}
+People implement their own approaches to version control all the time.
+
+. . .
+
+[We make a copy of the original, then create a new copy that we begin to edit and work on without breaking the original source.]{.fragment .highlight-red}
 
 . . .
 
@@ -114,17 +119,21 @@ I'm going to be more than I've ever been.
 
 I'm going to use Git.
 
-. . .
-
 ## 
 
-{{< video https://youtu.be/x_CNqKA2t9M?si=gFjkE4VeObGw_TK2&t=136 >}}
+## {background-image="images/learning_git.png" background-position="center" background-color="white" background-size="cover"}
 
-##
+## {background-image="images/intimidating_git.png" background-position="center" background-color="white" background-size="cover"}
+
+## {background-image="images/intimidating_git.png" background-position="center" background-color="white" background-size="cover"}
+
+![](images/this_is_the_bad_place.gif){fig-align="center"}
+
+
+
+## The Reality
 
 And about thirty minutes later it was so unclear how any of this would help you that you just punted and decided to keep working as you always have, warts and all, because Git clearly comes from **The Bad Place**.
-
-. . .
 
 ## The Reality
 
@@ -149,7 +158,7 @@ It's going to be painful.
 
 
 
-[But it's worth it.]{style="font-size: 100px;"}
+[But it's worth it.]{style="font-size: 80px;"}
 
 
 ## Why should we *commit* to this?
@@ -204,6 +213,7 @@ background-opacity=0.75}
 . . .
 
 Suppose we have a project we are working on. We are interested in running text/sentiment analysis on the scripts of the original Star Wars trilogy. 
+
 . . .
 
 We want to know things such as, who are the most positive/negative characters in A New Hope? A lot of people have claimed Luke was really whiny; is that the case?
@@ -242,7 +252,9 @@ starwars = read_csv(here::here('materials', 'data', 'starwars_text.csv'))  |>
 # show first few lines of a new hope
 starwars |>
   head(10) |>
-  select(episode, document, character, dialogue) 
+  select(episode, document, character, dialogue) |>
+  gt::gt() |>
+  gt::as_raw_html()
 
 ```
 
@@ -267,8 +279,11 @@ starwars_tokenized =
   anti_join(stop_words, by = "word")
 
 starwars_tokenized |>
-  inner_join(tidytext::get_sentiments("afinn"), by = "word")
-
+  inner_join(tidytext::get_sentiments("afinn"), by = "word") |>
+  head(10) |>
+  gt::gt() |>
+  gt::as_raw_html()
+ 
 ```
 
 ## 
@@ -546,24 +561,6 @@ starwars_sentimentr |>
 
 ##
 
-```{r}
-#| fig-align: center
-#| fig-height: 6
-#| fig-width: 10
-#| fig-dpi: 400
-#| message: false
-#| warning: false
-
-
-starwars_sentimentr |>
-  filter(document == 'return of the jedi') |>
-  filter(character == 'EMPEROR') |>
-  plot_character_lines_with_sentiment()
-
-```
-
-##
-
 We realize that we shouldn't be calculating sentiment at the line-level and then aggregating, because short positive statements potentially end up getting as much weight as longer complaints.
 
 With this method we really should look at the estimated sentiment across a character's entire dialogue to get a sense of their tone.
@@ -625,7 +622,7 @@ starwars |>
 
 ##
 
-Is Luke whiny? Well, it depends. [This is the type of hard hitting analysis that I deliver for my clients.]{.fragment}
+Is Luke whiny? Well, it depends. [*This is the type of hard hitting analysis that I deliver for my clients.*]{.fragment}
 
 . . .
 
@@ -702,23 +699,183 @@ And, most importantly, we can view the history of our work in the approriate way
 
 ## Why Go Through This Exercise
 
+. . .
+
+Because I wanted to make Star Wars jokes.
+
+## Why Go Through This Exercise
+
 In short, git is tremendously helpful even just for one individual.
 
 . . .
 
-It removes the mental baggage of editing your code while trying to preserve a history of your work.
+It removes the mental baggage of worrying about editing your code and remembering what you did. It allows you to make changes, track the history of your project, and document everything you did along the way.
 
 . . .
 
 Where it starts to get even more helpful is for enabling collaboration within a team.
 
+## {background-image="images/styles_of_work.png" background-position="center" background-color="white" background-size="contain"}
+
+# With and Without Git: Predictive Modeling
+
+## Git for Data Science
+
+Suppose we were working on a predictive modeling project instead of looking at Star Wars scripts.
+
+Think about the pieces involved in a typical predictive modeling project. 
+
 . . .
 
-But in order to do that, we need to get comfortable with a few terms and concepts.
+- Loading data
+- Cleaning data
+- Splitting data
+- Feature engineering
+- Model specification
+- Tuning parameters
+- Model evaluation
+- Model selection
+- Model deployment
+
+## Git for Data Science
+
+We typically don't build all of this at once and have everything finalized from the get go.
+
+```{mermaid}
+flowchart LR
+  raw[Raw Data] --> clean[Clean Data]
+  clean --> train[Training Set]
+  clean --> valid[Validation Set]
+  train --> preprocessor(Preprocessor)
+  preprocessor --> resamples[Resamples]
+  resamples --> model(Model Spec)
+  model --> features(Features)
+  features --> tuning(Tuning)
+  tuning --> valid
+  preprocessor --> valid
+  valid --> evaluation[Model Evaluation]
+  train --> final(Model)
+  valid --> final
+```
+
+##
+
+We build incrementally, typically testing and experimenting with different pieces along the way.
+
+Maybe we start out by just estimating a simple baseline model.
+
+```{mermaid}
+flowchart LR
+  raw[Raw Data] --> clean[Clean Data]
+  clean --> train[Training Set]
+  clean --> valid[Validation Set]
+  train --> model(Baseline Model)
+```
+
+## 
+
+Then maybe we decide to add in some feature engineering and tune a ridge regression over 25 bootstraps, which requires normalization and imputation.
+
+```{mermaid}
+
+flowchart LR
+  raw[Raw Data] --> clean[Clean Data]
+  clean --> train[Training Set]
+  clean --> valid[Validation Set]
+  train --> preprocessor(Preprocessor)
+  preprocessor --> resamples[Bootstraps]
+  resamples --> model(glmnet)
+  model --> features(Impute + Normalize)
+  features --> tuning(Tuning)
+  tuning --> valid
+  preprocessor --> valid
+  valid --> evaluation[Model Evaluation]
+  train --> final(Model)
+  valid --> final
+
+```
+
+Then maybe we decide to try out a more flexible model like lightgbm with minimal feature engineering.
+
+```{mermaid}
+
+flowchart LR
+  raw[Raw Data] --> clean[Clean Data]
+  clean --> train[Training Set]
+  clean --> valid[Validation Set]
+  train --> preprocessor(Preprocessor)
+  preprocessor --> resamples[Cross validation]
+  resamples --> model(lightgbm)
+  model --> features(Minimal)
+  features --> tuning(Tuning)
+  tuning --> valid
+  preprocessor --> valid
+  valid --> evaluation[Model Evaluation]
+  train --> final(Model)
+  valid --> final
+
+```
+
+## Git for Data Science
+
+In each of these cases, we have **code** that we have executed and **results** associated with that code. 
+
+. . .
+
+Just as with the Star Wars example, we could try to store a bunch of scripts and track all of the results in different folders. 
+
+. . .
+
+Or, we could use Git to track our code and the results of our experiments.
+
+## {background-image="images/git_data_science_branches.png" background-position="center" background-color="white" background-size="contain"}
 
 # What We Need to Know About Git
 
 ## So, what the heck is Git?
+
+. . .
+
+> As with many great things in life, Git began with a bit of **creative destruction and fiery controversy**.
+
+. . .
+
+> The Linux kernel is an open source software project of fairly large scope. During the early years of the Linux kernel maintenance (1991–2002), changes to the software were passed around as patches and archived files. In 2002, the Linux kernel project began using a proprietary [Distributed Version Control System] called BitKeeper.
+
+. . .
+
+> In 2005, the relationship between the community that developed the Linux kernel and the commercial company that developed BitKeeper broke down, and the tool’s free-of-charge status was revoked. This prompted the Linux development community (and in particular Linus Torvalds, the creator of Linux) to develop their own tool based on some of the lessons they learned while using BitKeeper.
+
+https://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git
+
+
+## Git
+
+Git is a **version control system**. 
+
+. . .
+
+Git was originally developed for the purpose of helping (Linux) developers work in parallel on their software projects.
+
+. . .
+
+Git manages and tracks a set of files - referred to as a **repository** - in a highly structured way.
+
+. . .
+
+Though originally intended for software development, Git is now used by data scientists in a variety of different ways to track the odds and ends that go into data science projects.
+
+## GitHub
+
+GitHub is a hosting service that stores your Git-based projects in a **remote location**.
+
+. . .
+
+Storing your code on GitHub allows you to share/sync your work with others (as well as have a safe back up for when you inevitably mess up your local repository).
+
+. . .
+
+We'll focus on GitHub (because it's what I use, but there are other options out there as well). GitHub has additional features for managing projects and automating aspects of a project, we'll touch on tht later.
 
 ## Git Terms
 
@@ -747,6 +904,226 @@ But in order to do that, we need to get comfortable with a few terms and concept
 :::
 :::
 ::::
+
+# Creating a New Repo
+
+## Creating a New Repo
+
+Git is highly structured way of managing a set of files, called a repository. In order to see this in action, we need to start with a set of files.
+
+. . .
+
+We have a new project that we'll call **git-started**.
+
+. . .
+
+We want to create a new GitHub repository,  **github.com/phenrickson/git-started.git**
+
+. . .
+
+We want to create a new RStudio project, **git-started.Rproj**
+
+. . .
+
+We want to connect RStudio to GitHub so our project is synced with our repository.
+
+. . .
+
+We can do this in a couple of different ways, starting in either GitHub or RStudio. 
+
+## GitHub -> RStudio
+
+1. Go to GitHub.com and sign in with your account
+2. Click on Repositories.
+3. **Click on New repository.**
+
+## {background-image="images/github_new_repo.png" background-position="center" background-color="white" background-size="contain"}
+
+## GitHub -> RStudio
+
+1. Go to GitHub.com and sign in with your account
+2. Click on Repositories.
+3. Click on New repository.
+4. **Name the repository**
+5. **Initialize the repository with a README**
+
+## {background-image="images/github_create_project.png" background-position="center" background-color="white" background-size="contain"}
+
+## GitHub -> RStudio
+
+1. Go to GitHub.com and sign in with your account
+2. Click on Repositories.
+3. Click on New repository.
+4. Name the repository
+5. Initialize the repository with a README
+6. Click Create repository.
+
+## {background-image="images/github_git_started.png" background-position="center" background-color="white" background-size="contain"}
+
+## GitHub -> RStudio
+
+1. Go to GitHub.com and sign in with your account
+2. Click on Repositories.
+3. Click on New repository.
+4. Name the repository
+5. Initialize the repository with a README
+6. Click Create repository.
+
+This creates a new repository on GitHub, but **we still need to connect it to RStudio**. To do this, we need to clone this repo from RStudio.
+
+## GitHub -> RStudio
+
+1. Go to GitHub.com and sign in with your account
+2. Click on Repositories.
+3. Click on New repository.
+4. Name the repository
+5. Initialize the repository with a README
+6. Click Create repository.
+7. **Open a New Project in RStudio**
+8. **Create from Version Control**
+
+## {background-image="images/rstudio_version_control.png" background-position="center" background-color="white" background-size="contain"}
+
+## GitHub -> RStudio
+
+1. Go to GitHub.com and sign in with your account
+2. Click on Repositories.
+3. Click on New repository.
+4. Name the repository
+5. Initialize the repository with a README
+6. Click Create repository.
+7. Open a New Project on RStudio
+8. Create from Version Control
+9. **Paste in your Repository URL from GitHub**
+
+## {background-image="images/rstudio_clone_repo_link.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/github_clone_repo.png" background-position="center" background-color="white" background-size="contain"}
+
+## GitHub -> RStudio
+
+1. Go to GitHub.com and sign in with your account
+2. Click on Repositories.
+3. Click on New repository.
+4. Name the repository
+5. Initialize the repository with a README
+6. Click Create repository.
+7. Open a New Project on RStudio
+8. Create from Version Control
+9. Set Repository URL to link of GitHub repo
+10. **Set name and location of project**
+11. Create project
+
+## GitHub -> RStudio
+
+These steps inside of RStudio can also be taken care of by using the **usethis** package, but I tend to just go through the process each time.
+
+```{r}
+#| eval: false
+#| echo: true
+
+usethis::create_from_github("https://github.com/phenrickson/git-started.git")
+
+```
+
+![](images/rstudio_create_from_github.png){fig-align="center"}
+
+## GitHub -> RStudio
+
+These steps inside of RStudio can also be taken care of by using the **usethis** package, but I tend to just go through the process each time.
+
+Under the hood, this last bit is essentially just:
+
+> git clone "https://github.com/YOU/YOUR_REPO.git"
+
+# `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
+
+- Create a new Git repository on GitHub, **git-started**
+- Add a description to the project (whatever you would like)
+- Initialize this repository with a README
+- Create a new RStudio project
+- Connect this RStudio project to your GitHub repo
+
+```{R}
+#| echo: false
+countdown_timer(5)
+```
+
+## GitHub -> RStudio
+
+Creating a new project with GitHub first then cloning with RStudio is what I would tend to recommend.
+
+. . .
+
+It's the same process as cloning repositories from other people, plus it takes care of some pieces behind the scenes. 
+
+. . .
+
+You can however also start by first creating an RStudio project, then initialize a GitHub repository second. This process can be useful to know if you want to set up a GitHub repo for an existing project.
+
+
+## RStudio -> Github
+
+1. Create a new RStudio project.
+2. Check 'Create a git repository'
+
+## {background-image="images/rstudio_create_project.png" background-position="center" background-color="white" background-size="contain"}
+
+## RStudio -> Github
+
+1. Create a new RStudio project
+2. Check 'Create a git repository'
+3. **usethisthis::use_git()** to add and commit your initial files 
+4. **usethis::use_github()** to create a repository on GitHub and connect your R project
+
+## {background-image="images/rstudio_use_github.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/rstudio_create_project.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/rstudio_git_started.png" background-position="center" background-color="white" background-size="contain"}
+
+## RStudio -> Github
+
+Under the hood, this is essentially just:
+
+> git init
+> git add .
+> git commit -m "Initial commit"
+> git remote add origin 'https://github.com/phenrickson/git-started.git'
+> git push -u origin maain
+
+# Add/Commit/Push
+
+I now have a repository, but I'm missing a README. I want to add a README to provide some basic details about this repository.
+
+To add files, we'll 
+
+. . .
+
+
+# Cloning a Repo
+
+# `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
+
+- Go to 
+-   Try <kbd>`Ctrl + space`</kbd> to see the available YAML options
+-   Try out the tab-completion of any options you remember
+
+```{R}
+#| echo: false
+countdown_timer(10)
+```
+
+# Add/Commit/Push
+
+## Adding Files
+
+We now have a 
+
+
+
+## Cloning a Repo
+
 
 ## Next Steps
 
