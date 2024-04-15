@@ -25,7 +25,7 @@ library(quarto)
 
 # Background
 
-## {background-image="images/everything_is_fine.webp" background-position="center" background-color="#4f6952" background-size="cover"}
+## {background-image="images/everything_is_fine.webp" background-position="center" background-color="white" background-size="cover"}
 
 ## Goals
 
