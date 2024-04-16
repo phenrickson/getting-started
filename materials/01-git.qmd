@@ -1189,6 +1189,8 @@ countdown_timer(10)
 
 # Branches and Pull Requests
 
+## Branches and Pull Requests
+
 A typical commit history for one branch might look something like this. We have a series of commits that tracks the history of the project from left to right.
 
 ```{mermaid}
@@ -1246,7 +1248,7 @@ How often should we commit our code?
 
 [https://r-pkgs.org/software-development-practices.html#git-commit](Hadley Wickham)
 
-## Branches
+##
 
 Suppose you're at a point in your project where you're not certain about the next direction you want to take. You could keep making a series of small commits and then revert all the way back to where you were originally.
 
@@ -1454,7 +1456,6 @@ gitGraph
 
 ```
 
-
 ## 
 
 How does data science differ from traditional software development? 
@@ -1495,48 +1496,9 @@ gitGraph
 
 ```
 
+##
 
-
-
-## Next Steps
-
-- Local: “on your personal machine”
-- Remote: “on the official server”
-- Branch: A version of the directory
-- Commit: A change made to a version of the directory
-- Push: Uploads your work to the ‘official’ remote server
-- Fetch/Pull: Checks for available updates on a remote
-- Switch/Checkout: Switches your local copy to a version of the directory
-- Pull Request: A request to merge one branch into another
-
-
-# Demo
-
-- Cloning a repo
-- Viewing repo organization
-- Fetch/pull
-
-
-Cloning
-Updating submodules
-Repo log
-Working tree changes
-Fetch / Pull
-SHAs
-Ref browser
-Comparing between branches / commits
-Switching between branches / commits
-
-# 
-
-```{mermaid}
-graph TD;
-
-A[Remote Repo] --> B[Local Repo]
-
-
-
-```
+![](images/this_is_the_bad_place.gif){fig-align="center"}
 
 ##
 
@@ -1564,20 +1526,156 @@ I2 --> J2[Delete Phil's Feature Branch]
 
 ```
 
-
-# Github and RStudio
-
-## Cloning a Repo
-
-- Connect to 
+## Cloning 
 
 # `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
 
-- Go to 
--   Try <kbd>`Ctrl + space`</kbd> to see the available YAML options
--   Try out the tab-completion of any options you remember
+- Create a new R project by cloning the repo at github.com/phenrickson/starwars
+- Run `sentiment.qmd` (notice: what packages do you need to install?)
+- Create a new branch titled *feature*
+- Make any changes to `sentiment.qmd` that you would like
+- Commit those changes to your branch
+- Create a pull request for feature into main
 
 ```{R}
 #| echo: false
 countdown_timer(10)
+```
+
+## Cloning vs Forking
+
+Okay so we can see what you all did in your own separate repos, but there's a problem. Let's say I wanted to merge a change that you made into my repo - right now, there's no way to do that.
+
+. . .
+
+When you create a Git repo locally, you eventually need to connect that repo to a remote location.
+
+![](images/no-github.jpeg){fig-align="center"}
+
+##
+
+You typically create a copy of that repo at your remote location (GitHub), which is owned by you and you have full access to push/pull/merge to your heart's content.
+
+The remote is typically known as **origin**.
+
+![](images/ours-you.jpeg){fig-align="center"}
+
+## 
+
+Cloning someone else's repo creates a local copy of their repo, where the **origin** is owned by someone else. 
+
+In this case, you can pull and execute code, but you have no way of pushing changes to it; the owner of that repo has configured origin to be read-only for others.
+
+![](images/theirs.jpeg){fig-align="center"}
+
+##
+
+So what the heck? If Git and GitHub are supposed to be collaborative, how do we configure things so that we can push and pull and work within the same repository?
+
+. . .
+
+One option is to just provide permissions to origin by adding others as collaborators. The source repo is owned by someone else, or an organization, but you have permissions to make changes.
+
+. . .
+
+![](images/ours-them.jpeg){fig-align="center"}
+
+##
+
+The other option is to use **forking**, where you **fork** the original repo to create a copy for yourself that becomes your remote **origin**, where you have full permissions to read and write. 
+
+The original source repo is typically referred to as **upstream** - you can pull changes from it but you can't push directly to it.
+
+. . .
+
+If you want your changes to make it upstream, you push your code to your origin, then create a **pull request** for the repo owner to consider merging in your changes.
+
+. . .
+
+![](images/fork-them.jpeg){fig-align="center"}
+
+# Fork-and-Clone - Demo
+
+- Fork-and-clone a repo (https://github.com/jennybc/bingo)
+- Configure the source stream as the upstream remote
+- Configure local *main* to track upstream/main
+- Make a change (add annoying data science questions)
+- Commit a change (push to origin)
+- Submit a pull request
+
+## 
+
+Forking and cloning directly from Github entails a couple of additional steps to ensure that you are tracking the original source repo.
+
+![](images/fork-no-upstream-sad.jpeg){fig-align="center"}
+
+##
+
+To add the upstream remote:
+> git remote add upstream https://github.com/OWNER/REPO.git
+
+To fetch any changes that have been made upstream:
+> git fetch upstream
+
+To set your local main to track the upstream/main:
+
+> git branch --set-upstream-to upstream/main
+
+##
+
+Alternatively, you can always use the helpful functions from **usethis**, which will take care of the upstream tracking on one go.
+
+```{r}
+#| eval: false
+#| echo: true
+#| 
+usethis::create_from_github(
+  repo_spec = "https://github.com/OWNER/REPO.git",
+  destdir = "~/path/to/your/local/repos",
+  fork = TRUE
+)
+
+```
+
+# `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
+
+- Fork and clone https://github.com/ds-workshop/board_games
+- Run **usethis::git_remotes()** in R or use **git remote -v** in the terminal; what do you see?
+- **Create a new branch** to begin your development
+- Open **analysis.qmd** 
+- Run **analysis.qmd** (something is going to be a problem here here!)
+- Answer the questions
+- Commit your answers
+- Push your answers
+- Create a pull request for your branch into ds-workshop/feature
+
+```{R}
+#| echo: false
+countdown_timer(15)
+```
+
+
+## 
+
+We hit something of a snag with installing the requisite packages for that one, eh? We'll talk about that shortly.
+
+. . .
+
+But next, let's review everyone's work and complete a pull request. We'll then work off one of these branches, and proceed to add some new pieces.
+
+## 
+
+# `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
+
+- Checkout main
+- Pull upstream/main to ensure you are caught up with new changes
+- Examine the new questions in **analysis.qmd**
+- Create a new branch for development
+- Commit your answers
+- Push your answers
+- Create a pull request for your branch into ds-workshop/main
+
+```{R}
+#| echo: false
+countdown_timer(15)
 ```
