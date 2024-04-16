@@ -676,13 +676,31 @@ The end result of our work is the **current state** of the project, which we sto
 
 ##
 
-If we want to see the work that we did up to this point, all we have to do is look at the history of that script and the various changes, or **commits**, we made to it.
+If we want to see the work that we did up to this point, all we have to do is look at the history of that script and the various changes we made to in in the form of **commits**.
 
 ![](images/starwars_commits.png){fig-align="center"}
 
 ## 
 
-This allows us to easily view how our script changed as we worked on it.
+Visualized as a timeline from left to right, the history of our work might look something like this. Each **commit** is a snapshot of the repository at a specific point in time.
+
+```{mermaid}
+%%| diagram: 9
+%%| fig-width: 12
+%%| fig-height: 6
+%%| rotateCommitLabel: true
+ 
+gitGraph
+    commit id: "initial"
+    commit id: "afinn"
+    commit id: "bing"
+    commit id: "sentimentr"
+```
+
+
+## 
+
+The **diff**erences between these commits allow us to easily view how our script changed as we worked on it.
 
 ![](images/starwars_compare.png){fig-align="center"}
 
@@ -703,9 +721,9 @@ And, most importantly, we can view the history of our work in the approriate way
 
 Because I wanted to make Star Wars jokes.
 
-## Why Go Through This Exercise
+. . .
 
-In short, git is tremendously helpful even just for one individual.
+Because git is tremendously helpful even just for one individual.
 
 . . .
 
@@ -742,6 +760,7 @@ Think about the pieces involved in a typical predictive modeling project.
 We typically don't build all of this at once and have everything finalized from the get go.
 
 ```{mermaid}
+%%| fig-height: 10
 flowchart LR
   raw[Raw Data] --> clean[Clean Data]
   clean --> train[Training Set]
@@ -758,11 +777,7 @@ flowchart LR
   valid --> final
 ```
 
-##
-
 We build incrementally, typically testing and experimenting with different pieces along the way.
-
-Maybe we start out by just estimating a simple baseline model.
 
 ```{mermaid}
 flowchart LR
@@ -771,6 +786,8 @@ flowchart LR
   clean --> valid[Validation Set]
   train --> model(Baseline Model)
 ```
+
+We might start out the project by training a simple baseline model.
 
 ## 
 
@@ -816,19 +833,62 @@ flowchart LR
 
 ```
 
+And so on, and so on.
+
 ## Git for Data Science
 
 In each of these cases, we have **code** that we have executed and **results** associated with that code. 
-
 . . .
 
-Just as with the Star Wars example, we could try to store a bunch of scripts and track all of the results in different folders. 
+As before, we could try to store a bunch of scripts and track all of the results in different folders. 
 
 . . .
 
 Or, we could use Git to track our code and the results of our experiments.
 
 ## {background-image="images/git_data_science_branches.png" background-position="center" background-color="white" background-size="contain"}
+
+##
+
+This can start to get complicated.
+
+```{mermaid}
+%%| diagram: 9
+%%| fig-width: 12
+%%| fig-height: 6
+%%| rotateCommitLabel: true
+
+gitGraph
+    commit
+    commit
+    branch data
+    checkout data
+    commit
+    commit
+    branch stable/model
+    checkout stable/model
+    branch dev/model
+    checkout dev/model
+    commit
+    branch dev/glmnet
+    checkout dev/glmnet
+    commit
+    checkout dev/model
+    merge dev/glmnet
+    branch dev/xgboost
+    checkout dev/xgboost
+    commit
+    checkout dev/model
+    merge dev/xgboost
+    commit
+    checkout stable/model
+    merge dev/model
+    checkout main
+    merge stable/model tag: "v1"
+
+```
+
+We'll start with the basics.
 
 # What We Need to Know About Git
 
@@ -855,13 +915,17 @@ Git is a **version control system**.
 
 . . .
 
-Git was originally developed for the purpose of helping (Linux) developers work in parallel on their software projects.
+Git was originally developed for the purpose of helping developers work in parallel on their software projects.
 
 . . .
 
 Git manages and tracks a set of files - referred to as a **repository** - in a highly structured way.
 
 . . .
+
+## {background-image="images/commit-diff-sha-tag.png" background-position="center" background-color="white" background-size="contain"}
+
+## Git
 
 Though originally intended for software development, Git is now used by data scientists in a variety of different ways to track the odds and ends that go into data science projects.
 
@@ -877,51 +941,58 @@ Storing your code on GitHub allows you to share/sync your work with others (as w
 
 We'll focus on GitHub (because it's what I use, but there are other options out there as well). GitHub has additional features for managing projects and automating aspects of a project, we'll touch on tht later.
 
-## Git Terms
+# Git Basics
 
-:::: {.columns}
+- Local: “on your personal machine”
+- Remote: “on the official server”
+- Branch: A version of the directory
+- Commit: A change made to a version of the directory
+- Push: Uploads your work to the ‘official’ remote server
+- Fetch/Pull: Checks for available updates on a remote
+- Switch/Checkout: Switches your local copy to a version of the directory
+- Pull Request: A request to merge one branch into another
 
-::: {.column width="40%"}
+# Git Basics - Demo
 
-:::{.fragment fragment-index=1}
-- Repository: A directory in which file history is preserved
-:::
+- Repo organization
+- Viewing history
+- Making a change (Let's examine Vader)
+- Adding that change
+- Viewing that change
 
-:::{.fragment fragment-index=2}
-- Clone: Downloading an existing repository
-:::
+```{mermaid}
 
-:::
+gitGraph
+    commit id: "Initial commit"
+    commit
+    branch dev
+    checkout dev
+    commit
+    commit
+    checkout main
+    merge dev
+    commit
+    commit
 
-::: {.column width="50%"}
-
-::: {.fragment fragment-index=1}
-![](images/git-repository.png){fig-align="center"}
-:::
-
-::: {.fragment fragment-index=2}
-![](images/git-clone.png){fig-align="center"}
-:::
-:::
-::::
+```
 
 # Creating a New Repo
 
 ## Creating a New Repo
 
-Git is highly structured way of managing a set of files, called a repository. In order to see this in action, we need to start with a set of files.
+Git is highly structured way of managing a set of files, called a repository. We'll often work by cloning an already established repository in order introduce changes, meaning that we are inheriting a set of files. But it's really worth knowing how to create a repository from scratch.
 
 . . .
 
-We have a new project that we'll call **git-started**.
+We want to create a new project called **git-started**.
 
 . . .
 
-We want to create a new GitHub repository,  **github.com/phenrickson/git-started.git**
+We want to create a new GitHub repository.
 
 . . .
 
-We want to create a new RStudio project, **git-started.Rproj**
+We want to create a new RStudio projec.
 
 . . .
 
@@ -1049,9 +1120,9 @@ Under the hood, this last bit is essentially just:
 countdown_timer(5)
 ```
 
-## GitHub -> RStudio
+## RStudio -> Github
 
-Creating a new project with GitHub first then cloning with RStudio is what I would tend to recommend.
+Creating a new project with GitHub **first** then **cloning** with RStudio is what I would tend to recommend.
 
 . . .
 
@@ -1092,11 +1163,13 @@ Under the hood, this is essentially just:
 > git remote add origin 'https://github.com/phenrickson/git-started.git'
 > git push -u origin maain
 
-# Add/Commit/Push
+# Commits
+
+##
 
 I now have a repository, but I'm missing a README. I want to add a README to provide some basic details about this repository.
 
-To add files, we'll 
+To add files...
 
 . . .
 
@@ -1114,15 +1187,315 @@ To add files, we'll
 countdown_timer(10)
 ```
 
-# Add/Commit/Push
+# Branches and Pull Requests
 
-## Adding Files
+A typical commit history for one branch might look something like this. We have a series of commits that tracks the history of the project from left to right.
 
-We now have a 
+```{mermaid}
+%%| diagram: 9
+%%| fig-width: 10
+%%| fig-height: 4
+%%| rotateCommitLabel: true
+
+gitGraph
+    commit
+    commit
+    commit
+    commit type:HIGHLIGHT
+
+```
+
+##
+
+We could just keep working out of one branch, tracking the history of the project via our commits.
+
+```{mermaid}
+%%| diagram: 9
+%%| fig-width: 10
+%%| fig-height: 4
+%%| rotateCommitLabel: true
+
+gitGraph
+    commit
+    commit
+    commit
+    commit
+    commit
+    commit
+    commit type:HIGHLIGHT
+
+```
+
+This has some appeal because of its simplicity; if we ever want to see our previous work, we just flip back through our history of commits.
+
+##
+
+How often should we commit our code?
+
+. . .
+
+> Using a Git commit is like using anchors and other protection when climbing. If you’re crossing a dangerous rock face you want to make sure you’ve used protection to catch you if you fall. Commits play a similar role: if you make a mistake, you can’t fall past the previous commit.
+
+. . .
+
+> Coding without commits is like free-climbing: you can travel much faster in the short-term, but in the long-term the chances of catastrophic failure are high! Like rock climbing protection, you want to be judicious in your use of commits. 
+
+. . .
+
+> Committing too frequently will slow your progress; use more commits when you’re in uncertain or dangerous territory. Commits are also helpful to others, because they show your journey, not just the destination.
+
+[https://r-pkgs.org/software-development-practices.html#git-commit](Hadley Wickham)
+
+## Branches
+
+Suppose you're at a point in your project where you're not certain about the next direction you want to take. You could keep making a series of small commits and then revert all the way back to where you were originally.
+
+```{mermaid}
+%%| diagram: 9
+%%| fig-width: 10
+%%| fig-height: 4
+%%| rotateCommitLabel: true
+
+gitGraph
+    commit
+    commit
+    commit
+    commit type:HIGHLIGHT
+    commit
+    commit
+    commit
+
+```
+
+But a better approach is to use **branches**. Branching amounts to creating a detour from the main stream of commits; it allows you to work without any fear of disrupting the work in main.
+
+```{mermaid}
+%%| diagram: 9
+%%| fig-width: 10
+%%| fig-height: 4
+%%| rotateCommitLabel: true
+
+gitGraph
+    commit
+    commit
+    commit
+    commit
+    branch dev
+    checkout dev
+    commit
+    commit
+    commit
+
+```
 
 
+##
 
-## Cloning a Repo
+Once you've completed your work, you can then choose to **merge** it back into main. This is a **pull request** on GitHub.
+
+```{mermaid}
+%%| diagram: 9
+%%| fig-width: 10
+%%| fig-height: 4
+%%| rotateCommitLabel: true
+
+gitGraph
+    commit
+    commit
+    commit
+    commit
+    branch dev
+    checkout dev
+    commit
+    commit
+    commit
+    checkout main
+    merge dev
+
+```
+
+Or, you can just stop working on the branch and go back to working on main, letting the branch become stale.
+
+```{mermaid}
+%%| diagram: 9
+%%| fig-width: 10
+%%| fig-height: 4
+%%| rotateCommitLabel: true
+
+gitGraph
+    commit
+    commit
+    commit
+    commit
+    branch dev
+    checkout dev
+    commit
+    commit
+    commit
+    checkout main
+    commit
+    commit
+
+```
+
+
+##
+
+Branching allows teams of developers to do their work on separate branches without overwriting or getting in the way of each other's work.
+
+##
+
+Typically, it is common to block direct commits to **main** and only allow new commits to main via pull requests.
+
+This pattern requires creating new branches, such as **dev**, where developers commit their work. **dev** is then merged back into **main** pending an approval process.
+
+```{mermaid}
+%%| diagram: 9
+%%| fig-width: 16
+%%| fig-height: 4
+%%| rotateCommitLabel: true
+gitGraph
+    commit
+    branch dev
+    checkout dev
+    commit
+    commit
+    commit
+    commit
+    checkout main
+    merge dev tag: "draft"
+```
+
+With larger development teams, it's more common to see branching strategies involving a number of common branchdes **main**, **dev**, **feature**, **hotfix**. 
+
+## 
+
+**main**: releases, most controlled branch
+
+**dev**: where completed work is staged for release
+
+**feature**: in-progress work; mostly a sandbox for individual developers
+
+
+```{mermaid}
+%%| diagram: 9
+%%| fig-width: 16
+%%| fig-height: 8
+%%| rotateCommitLabel: true
+gitGraph
+    commit
+    commit
+    branch dev
+    checkout dev
+    commit
+    commit
+    commit
+    branch feature
+    commit
+    commit
+    checkout dev
+    merge feature
+    commit
+    checkout main
+    merge dev tag: "release 1"
+```
+
+## Guidelines
+
+- Delete branches when merging
+- Disallow direct commits to main
+- Minimize direct commits to develop
+- Require reviewer approval on pull
+requests into main
+- Limit PR approval to project leads
+- Use tags to mark milestones/releases
+
+```{mermaid}
+%%| diagram: 9
+%%| fig-width: 12
+%%| fig-height: 6
+%%| rotateCommitLabel: true
+
+gitGraph
+    commit
+    branch hotfix
+    checkout hotfix
+    commit
+    branch develop
+    checkout develop
+    commit tag:"draft"
+    branch featureB
+    checkout featureB
+    commit type:HIGHLIGHT
+    checkout main
+    checkout hotfix
+    commit type:NORMAL
+    checkout develop
+    commit
+    checkout featureB
+    commit
+    checkout main
+    merge hotfix
+    checkout featureB
+    commit
+    checkout develop
+    branch featureA
+    commit
+    checkout develop
+    merge hotfix
+    checkout featureA
+    commit
+    checkout featureB
+    commit
+    checkout develop
+    merge featureA
+    checkout main
+    merge develop
+
+```
+
+
+## 
+
+How does data science differ from traditional software development? 
+
+```{mermaid}
+%%| diagram: 9
+%%| fig-width: 12
+%%| fig-height: 6
+%%| rotateCommitLabel: true
+
+gitGraph
+    commit
+    commit
+    branch data
+    checkout data
+    commit
+    commit
+    branch stable/model
+    checkout stable/model
+    branch dev/model
+    checkout dev/model
+    commit
+    branch dev/glmnet
+    checkout dev/glmnet
+    commit
+    checkout dev/model
+    merge dev/glmnet
+    branch dev/xgboost
+    checkout dev/xgboost
+    commit
+    checkout dev/model
+    merge dev/xgboost
+    commit
+    checkout stable/model
+    merge dev/model
+    checkout main
+    merge stable/model tag: "v1"
+
+```
+
+
 
 
 ## Next Steps
