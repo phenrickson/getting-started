@@ -21,6 +21,29 @@ editor: source
 library(tidyverse)
 library(fontawesome)
 library(quarto)
+
+countdown_timer <- function(
+    minutes = 1, 
+    play_sound = TRUE, 
+    font_size = "2em", 
+    ...
+) {
+  countdown(
+    minutes = minutes,
+    # Fanfare when it's over
+    play_sound = play_sound,
+    # Set timer theme to match solarized colors
+    color_border              = "#404041",
+    color_text                = "white",
+    color_background = "#447099",
+    color_running_background  = "#72994E",
+    color_running_text        = "white",
+    color_finished_background = "#EE6331",
+    color_finished_text       = "white",
+    font_size = font_size,
+    ...
+  )
+}
 ```
 
 # Background
@@ -216,6 +239,10 @@ How can a group of people work on the same project without getting in each other
 
 How can we run experiments and test out changes without breaking the current project?
 
+. . .
+
+How do we ensure that we are running the same code and avoid conflicts from packages being out of date?
+
 ## Challenge
 
 Can we predict which board games Phil wants to buy? 
@@ -223,3 +250,12 @@ Can we predict which board games Phil wants to buy?
 . . .
 
 > Find out next week on Dragon Ball Z
+
+. . .
+
+To get to this point, we'll need to cover:
+
+1. Git (and Github)
+2. [renv](https://rstudio.github.io/renv/index.html)
+3. [targets](https://docs.ropensci.org/targets/)'
+

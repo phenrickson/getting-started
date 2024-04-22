@@ -85,7 +85,7 @@ Consider the following situations:
 
 ## Version Control
 
-For each one of these scenarios, we intuitively wanted something resembling version control. We want to tinker with making a change, but we don't want that change to overwrite or break our existing code. 
+For each one of these scenarios, we intuitively want something resembling version control. We want to tinker with making a change, but we don't want that change to overwrite or break our existing code. 
 
 . . .
 
@@ -99,7 +99,9 @@ People implement their own approaches to version control all the time.
 
 We've all probably come up with some version of crazy, half-baked version syntax to control the various versions of projects/files. 
 
-. . . 
+
+## {background-image="images/phd_final.gif" background-position="center" background-color="white" background-size="contain"}
+
 
 ## So why Git?
 
@@ -119,8 +121,6 @@ I'm going to be more than I've ever been.
 
 I'm going to use Git.
 
-## 
-
 ## {background-image="images/learning_git.png" background-position="center" background-color="white" background-size="cover"}
 
 ## {background-image="images/intimidating_git.png" background-position="center" background-color="white" background-size="cover"}
@@ -134,6 +134,11 @@ I'm going to use Git.
 ## The Reality
 
 And about thirty minutes later it was so unclear how any of this would help you that you just punted and decided to keep working as you always have, warts and all, because Git clearly comes from **The Bad Place**.
+
+. . .
+
+[But!]{style="font-size: 100px;"}
+
 
 ## The Reality
 
@@ -226,12 +231,13 @@ So, naturally, we go and get the script from A New Hope in text form.
 
 . . .
 
-```{r load and look at star wars text}
-#| echo: true
-#| eval: true
-#| message: false
-#| warning: false
-#| label: starwars-dialogue
+::: panel-tabset
+
+### Code
+
+```{r}
+#| echo: fenced
+#| eval: false
 
 clean_starwars = function(data) {
   
@@ -258,15 +264,55 @@ starwars |>
 
 ```
 
+### Output
+
+```{r}
+#| echo: false
+#| eval: true
+#| message: false
+#| warning: false
+
+clean_starwars = function(data) {
+  
+  data |>
+    mutate(episode = case_when(document == 'a new hope' ~ 'iv',
+                               document == 'the empire strikes back' ~ 'v',
+                               document == 'return of the jedi' ~ 'vi')) |>
+    mutate(character = case_when(character == 'BERU' ~ 'AUNT BERU',
+                                 character == 'LURE' ~ 'LUKE',
+                                 TRUE ~ character)) |>
+    select(episode, everything())
+}
+
+# load starwars
+starwars = read_csv(here::here('materials', 'data', 'starwars_text.csv'))  |>
+  clean_starwars()
+
+# show first few lines of a new hope
+starwars |>
+  head(15) |>
+  select(episode, document, character, dialogue) |>
+  gt::gt() |>
+  gt::as_raw_html()
+
+
+```
+
+:::
+
 ##
 
 We tokenize the data, remove stopwords, and then calculate sentiment in a pretty simple way.
 
 . . .
 
+::: panel-tabset
+
+### Code
+
 ```{r}
-#| echo: true
-#| eval: true
+#| echo: fenced
+#| eval: false
 #| message: false
 #| warning: false
 #| label: starwars-text
@@ -280,23 +326,47 @@ starwars_tokenized =
 
 starwars_tokenized |>
   inner_join(tidytext::get_sentiments("afinn"), by = "word") |>
-  head(10) |>
+  head(15) |>
   gt::gt() |>
   gt::as_raw_html()
  
 ```
 
+### Output
+
+```{r}
+#| echo: false
+#| eval: true
+
+data("stop_words")
+
+starwars_tokenized =
+  starwars |>
+  unnest_tokens(word, dialogue) |>
+  anti_join(stop_words, by = "word")
+
+starwars_tokenized |>
+  inner_join(tidytext::get_sentiments("afinn"), by = "word") |>
+  head(10) |>
+  gt::gt() |>
+  gt::as_raw_html()
+
+```
+
+:::
+
 ## 
 
 We then calculate sentiment across all characters to get a sense of how negative Luke really was.
 
-. . .
+##
 
 ```{r}
 #| fig-align: center
 #| fig-height: 6
 #| fig-width: 10
 #| fig-dpi: 300
+#| fig-cap: 'sentiment analysis via tokenization and afinn'
 
 starwars_tokenized |>
   filter(document == 'a new hope') |>
@@ -320,6 +390,8 @@ starwars_tokenized |>
 
 Apparently, pretty negative. Let's look at some dialogue.
 
+. . .
+
 ```{r}
 starwars_tokenized |>
   filter(document == 'a new hope') |>
@@ -336,7 +408,10 @@ starwars_tokenized |>
   head(20) |>
   select(document, character, line_number, value, dialogue) |>
   group_by(document) |>
-  gt::gt()
+  gt::gt() |>
+  gt::tab_options(
+    table.font.size = 14
+  )
 ```
 
 
@@ -354,13 +429,15 @@ Then we think, maybe we should see what happens if we calculate sentiment in a d
 
 But we might want to stick our first approach, so we decide to write a whole new section to our code, or just add a new script entirely, **sentiment_bing.R**.
 
-. . .
+##
 
 ```{r}
 #| fig-align: center
 #| fig-height: 6
 #| fig-width: 10
 #| fig-dpi: 300
+#| fig-cap: 'sentiment analysis via tokenization and bing'
+
 
 starwars_tokenized |>
   filter(document == 'a new hope') |>
@@ -407,11 +484,14 @@ We're also slightly worried that we've forgotten what we originally started with
 
 But anyway, we'll edit our code for the third time and run it again.
 
+##
+
 ```{r}
 #| fig-align: center
 #| fig-height: 6
 #| fig-width: 10
 #| fig-dpi: 300
+#| fig-cap: 'sentiment analysis via sentimentr'
 
 starwars_sentimentr = 
   starwars |>
@@ -480,7 +560,7 @@ We decide to compare how our original method (left) calculates sentiment for the
 
 These are very different, so now we go down a rabbit hole of digging into what we're getting out of the **sentimentr** package. We take a look at Luke's dialogue line by line.
 
-. . .
+##
 
 ```{r}
 #| fig-align: center
@@ -569,13 +649,14 @@ With this method we really should look at the estimated sentiment across a chara
 
 So we implement a change, shifting away from aggregation by summing to using the average sentiment over all lines. We then calculate the estimated sentiment across all characters.
 
-. . .
+##
 
 ```{r}
 #| fig-align: center
 #| fig-height: 6
 #| fig-width: 10
 #| fig-dpi: 300
+#| fig-cap: 'estimated sentiment by character via sentimentr'
 #| message: false
 #| warning: false
 
@@ -624,7 +705,7 @@ starwars |>
 
 Is Luke whiny? Well, it depends. [*This is the type of hard hitting analysis that I deliver for my clients.*]{.fragment}
 
-. . .
+##
 
 ```{r}
 #| fig-align: center
@@ -682,7 +763,7 @@ If we want to see the work that we did up to this point, all we have to do is lo
 
 ## 
 
-Visualized as a timeline from left to right, the history of our work might look something like this. Each **commit** is a snapshot of the repository at a specific point in time.
+Visualized as a timeline from left to right, the history of our work might look something like this. Each **commit** is a snapshot of our files at a specific point in time.
 
 ```{mermaid}
 %%| diagram: 9
@@ -735,7 +816,7 @@ Where it starts to get even more helpful is for enabling collaboration within a 
 
 ## {background-image="images/styles_of_work.png" background-position="center" background-color="white" background-size="contain"}
 
-# With and Without Git: Predictive Modeling
+# With and Without Git: <br> Predictive Modeling
 
 ## Git for Data Science
 
@@ -755,7 +836,7 @@ Think about the pieces involved in a typical predictive modeling project.
 - Model selection
 - Model deployment
 
-## Git for Data Science
+## 
 
 We typically don't build all of this at once and have everything finalized from the get go.
 
@@ -776,6 +857,8 @@ flowchart LR
   train --> final(Model)
   valid --> final
 ```
+
+##
 
 We build incrementally, typically testing and experimenting with different pieces along the way.
 
@@ -838,6 +921,7 @@ And so on, and so on.
 ## Git for Data Science
 
 In each of these cases, we have **code** that we have executed and **results** associated with that code. 
+
 . . .
 
 As before, we could try to store a bunch of scripts and track all of the results in different folders. 
@@ -892,6 +976,8 @@ We'll start with the basics.
 
 # What We Need to Know About Git
 
+## {background-image="images/xkcd_how_git.png" background-position="center" background-color="white" background-size="contain"}
+
 ## So, what the heck is Git?
 
 . . .
@@ -939,10 +1025,114 @@ Storing your code on GitHub allows you to share/sync your work with others (as w
 
 . . .
 
-We'll focus on GitHub (because it's what I use, but there are other options out there as well). GitHub has additional features for managing projects and automating aspects of a project, we'll touch on tht later.
+We'll focus on GitHub (because it's what I use, but there are other options out there as well).
+
+. . .
+
+GitHub has additional features for managing projects and automating aspects of a project, we'll touch on that later.
 
 # Git Basics
 
+## Git Basics
+
+- **Repository: a directory in which file history is preserved**
+
+## {background-image="images/diag_1.png" background-position="center" background-color="white" background-size="contain"}
+
+## Git Basics
+
+- Repository: a directory in which file history is preserved
+- **Clone: downloading an existing repository**
+
+## {background-image="images/diag_2.png" background-position="center" background-color="white" background-size="contain"}
+
+## Git Basics
+
+- Repository: a directory in which file history is preserved
+- Clone: downloading an existing repository
+- **Local: “on your personal machine”**
+
+## {background-image="images/diag_3.png" background-position="center" background-color="white" background-size="contain"}
+
+## Git Basics
+
+- Repository: a directory in which file history is preserved
+- Clone: downloading an existing repository
+- Local: “on your personal machine”
+- **Remote: “on the official server”**
+
+## {background-image="images/diag_4.png" background-position="center" background-color="white" background-size="contain"}
+
+## Git Basics
+
+- Repository: a directory in which file history is preserved
+- Clone: downloading an existing repository
+- Local: “on your personal machine”
+- Remote: “on the official server”
+- **Branch: A version of the directory**
+
+## {background-image="images/diag_5.png" background-position="center" background-color="white" background-size="contain"}
+
+## Git Basics
+
+- Repository: a directory in which file history is preserved
+- Clone: downloading an existing repository
+- Local: “on your personal machine”
+- Remote: “on the official server”
+- Branch: A version of the directory
+- **Commit: A change made to a version of the directory**
+
+## {background-image="images/diag_6.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/diag_7.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/diag_8.png" background-position="center" background-color="white" background-size="contain"}
+
+## Git Basics
+
+- Repository: a directory in which file history is preserved
+- Clone: downloading an existing repository
+- Local: “on your personal machine”
+- Remote: “on the official server”
+- Branch: A version of the directory
+- Commit: A change made to a version of the directory
+- **Push: Uploads your work to the ‘official’ remote server**
+
+## {background-image="images/diag_9.png" background-position="center" background-color="white" background-size="contain"}
+
+## Git Basics
+
+- Repository: a directory in which file history is preserved
+- Clone: downloading an existing repository
+- Local: “on your personal machine”
+- Remote: “on the official server”
+- Branch: A version of the directory
+- Commit: A change made to a version of the directory
+- Push: Uploads your work to the ‘official’ remote server
+- **Fetch/Pull: Checks for available updates on a remote**
+
+## {background-image="images/diag_10.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/diag_11.png" background-position="center" background-color="white" background-size="contain"}
+
+## Git Basics
+
+- Repository: a directory in which file history is preserved
+- Clone: downloading an existing repository
+- Local: “on your personal machine”
+- Remote: “on the official server”
+- Branch: A version of the directory
+- Commit: A change made to a version of the directory
+- Push: Uploads your work to the ‘official’ remote server
+- Fetch/Pull: Checks for available updates on a remote
+- **Switch/Checkout: Switches your local copy to a version of the directory**
+
+## {background-image="images/diag_12.png" background-position="center" background-color="white" background-size="contain"}
+
+## Git Basics
+
+- Repository: a directory in which file history is preserved
+- Clone: downloading an existing repository
 - Local: “on your personal machine”
 - Remote: “on the official server”
 - Branch: A version of the directory
@@ -950,17 +1140,31 @@ We'll focus on GitHub (because it's what I use, but there are other options out 
 - Push: Uploads your work to the ‘official’ remote server
 - Fetch/Pull: Checks for available updates on a remote
 - Switch/Checkout: Switches your local copy to a version of the directory
-- Pull Request: A request to merge one branch into another
+- **Pull Request: A request to merge one branch into another**
+
+## {background-image="images/diag_13.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/diag_15.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/diag_16.png" background-position="center" background-color="white" background-size="contain"}
+
+# Oh My Git
 
 # Git Basics - Demo
 
-- Repo organization
+- Repo organization for **https:://github.com/ds-workshop/starwars**
 - Viewing history
-- Making a change (Let's examine Vader)
-- Adding that change
-- Viewing that change
+- Making a change (Let's examine Vader insteaed of Luke)
+- Creating a branch
+- Adding a change
+- Pushing the change
+- Viewing the change
 
 ```{mermaid}
+%%| diagram: 9
+%%| fig-width: 12
+%%| fig-height: 6
+%%| rotateCommitLabel: true
 
 gitGraph
     commit id: "Initial commit"
@@ -980,9 +1184,16 @@ gitGraph
 
 ## Creating a New Repo
 
-Git is highly structured way of managing a set of files, called a repository. We'll often work by cloning an already established repository in order introduce changes, meaning that we are inheriting a set of files. But it's really worth knowing how to create a repository from scratch.
+Git is highly structured way of managing a set of files, called a repository.
 
 . . .
+
+We'll often work by **cloning** an already established repository in order introduce changes, meaning that we are inheriting a set of files.
+. . .
+
+But it's really worth knowing how to create a repository from scratch.
+
+## Creating a New Repo
 
 We want to create a new project called **git-started**.
 
@@ -992,13 +1203,15 @@ We want to create a new GitHub repository.
 
 . . .
 
-We want to create a new RStudio projec.
+We want to create a new RStudio project.
 
 . . .
 
-We want to connect RStudio to GitHub so our project is synced with our repository.
+We want to connect RStudio to GitHub so our project is connected with our repository.
 
 . . .
+
+##
 
 We can do this in a couple of different ways, starting in either GitHub or RStudio. 
 
@@ -1114,10 +1327,11 @@ Under the hood, this last bit is essentially just:
 - Initialize this repository with a README
 - Create a new RStudio project
 - Connect this RStudio project to your GitHub repo
+- Add a new script, or make a change to the README; what happens?
 
 ```{R}
 #| echo: false
-countdown_timer(5)
+countdown_timer(10)
 ```
 
 ## RStudio -> Github
@@ -1144,43 +1358,135 @@ You can however also start by first creating an RStudio project, then initialize
 
 1. Create a new RStudio project
 2. Check 'Create a git repository'
-3. **usethisthis::use_git()** to add and commit your initial files 
+3. **usethisthis::use_git()** to initialize a local repository, add and commit your initial files 
 4. **usethis::use_github()** to create a repository on GitHub and connect your R project
 
-## {background-image="images/rstudio_use_github.png" background-position="center" background-color="white" background-size="contain"}
-
 ## {background-image="images/rstudio_create_project.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/rstudio_use_github.png" background-position="center" background-color="white" background-size="contain"}
 
 ## {background-image="images/rstudio_git_started.png" background-position="center" background-color="white" background-size="contain"}
 
 ## RStudio -> Github
 
-Under the hood, this is essentially just:
-
-> git init
-> git add .
-> git commit -m "Initial commit"
-> git remote add origin 'https://github.com/phenrickson/git-started.git'
-> git push -u origin maain
-
 # Commits
 
 ##
 
-I now have a repository, but I'm missing a README. I want to add a README to provide some basic details about this repository.
+We now have a repository, but we want Git to track our files. 
 
-To add files...
+. . . 
+
+I created my **git-started** repo from RStudio -> GitHub, which means I didn't initialize a README. I want to add a README to the repo.
+
+## {background-image="images/add_readme.png" background-position="center" background-color="white" background-size="contain"}
+
+##
+
+I create the file in my working directory, which causes it to appear in my Git tab in RStudio.
+
+## {background-image="images/untracked.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+Checking the file adds it to staging.
+
+## {background-image="images/staged.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+We can then commit the file.
+
+## {background-image="images/rstudio_commit.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/rstudio_committed.png" background-position="center" background-color="white" background-size="contain"}
+
+## Three States of (Tracked) Files
+
+Files in your repository can generally take on one of three states:
+. . .
+
+**Modified** means that you made changes to a file but have not committed those changes to your repository yet.
 
 . . .
 
+**Staged** means that you have marked a modified file in its current version to go into your next commit.
+
+. . .
+
+**Committed** means that the snapshot is safely stored in your local repository
+
+## {background-image="images/three_states.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+If you haven't yet added a file but it's in your working directory, it will appear as "untracked". It will only be added to your repository if you add it, by first staging it and then committing it.
+
+## {background-image="images/lifecycle.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+Let's go back to the first image. I don't know how important it is to dwell on this, but if we want to get an understanding of what's happening under the hood with Git, we can get a sense of how Git works.
+
+## {background-image="images/three_states.png" background-position="center" background-color="white" background-size="contain"}
+
+## Three Sections of Git
+
+This last image highlights the three main sections of a Git project - what you're going through painstaking effort to set up.
+
+. . .
+ 
+- The **Working Directory (Tree)** is a single checkout of one version of a project
+
+. . .
+
+- The **Staging Area** refers to a file (index) that lives in your .git directory that tracks information about what will go into your next commit
+
+. . .
+
+- The **Git Directory** is where Git stores the metadata and object database for your project
+
+##
+
+![](images/this_is_the_bad_place.gif){fig-align="center"}
+
+##
+
+If you open up a the folder where you created **git-started**, you'll notice that there's a hidden *.git* folder.
+
+. . .
+
+## {background-image="images/git_under_the_hood.png" background-position="center" background-color="white" background-size="contain"}
+
+
+##
+
+If you open up a the folder where you created **git-started**, you'll notice that there's a hidden *.git* folder.
+
+Yeah, don't mess with that; that's basically what you're configuring when you initialize a repo, add/commit files, and sync with a remote.
 
 # Cloning a Repo
 
+## {background-image="images/clones.gif" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+Cloning someone else's repo from GitHub operates in much the same way as before.
+
+. . .
+
+1. Copy the GitHub Repository URL
+2. Open a New Project on RStudio
+3. Create from Version Control
+4. Paste Repository URL from GitHub repo
+5. Set name and location of project
+6. Create project
+
 # `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
 
-- Go to 
--   Try <kbd>`Ctrl + space`</kbd> to see the available YAML options
--   Try out the tab-completion of any options you remember
+- Create a new R project
+- Clone the repo at **https:://github.com/ds-workshop/starwars**
+- Run `README`.qmd` (notice: what packages do you need to install?)
 
 ```{R}
 #| echo: false
@@ -1269,6 +1575,8 @@ gitGraph
 
 ```
 
+## 
+
 But a better approach is to use **branches**. Branching amounts to creating a detour from the main stream of commits; it allows you to work without any fear of disrupting the work in main.
 
 ```{mermaid}
@@ -1293,7 +1601,7 @@ gitGraph
 
 ##
 
-Once you've completed your work, you can then choose to **merge** it back into main. This is a **pull request** on GitHub.
+Once you've completed your work, you can then choose to **merge** it back into main; this can be done via a **pull request** on GitHub.
 
 ```{mermaid}
 %%| diagram: 9
@@ -1315,6 +1623,9 @@ gitGraph
     merge dev
 
 ```
+
+
+##
 
 Or, you can just stop working on the branch and go back to working on main, letting the branch become stale.
 
@@ -1500,42 +1811,13 @@ gitGraph
 
 ![](images/this_is_the_bad_place.gif){fig-align="center"}
 
-##
-
-```{mermaid}
-graph TD;
-
-A[Main Branch] --> B1[Jim's Feature Branch]
-A --> B2[Phil's Feature Branch]
-B1 --> C1{Work on Feature}
-B2 --> C2{Work on Feature}
-C1 --> D1[Commit Changes]
-C2 --> D2[Commit Changes]
-D1 --> E1[Push Changes to Jim's Feature Branch]
-D2 --> E2[Push Changes to Phil's Feature Branch]
-E1 --> F1[Create Pull Request]
-E2 --> F2[Create Pull Request]
-F1 --> G1[Review Code]
-F2 --> G2[Review Code]
-G1 --> H1[Approve Changes]
-G2 --> H2[Approve Changes]
-H1 --> I1[Merge Pull Request]
-H2 --> I2[Merge Pull Request]
-I1 --> J1[Delete Jim's Feature Branch]
-I2 --> J2[Delete Phil's Feature Branch]
-
-```
-
-## Cloning 
-
 # `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
 
-- Create a new R project by cloning the repo at github.com/phenrickson/starwars
-- Run `sentiment.qmd` (notice: what packages do you need to install?)
-- Create a new branch titled *feature*
-- Make any changes to `sentiment.qmd` that you would like
+- Open the **starwars** project you have previously cloned
+- Create a new branch called *feature* or *dev*
+- Make a change to `README.qmd`, or add a new script
 - Commit those changes to your branch
-- Create a pull request for feature into main
+- Create a pull request for your branch into main
 
 ```{R}
 #| echo: false
@@ -1544,7 +1826,7 @@ countdown_timer(10)
 
 ## Cloning vs Forking
 
-Okay so we can see what you all did in your own separate repos, but there's a problem. Let's say I wanted to merge a change that you made into my repo - right now, there's no way to do that.
+Okay so we can see what you all did in your own separate repos, but there's a problem. Let's say I wanted to merge a change that you made into the original Star Wars repo - right now, there's no way to do that.
 
 . . .
 
@@ -1586,7 +1868,7 @@ The other option is to use **forking**, where you **fork** the original repo to 
 
 The original source repo is typically referred to as **upstream** - you can pull changes from it but you can't push directly to it.
 
-. . .
+##
 
 If you want your changes to make it upstream, you push your code to your origin, then create a **pull request** for the repo owner to consider merging in your changes.
 
@@ -1611,19 +1893,23 @@ Forking and cloning directly from Github entails a couple of additional steps to
 
 ##
 
-To add the upstream remote:
+The first step is to add an additional remote that is pointed to the source repo. The original (source) repo in this case is typically referred to as **upstream**. This can be done by running:
+
+
 > git remote add upstream https://github.com/OWNER/REPO.git
 
-To fetch any changes that have been made upstream:
+
+After adding the upstream remote, you will then want to look for any changes that have happened to the source 
+
 > git fetch upstream
 
-To set your local main to track the upstream/main:
+You'll probably want to set your local main branch to track the upstream/main branch, so you can easily see if any changes have occurred in the source repo. This is optional, but in a fork-and-clone situation it's the standard.
 
 > git branch --set-upstream-to upstream/main
 
 ##
 
-Alternatively, you can always use the helpful functions from **usethis**, which will take care of the upstream tracking on one go.
+Alternatively, you can always use the helpful functions from **usethis**, which will take care of the upstream tracking on one go. You simply need to open a new RStudio session (note: not in a project) and run the following:
 
 ```{r}
 #| eval: false
@@ -1636,6 +1922,8 @@ usethis::create_from_github(
 )
 
 ```
+
+This will fork and clone the repository at *repo_spec*  and create a local RStudio project in *destdir*.
 
 # `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
 
@@ -1654,7 +1942,6 @@ usethis::create_from_github(
 countdown_timer(15)
 ```
 
-
 ## 
 
 We hit something of a snag with installing the requisite packages for that one, eh? We'll talk about that shortly.
@@ -1662,8 +1949,6 @@ We hit something of a snag with installing the requisite packages for that one, 
 . . .
 
 But next, let's review everyone's work and complete a pull request. We'll then work off one of these branches, and proceed to add some new pieces.
-
-## 
 
 # `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
 
