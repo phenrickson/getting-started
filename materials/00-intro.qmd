@@ -1,0 +1,261 @@
+---
+title: "What They Didn't Teach You <br> About Data Science"
+subtitle: "Or, How I Learned to Stop Worrying and Love the Git"
+format:
+  revealjs:
+    slide-number: c/t
+    width: 1600
+    height: 900
+    css: ["theme/theme.css"]
+    theme: simple
+    highlight-style: github
+    code-block-border-left: "#4f6952"
+    code-block-bg: true
+    code-link: true
+    chalkboard:
+      src: drawings.json
+editor: source
+---
+
+```{r setup, include = F}
+library(tidyverse)
+library(fontawesome)
+library(quarto)
+
+countdown_timer <- function(
+    minutes = 1, 
+    play_sound = TRUE, 
+    font_size = "2em", 
+    ...
+) {
+  countdown(
+    minutes = minutes,
+    # Fanfare when it's over
+    play_sound = play_sound,
+    # Set timer theme to match solarized colors
+    color_border              = "#404041",
+    color_text                = "white",
+    color_background = "#447099",
+    color_running_background  = "#72994E",
+    color_running_text        = "white",
+    color_finished_background = "#EE6331",
+    color_finished_text       = "white",
+    font_size = font_size,
+    ...
+  )
+}
+```
+
+# Background
+
+## {background-image="images/everything_is_fine.webp" background-position="center" background-color="white" background-size="cover"}
+
+## Goals
+
+The aim of this workshop is to gain familiarity and experience with tools that will enable collaborative open-source data science development. 
+
+. . .
+
+Learning a little bit about version control package/environment management, and pipelines will go a long way towards solving the headaches of modern data science projects.
+
+. . . 
+
+This workshop leans heavily on R/RStudio and the Posit ecosystem, but the principles we will cover apply equally to Python and R.
+
+. . . 
+
+## Topics
+
+Our goal is to create **consistent, repeatable** patterns for data science project development, iteration, and delivery. To this end, we are going to cover three main topics:
+
+- Git (and Github)
+- [renv](https://rstudio.github.io/renv/index.html)
+- [targets](https://docs.ropensci.org/targets/)
+
+## References
+
+I am far from the first person to cover these topics. I highly recommend bookmarking each of the following resources, as we will be covering pieces of these throughout the workshop:
+
+. . . 
+
+- [Cookiecutter Data Science](https://drivendata.github.io/cookiecutter-data-science/) - a flexible, standardized project structure for organizing data science repositories
+
+- [Pro Git](https://git-scm.com/book/en/v2#_the_three_states)
+
+- [What They Forgot to Teach You About R](https://rstats.wtf)
+
+- [Happy Git and GitHub for the useR](https://happygitwithr.com/index.html)
+
+- [Functional Programming with R](https://adv-r.hadley.nz/fp.html)
+
+. . .
+
+
+## I'm assuming
+
+`r fa("r-project")` You are familiar with R.
+
+You have RStudio installed.
+
+`r fa("github")` You have a Github Account
+
+
+<img src="https://raw.githubusercontent.com/quarto-dev/quarto-web/main/favicon.png" style="display: inline-block; margin: 0; margin-bottom: -2px; height: 35px;"/></img> You have installed Quarto.
+
+. . .
+
+<h2>We'll cover</h2>
+
+A crash course in version control and Git and its application to data science projects.
+
+Project and environment dependencies with renv
+
+Building pipelines with targets
+
+#
+
+## 
+::: {.r-fit-text}
+CAVEATS
+:::
+
+. . .
+
+- I am **NOT** a software engineer. 
+
+. . .
+
+- Like, at all. Everything we will cover in these workshops comes from my experiences, both good and bad, as a consultant in data science. [**I have seen some shit.**]{.fragment .fade-in}
+
+. . .
+
+- We will only be covering a small portion of these topics - our goal is not to become experts in Git, but to **learn the little bit of Git that will help us be better data scientists**. 
+
+
+## 
+
+- The DevOps folks will surely judge us all for not being experts in their craft. This is fine. We will accept this and move on. It's fine.
+
+. . .
+
+- It's fine.
+
+
+. . .
+
+- It's **fine**.
+
+## A reminder
+
+. . .
+
+There is no simple, *you-won't-believe-how-easy-it-is*, ***experts-hate-him!*** trick that will make us experts in Git, CI/CD, DevOps, pipelines, etc.
+
+. . .
+
+As with most things in life, the only way to get better is through **practice and repeated trial and error**.
+
+. . .
+
+But, if maximum likelihood and gradient boosting have taught us anything about learning:
+
+::: {.incremental}
+
+- **start somewhere**
+- [make mistakes]{.fragment .highlight-red}
+- learn from those mistakes
+- **do better the next time**
+
+:::
+
+## Let's start at the end: a (ridiculous) data science project {background-color="black"}
+
+. . .
+
+I have a ridiculous, ever-evolving personal project: [predicting boardgames that I might want to add to my boardgame collection.]{.fragment .fade-in .highlight-red}
+
+## This is the pipeline that scrapes data from BoardGameGeek and populates a cloud data warehouse (GCP/BigQuery)
+
+## {background-image="images/targets_bgg_data.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/github_bgg_data.png" background-position="center" background-color="white" background-size="cover"}
+
+## This is the pipeline that trains models to predict how the BoardGameGeek community is going to rate games
+
+## {background-image="images/targets_bgg_models.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/results_bgg_models.png" background-position="center" background-color="white" background-size="contain"}
+
+## This is the repo for training a user specific model and creating a user report to predict games in their collection
+
+## {background-image="images/github_bgg_collection.png" background-position="center" background-color="black" background-size="contain"}
+
+## {background-image="images/targets_bgg_collections.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/report_games_in_collection.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/bgg_collection_coefficients.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/report_bgg_collection.png" background-position="center" background-color="white" background-size="contain"}
+
+
+## Motivation
+
+Do these projects represent the height of data science maturity and sophistication? 
+
+## {background-image="images/shrug.gif" background-position="center" background-color="white" background-size="cover"}
+
+## Motivation
+
+Do these projects represent the height of data science maturity and sophistication? 
+
+Not at all. But it will help illustrate the **typical setting of data science projects**.
+
+. . .
+
+Suppose I wanted you to take a look at something in my work and and see if you could write a more efficient function.
+
+. . .
+
+Or maybe you could train a better model.
+
+. . .
+
+Or maybe you could create a better report. 
+
+. . .
+
+Or maybe you could do the whole thing differently and save me a ton of time and/or make better predictions.
+
+## Challenge
+
+How do I share my code with you, so that you can run my code, make changes, and let me know what you've changed?
+
+. . .
+
+How can a group of people work on the same project without getting in each other's way?
+
+. . .
+
+How can we run experiments and test out changes without breaking the current project?
+
+. . .
+
+How do we ensure that we are running the same code and avoid conflicts from packages being out of date?
+
+## Challenge
+
+Can we predict which board games Phil wants to buy? 
+
+. . .
+
+> Find out next week on Dragon Ball Z
+
+. . .
+
+To get to this point, we'll need to cover:
+
+1. Git (and Github)
+2. [renv](https://rstudio.github.io/renv/index.html)
+3. [targets](https://docs.ropensci.org/targets/)'
+

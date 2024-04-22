@@ -1,0 +1,20 @@
+.reveal .slides > section > section { 
+  text-align:left; 
+}
+
+.overlay-text {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white; /* Text color */
+}
+
+
+.big-text {
+  height: 0px;
+  font-size: 150px;
+  text-align: center;
+  color: white;
+  line-height: 100px;
+}
