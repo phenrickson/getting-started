@@ -28,6 +28,1000 @@
     "text": "Intro\nGit + GitHub\nrenv\ntargets"
   },
   {
+    "objectID": "materials/00-intro.html#goals",
+    "href": "materials/00-intro.html#goals",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Goals",
+    "text": "Goals\nThe aim of this workshop is to gain familiarity and experience with tools that will enable collaborative open-source data science development.\n\nLearning a little bit about version control package/environment management, and pipelines will go a long way towards solving the headaches of modern data science projects.\n\n\nThis workshop leans heavily on R/RStudio and the Posit ecosystem, but the principles we will cover apply equally to Python and R."
+  },
+  {
+    "objectID": "materials/00-intro.html#topics",
+    "href": "materials/00-intro.html#topics",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Topics",
+    "text": "Topics\nOur goal is to create consistent, repeatable patterns for data science project development, iteration, and delivery. To this end, we are going to cover three main topics:\n\nGit (and Github)\nrenv\ntargets"
+  },
+  {
+    "objectID": "materials/00-intro.html#references",
+    "href": "materials/00-intro.html#references",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "References",
+    "text": "References\nI am far from the first person to cover these topics. I highly recommend bookmarking each of the following resources, as we will be covering pieces of these throughout the workshop:\n\n\nCookiecutter Data Science - a flexible, standardized project structure for organizing data science repositories\nPro Git\nWhat They Forgot to Teach You About R\nHappy Git and GitHub for the useR\nFunctional Programming with R"
+  },
+  {
+    "objectID": "materials/00-intro.html#im-assuming",
+    "href": "materials/00-intro.html#im-assuming",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "I’m assuming",
+    "text": "I’m assuming\n You are familiar with R.\nYou have RStudio installed.\n You have a Github Account\n You have installed Quarto.\n\n\nWe’ll cover\n\nA crash course in version control and Git and its application to data science projects.\nProject and environment dependencies with renv\nBuilding pipelines with targets"
+  },
+  {
+    "objectID": "materials/00-intro.html#section-2",
+    "href": "materials/00-intro.html#section-2",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "",
+    "text": "CAVEATS\n\n\n\nI am NOT a software engineer.\n\n\n\n\nLike, at all. Everything we will cover in these workshops comes from my experiences, both good and bad, as a consultant in data science. I have seen some shit.\n\n\n\n\nWe will only be covering a small portion of these topics - our goal is not to become experts in Git, but to learn the little bit of Git that will help us be better data scientists."
+  },
+  {
+    "objectID": "materials/00-intro.html#section-3",
+    "href": "materials/00-intro.html#section-3",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "",
+    "text": "The DevOps folks will surely judge us all for not being experts in their craft. This is fine. We will accept this and move on. It’s fine.\n\n\n\nIt’s fine.\n\n\n\n\nIt’s fine."
+  },
+  {
+    "objectID": "materials/00-intro.html#a-reminder",
+    "href": "materials/00-intro.html#a-reminder",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "A reminder",
+    "text": "A reminder\n\nThere is no simple, you-won’t-believe-how-easy-it-is, experts-hate-him! trick that will make us experts in Git, CI/CD, DevOps, pipelines, etc.\n\n\nAs with most things in life, the only way to get better is through practice and repeated trial and error.\n\n\nBut, if maximum likelihood and gradient boosting have taught us anything about learning:\n\n\nstart somewhere\nmake mistakes\nlearn from those mistakes\ndo better the next time"
+  },
+  {
+    "objectID": "materials/00-intro.html#lets-start-at-the-end-a-ridiculous-data-science-project",
+    "href": "materials/00-intro.html#lets-start-at-the-end-a-ridiculous-data-science-project",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Let’s start at the end: a (ridiculous) data science project",
+    "text": "Let’s start at the end: a (ridiculous) data science project\n\nI have a ridiculous, ever-evolving personal project: predicting boardgames that I might want to add to my boardgame collection."
+  },
+  {
+    "objectID": "materials/00-intro.html#this-is-the-pipeline-that-scrapes-data-from-boardgamegeek-and-populates-a-cloud-data-warehouse-gcpbigquery",
+    "href": "materials/00-intro.html#this-is-the-pipeline-that-scrapes-data-from-boardgamegeek-and-populates-a-cloud-data-warehouse-gcpbigquery",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "This is the pipeline that scrapes data from BoardGameGeek and populates a cloud data warehouse (GCP/BigQuery)",
+    "text": "This is the pipeline that scrapes data from BoardGameGeek and populates a cloud data warehouse (GCP/BigQuery)"
+  },
+  {
+    "objectID": "materials/00-intro.html#this-is-the-pipeline-that-trains-models-to-predict-how-the-boardgamegeek-community-is-going-to-rate-games",
+    "href": "materials/00-intro.html#this-is-the-pipeline-that-trains-models-to-predict-how-the-boardgamegeek-community-is-going-to-rate-games",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "This is the pipeline that trains models to predict how the BoardGameGeek community is going to rate games",
+    "text": "This is the pipeline that trains models to predict how the BoardGameGeek community is going to rate games"
+  },
+  {
+    "objectID": "materials/00-intro.html#this-is-the-repo-for-training-a-user-specific-model-and-creating-a-user-report-to-predict-games-in-their-collection",
+    "href": "materials/00-intro.html#this-is-the-repo-for-training-a-user-specific-model-and-creating-a-user-report-to-predict-games-in-their-collection",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "This is the repo for training a user specific model and creating a user report to predict games in their collection",
+    "text": "This is the repo for training a user specific model and creating a user report to predict games in their collection"
+  },
+  {
+    "objectID": "materials/00-intro.html#motivation",
+    "href": "materials/00-intro.html#motivation",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Motivation",
+    "text": "Motivation\nDo these projects represent the height of data science maturity and sophistication?"
+  },
+  {
+    "objectID": "materials/00-intro.html#motivation-1",
+    "href": "materials/00-intro.html#motivation-1",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Motivation",
+    "text": "Motivation\nDo these projects represent the height of data science maturity and sophistication?\nNot at all. But it will help illustrate the typical setting of data science projects.\n\nSuppose I wanted you to take a look at something in my work and and see if you could write a more efficient function.\n\n\nOr maybe you could train a better model.\n\n\nOr maybe you could create a better report.\n\n\nOr maybe you could do the whole thing differently and save me a ton of time and/or make better predictions."
+  },
+  {
+    "objectID": "materials/00-intro.html#challenge",
+    "href": "materials/00-intro.html#challenge",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Challenge",
+    "text": "Challenge\nHow do I share my code with you, so that you can run my code, make changes, and let me know what you’ve changed?\n\nHow can a group of people work on the same project without getting in each other’s way?\n\n\nHow can we run experiments and test out changes without breaking the current project?\n\n\nHow do we ensure that we are running the same code and avoid conflicts from packages being out of date?"
+  },
+  {
+    "objectID": "materials/00-intro.html#challenge-1",
+    "href": "materials/00-intro.html#challenge-1",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Challenge",
+    "text": "Challenge\nCan we predict which board games Phil wants to buy?\n\n\nFind out next week on Dragon Ball Z\n\n\n\nTo get to this point, we’ll need to cover:\n\nGit (and Github)\nrenv\ntargets"
+  },
+  {
+    "objectID": "materials/01-git.html#the-problem",
+    "href": "materials/01-git.html#the-problem",
+    "title": "",
+    "section": "The Problem",
+    "text": "The Problem\n\nConsider the following situations:\n\nWe’ve been working on a project for ages. We have a core, legacy script that has gone through about 30 different iterations with edits from dozens of people as the project has changed over the years. We need to audit how that script has changed over time.\nWe made a change to one of the core functions of our project and everything seemed to be great. But two weeks later we discovered a change to a helper function broke something in our monthly report. We’re now trying to figure out what we changed and how to patch it.\nSomeone recently mentioned that lightgbm + linear trees offers a really nice improvement in both training time and performance over XGBoost. They want to test it in our project, and then evaluate whether this should become the new model."
+  },
+  {
+    "objectID": "materials/01-git.html#version-control",
+    "href": "materials/01-git.html#version-control",
+    "title": "",
+    "section": "Version Control",
+    "text": "Version Control\nFor each one of these scenarios, we intuitively want something resembling version control. We want to tinker with making a change, but we don’t want that change to overwrite or break our existing code.\n\nPeople implement their own approaches to version control all the time.\n\n\nWe make a copy of the original, then create a new copy that we begin to edit and work on without breaking the original source.\n\n\nWe’ve all probably come up with some version of crazy, half-baked version syntax to control the various versions of projects/files."
+  },
+  {
+    "objectID": "materials/01-git.html#so-why-git",
+    "href": "materials/01-git.html#so-why-git",
+    "title": "",
+    "section": "So why Git?",
+    "text": "So why Git?\n\nIf you’re like me, at some point you thought to yourself, maybe I could be that guy who uses Git and talks about commits and pull requests and really knows what he’s doing with dev vs prod environments rather than just putting _dev and _test at the end of important files.\n\n\nI’m going to improve.\n\n\nI’m going to be more than I’ve ever been.\n\n\nI’m going to use Git."
+  },
+  {
+    "objectID": "materials/01-git.html#the-reality",
+    "href": "materials/01-git.html#the-reality",
+    "title": "",
+    "section": "The Reality",
+    "text": "The Reality\nAnd about thirty minutes later it was so unclear how any of this would help you that you just punted and decided to keep working as you always have, warts and all, because Git clearly comes from The Bad Place.\n\nBut!"
+  },
+  {
+    "objectID": "materials/01-git.html#the-reality-1",
+    "href": "materials/01-git.html#the-reality-1",
+    "title": "",
+    "section": "The Reality",
+    "text": "The Reality\nSo many of the frustrations with writing code, making changes, and storing the history of your work go away once we implement version control.\n\nThere’s a reason Git is used everywhere. It is the life jacket in a sea of stashing files everywhere with poor naming conventions and no lineage or history.\n\n\nYou have to learn how to use Git.\n\n\nIt’s going to be painful.\n\n\nBut it’s worth it."
+  },
+  {
+    "objectID": "materials/01-git.html#why-should-we-commit-to-this",
+    "href": "materials/01-git.html#why-should-we-commit-to-this",
+    "title": "",
+    "section": "Why should we commit to this?",
+    "text": "Why should we commit to this?\n\nFrom Excuse Me, Do You Have a Moment to Talk About Version Control by Jennifer Bryan:\n\n\n\nWhy would a statistician use a version control system, such as Git? And what is the point of hosting your work online, e.g., on GitHub? Could the gains possibly justify the inevitable pain? I say yes, with the zeal of the converted.\n\n\n\n\nDoing your work becomes tightly integrated with organizing, recording, and disseminating it. It’s not a separate, burdensome task you are tempted to neglect.\n\n\n\n\nCollaboration is much more structured, with powerful tools for asynchronous work and managing versions.\n\n\n\n\nBy using common mechanics across work modes (research, teaching, analysis), you achieve basic competence quickly and avoid the demoralizing forget-relearn cycle."
+  },
+  {
+    "objectID": "materials/01-git.html#section-4",
+    "href": "materials/01-git.html#section-4",
+    "title": "",
+    "section": "",
+    "text": "Despite this zeal, she does make an important note:\n\n\nNow the bad news: Git was built neither for the exact usage described here, nor for broad usability. You will undoubtedly notice this, so it’s best to know in advance.\n\n\n\nGit was not designed for data science projects. This will at times create slightly wonky implementations and workarounds that feel frustrating.\n\n\nThings get more complicated once we start trying to version control data/models, which is a whole topic in and of itself."
+  },
+  {
+    "objectID": "materials/01-git.html#was-luke-really-that-whiny",
+    "href": "materials/01-git.html#was-luke-really-that-whiny",
+    "title": "",
+    "section": "Was Luke Really That Whiny?",
+    "text": "Was Luke Really That Whiny?\n\nSuppose we have a project we are working on. We are interested in running text/sentiment analysis on the scripts of the original Star Wars trilogy.\n\n\nWe want to know things such as, who are the most positive/negative characters in A New Hope? A lot of people have claimed Luke was really whiny; is that the case?"
+  },
+  {
+    "objectID": "materials/01-git.html#section-5",
+    "href": "materials/01-git.html#section-5",
+    "title": "",
+    "section": "",
+    "text": "So, naturally, we go and get the script from A New Hope in text form.\n\n\nCodeOutput\n\n\n\n```{r}\n#| eval: false\n\nclean_starwars = function(data) {\n  \n  data |&gt;\n    mutate(episode = case_when(document == 'a new hope' ~ 'iv',\n                               document == 'the empire strikes back' ~ 'v',\n                               document == 'return of the jedi' ~ 'vi')) |&gt;\n    mutate(character = case_when(character == 'BERU' ~ 'AUNT BERU',\n                                 character == 'LURE' ~ 'LUKE',\n                                 TRUE ~ character)) |&gt;\n    select(episode, everything())\n}\n\n# load starwars\nstarwars = read_csv(here::here('materials', 'data', 'starwars_text.csv'))  |&gt;\n  clean_starwars()\n\n# show first few lines of a new hope\nstarwars |&gt;\n  head(10) |&gt;\n  select(episode, document, character, dialogue) |&gt;\n  gt::gt() |&gt;\n  gt::as_raw_html()\n```\n\n\n\n\n\n\n\n  \n  \n  \n    \n      episode\n      document\n      character\n      dialogue\n    \n  \n  \n    iv\na new hope\nTHREEPIO\nDid you hear that?  They've shut down the main reactor.  We'll be destroyed for sure.  This is madness!\n    iv\na new hope\nTHREEPIO\nWe're doomed!\n    iv\na new hope\nTHREEPIO\nThere'll be no escape for the Princess this time.\n    iv\na new hope\nTHREEPIO\nWhat's that?\n    iv\na new hope\nTHREEPIO\nI should have known better than to trust the logic of a half-sized thermocapsulary dehousing assister...\n    iv\na new hope\nLUKE\nHurry up!  Come with me!  What are you waiting for?!  Get in gear!\n    iv\na new hope\nTHREEPIO\nArtoo! Artoo-Detoo, where are you?\n    iv\na new hope\nTHREEPIO\nAt last!  Where have you been?\n    iv\na new hope\nTHREEPIO\nThey're heading in this direction. What are we going to do?  We'll be sent to the spice mines of Kessel or smashed into who knows what!\n    iv\na new hope\nTHREEPIO\nWait a minute, where are you going?\n    iv\na new hope\nIMPERIAL OFFICER\nThe Death Star plans are not in the main computer.\n    iv\na new hope\nVADER\nWhere are those transmissions you intercepted?\n    iv\na new hope\nREBEL OFFICER\nWe intercepted no transmissions. Aaah...  This is a consular ship. Were on a diplomatic mission.\n    iv\na new hope\nVADER\nIf this is a consular ship... where is the Ambassador?\n    iv\na new hope\nVADER\nCommander, tear this ship apart until you've found those plans and bring me the Ambassador.  I want her alive!"
+  },
+  {
+    "objectID": "materials/01-git.html#section-6",
+    "href": "materials/01-git.html#section-6",
+    "title": "",
+    "section": "",
+    "text": "We tokenize the data, remove stopwords, and then calculate sentiment in a pretty simple way.\n\n\nCodeOutput\n\n\n\n```{r}\n#| eval: false\n#| message: false\n#| warning: false\n#| label: starwars-text\n\ndata(\"stop_words\")\n\nstarwars_tokenized =\n  starwars |&gt;\n  unnest_tokens(word, dialogue) |&gt;\n  anti_join(stop_words, by = \"word\")\n\nstarwars_tokenized |&gt;\n  inner_join(tidytext::get_sentiments(\"afinn\"), by = \"word\") |&gt;\n  head(15) |&gt;\n  gt::gt() |&gt;\n  gt::as_raw_html()\n```\n\n\n\n\n\n\n\n  \n  \n  \n    \n      episode\n      document\n      line_number\n      character\n      word\n      value\n    \n  \n  \n    iv\na new hope\n1\nTHREEPIO\ndestroyed\n-3\n    iv\na new hope\n1\nTHREEPIO\nmadness\n-3\n    iv\na new hope\n2\nTHREEPIO\ndoomed\n-2\n    iv\na new hope\n3\nTHREEPIO\nescape\n-1\n    iv\na new hope\n5\nTHREEPIO\ntrust\n1\n    iv\na new hope\n11\nIMPERIAL OFFICER\ndeath\n-2\n    iv\na new hope\n15\nVADER\nalive\n1\n    iv\na new hope\n17\nTROOPER\nprisoner\n-2\n    iv\na new hope\n18\nTHREEPIO\nrestricted\n-2\n    iv\na new hope\n19\nTHREEPIO\nmindless\n-2"
+  },
+  {
+    "objectID": "materials/01-git.html#section-7",
+    "href": "materials/01-git.html#section-7",
+    "title": "",
+    "section": "",
+    "text": "We then calculate sentiment across all characters to get a sense of how negative Luke really was."
+  },
+  {
+    "objectID": "materials/01-git.html#section-8",
+    "href": "materials/01-git.html#section-8",
+    "title": "",
+    "section": "",
+    "text": "sentiment analysis via tokenization and afinn"
+  },
+  {
+    "objectID": "materials/01-git.html#section-9",
+    "href": "materials/01-git.html#section-9",
+    "title": "",
+    "section": "",
+    "text": "Apparently, pretty negative. Let’s look at some dialogue.\n\n\n\n\n\n\n\n  \n    \n      character\n      line_number\n      value\n      dialogue\n    \n  \n  \n    \n      a new hope\n    \n    LUKE\n966\n-6\nYou worry about those fighters!  I'll worry about the tower!\n    LUKE\n967\n-4\nArtoo... that, that stabilizer's broken loose again!  See if you can't lock it down!\n    LUKE\n117\n-3\nThis R2 unit has a bad motivator.  Look!\n    LUKE\n220\n-3\nWait, there's something dead ahead on the scanner.  It looks like our droid... hit the accelerator.\n    LUKE\n228\n-3\nSand People!  Or worse!  Come on, let's have a look.  Come on.\n    LUKE\n238\n-3\nI think my uncle knew him.  He said he was dead.\n    LUKE\n263\n-3\nHow did my father die?\n    LUKE\n274\n-3\nI can't get involved!  I've got work to do!  It's not that I like the Empire.  I hate it!  But there's nothing I can do about it right now.  It's such a long way from here.\n    LUKE\n320\n-3\nGo on, go on.  I can't understand how we got by those troopers.  I thought we were dead.\n    LUKE\n354\n-3\nYou bet I could.  I'm not such a bad pilot myself!  We don't have to sit here and listen...\n    LUKE\n496\n-3\nThen he must have gotten lost, been part of a convoy or something...\n    LUKE\n566\n-3\nBut he didn't know she was here.  Look, will you just find a way back into the detention block?\n    LUKE\n570\n-3\nBut they're going to kill her!\n    LUKE\n597\n-3\nPrisoner transfer from Block one-one-three-eight.\n    LUKE\n729\n-3\nWhat good will it do us if he gets himself killed?  Come on!\n    LUKE\n886\n-3\nI'm hit, but not bad.\n    LUKE\n986\n-3\nI've lost Artoo!\n    LUKE\n38\n-2\nBut there was a lot of firing earlier...\n    LUKE\n80\n-2\nAnd I'm stuck here...\n    LUKE\n84\n-2\nI know, but he's got enough vaporators going to make the place pay off.  He needs me for just one more season.  I can't leave him now."
+  },
+  {
+    "objectID": "materials/01-git.html#section-10",
+    "href": "materials/01-git.html#section-10",
+    "title": "",
+    "section": "",
+    "text": "This is interesting enough, so we save the script, that produces this analysis, called sentiment.R.\n\nThen we think, maybe we should see what happens if we calculate sentiment in a different way. Were Han and Ben really that negative? Even simple methods of sentiment can vary quite a bit depending on which lexicon you use, so we should try a couple."
+  },
+  {
+    "objectID": "materials/01-git.html#section-11",
+    "href": "materials/01-git.html#section-11",
+    "title": "",
+    "section": "",
+    "text": "But we might want to stick our first approach, so we decide to write a whole new section to our code, or just add a new script entirely, sentiment_bing.R."
+  },
+  {
+    "objectID": "materials/01-git.html#section-12",
+    "href": "materials/01-git.html#section-12",
+    "title": "",
+    "section": "",
+    "text": "sentiment analysis via tokenization and bing"
+  },
+  {
+    "objectID": "materials/01-git.html#section-13",
+    "href": "materials/01-git.html#section-13",
+    "title": "",
+    "section": "",
+    "text": "We get a pretty similar result, so we’re feeling okay about ourselves and less okay about Luke.\n\nBut then someone says, we shouldn’t rely on such crude methods for calculating sentiment. We should use a more sophisticated method, via the sentimentr package.\n\n\nSo we want to edit our original sentiment.R script and switch over to using this new package. This one forces us to add some new packages, and rewrite some of our visualization scripts to get the same type of visualization, so we create a new script, sentiment_algorithm.R."
+  },
+  {
+    "objectID": "materials/01-git.html#section-14",
+    "href": "materials/01-git.html#section-14",
+    "title": "",
+    "section": "",
+    "text": "We’re also slightly worried that we’ve forgotten what we originally started with, so we’re gonna make a sentiment_original.R file. Just so we have it.\n\nBut anyway, we’ll edit our code for the third time and run it again."
+  },
+  {
+    "objectID": "materials/01-git.html#section-15",
+    "href": "materials/01-git.html#section-15",
+    "title": "",
+    "section": "",
+    "text": "sentiment analysis via sentimentr"
+  },
+  {
+    "objectID": "materials/01-git.html#section-16",
+    "href": "materials/01-git.html#section-16",
+    "title": "",
+    "section": "",
+    "text": "This gives us very different results, so we really need to dive into the data bit here to figure out what’s going on.\n\nWe decide to compare how our original method (left) calculates sentiment for the entire script of A New Hope compared to sentimentr (right). That means we need to go add a visualization to each of our original scripts, so we go edit sentiment_original.R and sentiment_algorithm.R."
+  },
+  {
+    "objectID": "materials/01-git.html#section-17",
+    "href": "materials/01-git.html#section-17",
+    "title": "",
+    "section": "",
+    "text": "These are very different, so now we go down a rabbit hole of digging into what we’re getting out of the sentimentr package. We take a look at Luke’s dialogue line by line."
+  },
+  {
+    "objectID": "materials/01-git.html#section-21",
+    "href": "materials/01-git.html#section-21",
+    "title": "",
+    "section": "",
+    "text": "We realize that we shouldn’t be calculating sentiment at the line-level and then aggregating, because short positive statements potentially end up getting as much weight as longer complaints.\nWith this method we really should look at the estimated sentiment across a character’s entire dialogue to get a sense of their tone."
+  },
+  {
+    "objectID": "materials/01-git.html#section-22",
+    "href": "materials/01-git.html#section-22",
+    "title": "",
+    "section": "",
+    "text": "So we implement a change, shifting away from aggregation by summing to using the average sentiment over all lines. We then calculate the estimated sentiment across all characters."
+  },
+  {
+    "objectID": "materials/01-git.html#section-23",
+    "href": "materials/01-git.html#section-23",
+    "title": "",
+    "section": "",
+    "text": "estimated sentiment by character via sentimentr"
+  },
+  {
+    "objectID": "materials/01-git.html#section-24",
+    "href": "materials/01-git.html#section-24",
+    "title": "",
+    "section": "",
+    "text": "Is Luke whiny? Well, it depends. This is the type of hard hitting analysis that I deliver for my clients."
+  },
+  {
+    "objectID": "materials/01-git.html#section-26",
+    "href": "materials/01-git.html#section-26",
+    "title": "",
+    "section": "",
+    "text": "What we are left with after a fairly simple analyses is a messy, entangled set of files with absolutely no sense of history or organization."
+  },
+  {
+    "objectID": "materials/01-git.html#section-27",
+    "href": "materials/01-git.html#section-27",
+    "title": "",
+    "section": "",
+    "text": "This is a mess for us to figure out, imagine if someone else is supposed to come along and work with this code. Where do they start?"
+  },
+  {
+    "objectID": "materials/01-git.html#section-28",
+    "href": "materials/01-git.html#section-28",
+    "title": "",
+    "section": "",
+    "text": "How would this look if we were using Git?\nThe end result is a bit cleaner. We basically just have the one script to worry about. If we’re really curious about what we need to do, we check the README (yes, you are expected to read these)."
+  },
+  {
+    "objectID": "materials/01-git.html#section-29",
+    "href": "materials/01-git.html#section-29",
+    "title": "",
+    "section": "",
+    "text": "The end result of our work is the current state of the project, which we store in a repository."
+  },
+  {
+    "objectID": "materials/01-git.html#section-30",
+    "href": "materials/01-git.html#section-30",
+    "title": "",
+    "section": "",
+    "text": "If we want to see the work that we did up to this point, all we have to do is look at the history of that script and the various changes we made to in in the form of commits."
+  },
+  {
+    "objectID": "materials/01-git.html#section-31",
+    "href": "materials/01-git.html#section-31",
+    "title": "",
+    "section": "",
+    "text": "Visualized as a timeline from left to right, the history of our work might look something like this. Each commit is a snapshot of our files at a specific point in time.\n\n\n\n\ngitGraph\ncommit id: \"initial\"\ncommit id: \"afinn\"\ncommit id: \"bing\"\ncommit id: \"sentimentr\""
+  },
+  {
+    "objectID": "materials/01-git.html#section-32",
+    "href": "materials/01-git.html#section-32",
+    "title": "",
+    "section": "",
+    "text": "The differences between these commits allow us to easily view how our script changed as we worked on it.\n\nClick to go to repo"
+  },
+  {
+    "objectID": "materials/01-git.html#section-33",
+    "href": "materials/01-git.html#section-33",
+    "title": "",
+    "section": "",
+    "text": "And, most importantly, we can view the history of our work in the approriate way…\n\nThe Best and Only Way to View Your Project History"
+  },
+  {
+    "objectID": "materials/01-git.html#why-go-through-this-exercise",
+    "href": "materials/01-git.html#why-go-through-this-exercise",
+    "title": "",
+    "section": "Why Go Through This Exercise",
+    "text": "Why Go Through This Exercise\n\nBecause I wanted to make Star Wars jokes.\n\n\nBecause git is tremendously helpful even just for one individual.\n\n\nIt removes the mental baggage of worrying about editing your code and remembering what you did. It allows you to make changes, track the history of your project, and document everything you did along the way.\n\n\nWhere it starts to get even more helpful is for enabling collaboration within a team."
+  },
+  {
+    "objectID": "materials/01-git.html#git-for-data-science",
+    "href": "materials/01-git.html#git-for-data-science",
+    "title": "",
+    "section": "Git for Data Science",
+    "text": "Git for Data Science\nSuppose we were working on a predictive modeling project instead of looking at Star Wars scripts.\nThink about the pieces involved in a typical predictive modeling project.\n\n\nLoading data\nCleaning data\nSplitting data\nFeature engineering\nModel specification\nTuning parameters\nModel evaluation\nModel selection\nModel deployment"
+  },
+  {
+    "objectID": "materials/01-git.html#section-35",
+    "href": "materials/01-git.html#section-35",
+    "title": "",
+    "section": "",
+    "text": "We typically don’t build all of this at once and have everything finalized from the get go.\n\n\n\n\nflowchart LR\nraw[Raw Data] --&gt; clean[Clean Data]\nclean --&gt; train[Training Set]\nclean --&gt; valid[Validation Set]\ntrain --&gt; preprocessor(Preprocessor)\npreprocessor --&gt; resamples[Resamples]\nresamples --&gt; model(Model Spec)\nmodel --&gt; features(Features)\nfeatures --&gt; tuning(Tuning)\ntuning --&gt; valid\npreprocessor --&gt; valid\nvalid --&gt; evaluation[Model Evaluation]\ntrain --&gt; final(Model)\nvalid --&gt; final"
+  },
+  {
+    "objectID": "materials/01-git.html#section-36",
+    "href": "materials/01-git.html#section-36",
+    "title": "",
+    "section": "",
+    "text": "We build incrementally, typically testing and experimenting with different pieces along the way.\n\n\n\n\nflowchart LR\nraw[Raw Data] --&gt; clean[Clean Data]\nclean --&gt; train[Training Set]\nclean --&gt; valid[Validation Set]\ntrain --&gt; model(Baseline Model)\n\n\n\n\n\nWe might start out the project by training a simple baseline model."
+  },
+  {
+    "objectID": "materials/01-git.html#section-37",
+    "href": "materials/01-git.html#section-37",
+    "title": "",
+    "section": "",
+    "text": "Then maybe we decide to add in some feature engineering and tune a ridge regression over 25 bootstraps, which requires normalization and imputation.\n\n\n\n\nflowchart LR\nraw[Raw Data] --&gt; clean[Clean Data]\nclean --&gt; train[Training Set]\nclean --&gt; valid[Validation Set]\ntrain --&gt; preprocessor(Preprocessor)\npreprocessor --&gt; resamples[Bootstraps]\nresamples --&gt; model(glmnet)\nmodel --&gt; features(Impute + Normalize)\nfeatures --&gt; tuning(Tuning)\ntuning --&gt; valid\npreprocessor --&gt; valid\nvalid --&gt; evaluation[Model Evaluation]\ntrain --&gt; final(Model)\nvalid --&gt; final\n\n\n\n\n\n\nThen maybe we decide to try out a more flexible model like lightgbm with minimal feature engineering.\n\n\n\n\nflowchart LR\nraw[Raw Data] --&gt; clean[Clean Data]\nclean --&gt; train[Training Set]\nclean --&gt; valid[Validation Set]\ntrain --&gt; preprocessor(Preprocessor)\npreprocessor --&gt; resamples[Cross validation]\nresamples --&gt; model(lightgbm)\nmodel --&gt; features(Minimal)\nfeatures --&gt; tuning(Tuning)\ntuning --&gt; valid\npreprocessor --&gt; valid\nvalid --&gt; evaluation[Model Evaluation]\ntrain --&gt; final(Model)\nvalid --&gt; final\n\n\n\n\n\n\nAnd so on, and so on."
+  },
+  {
+    "objectID": "materials/01-git.html#git-for-data-science-1",
+    "href": "materials/01-git.html#git-for-data-science-1",
+    "title": "",
+    "section": "Git for Data Science",
+    "text": "Git for Data Science\nIn each of these cases, we have code that we have executed and results associated with that code.\n\nAs before, we could try to store a bunch of scripts and track all of the results in different folders.\n\n\nOr, we could use Git to track our code and the results of our experiments."
+  },
+  {
+    "objectID": "materials/01-git.html#section-39",
+    "href": "materials/01-git.html#section-39",
+    "title": "",
+    "section": "",
+    "text": "This can start to get complicated.\n\n\n\n\n\ngitGraph\ncommit\ncommit\nbranch data\ncheckout data\ncommit\ncommit\nbranch stable/model\ncheckout stable/model\nbranch dev/model\ncheckout dev/model\ncommit\nbranch dev/glmnet\ncheckout dev/glmnet\ncommit\ncheckout dev/model\nmerge dev/glmnet\nbranch dev/xgboost\ncheckout dev/xgboost\ncommit\ncheckout dev/model\nmerge dev/xgboost\ncommit\ncheckout stable/model\nmerge dev/model\ncheckout main\nmerge stable/model tag: \"v1\"\n\n\n\n\n\n\nWe’ll start with the basics."
+  },
+  {
+    "objectID": "materials/01-git.html#so-what-the-heck-is-git",
+    "href": "materials/01-git.html#so-what-the-heck-is-git",
+    "title": "",
+    "section": "So, what the heck is Git?",
+    "text": "So, what the heck is Git?\n\n\nAs with many great things in life, Git began with a bit of creative destruction and fiery controversy.\n\n\n\n\nThe Linux kernel is an open source software project of fairly large scope. During the early years of the Linux kernel maintenance (1991–2002), changes to the software were passed around as patches and archived files. In 2002, the Linux kernel project began using a proprietary [Distributed Version Control System] called BitKeeper.\n\n\n\n\nIn 2005, the relationship between the community that developed the Linux kernel and the commercial company that developed BitKeeper broke down, and the tool’s free-of-charge status was revoked. This prompted the Linux development community (and in particular Linus Torvalds, the creator of Linux) to develop their own tool based on some of the lessons they learned while using BitKeeper.\n\nhttps://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git"
+  },
+  {
+    "objectID": "materials/01-git.html#git",
+    "href": "materials/01-git.html#git",
+    "title": "",
+    "section": "Git",
+    "text": "Git\nGit is a version control system.\n\nGit was originally developed for the purpose of helping developers work in parallel on their software projects.\n\n\nGit manages and tracks a set of files - referred to as a repository - in a highly structured way."
+  },
+  {
+    "objectID": "materials/01-git.html#git-1",
+    "href": "materials/01-git.html#git-1",
+    "title": "",
+    "section": "Git",
+    "text": "Git\nThough originally intended for software development, Git is now used by data scientists in a variety of different ways to track the odds and ends that go into data science projects."
+  },
+  {
+    "objectID": "materials/01-git.html#github",
+    "href": "materials/01-git.html#github",
+    "title": "",
+    "section": "GitHub",
+    "text": "GitHub\nGitHub is a hosting service that stores your Git-based projects in a remote location.\n\nStoring your code on GitHub allows you to share/sync your work with others (as well as have a safe back up for when you inevitably mess up your local repository).\n\n\nWe’ll focus on GitHub (because it’s what I use, but there are other options out there as well).\n\n\nGitHub has additional features for managing projects and automating aspects of a project, we’ll touch on that later."
+  },
+  {
+    "objectID": "materials/01-git.html#git-basics-1",
+    "href": "materials/01-git.html#git-basics-1",
+    "title": "",
+    "section": "Git Basics",
+    "text": "Git Basics\n\nRepository: a directory in which file history is preserved"
+  },
+  {
+    "objectID": "materials/01-git.html#git-basics-2",
+    "href": "materials/01-git.html#git-basics-2",
+    "title": "",
+    "section": "Git Basics",
+    "text": "Git Basics\n\nRepository: a directory in which file history is preserved\nClone: downloading an existing repository"
+  },
+  {
+    "objectID": "materials/01-git.html#git-basics-3",
+    "href": "materials/01-git.html#git-basics-3",
+    "title": "",
+    "section": "Git Basics",
+    "text": "Git Basics\n\nRepository: a directory in which file history is preserved\nClone: downloading an existing repository\nLocal: “on your personal machine”"
+  },
+  {
+    "objectID": "materials/01-git.html#git-basics-4",
+    "href": "materials/01-git.html#git-basics-4",
+    "title": "",
+    "section": "Git Basics",
+    "text": "Git Basics\n\nRepository: a directory in which file history is preserved\nClone: downloading an existing repository\nLocal: “on your personal machine”\nRemote: “on the official server”"
+  },
+  {
+    "objectID": "materials/01-git.html#git-basics-5",
+    "href": "materials/01-git.html#git-basics-5",
+    "title": "",
+    "section": "Git Basics",
+    "text": "Git Basics\n\nRepository: a directory in which file history is preserved\nClone: downloading an existing repository\nLocal: “on your personal machine”\nRemote: “on the official server”\nBranch: A version of the directory"
+  },
+  {
+    "objectID": "materials/01-git.html#git-basics-6",
+    "href": "materials/01-git.html#git-basics-6",
+    "title": "",
+    "section": "Git Basics",
+    "text": "Git Basics\n\nRepository: a directory in which file history is preserved\nClone: downloading an existing repository\nLocal: “on your personal machine”\nRemote: “on the official server”\nBranch: A version of the directory\nCommit: A change made to a version of the directory"
+  },
+  {
+    "objectID": "materials/01-git.html#git-basics-7",
+    "href": "materials/01-git.html#git-basics-7",
+    "title": "",
+    "section": "Git Basics",
+    "text": "Git Basics\n\nRepository: a directory in which file history is preserved\nClone: downloading an existing repository\nLocal: “on your personal machine”\nRemote: “on the official server”\nBranch: A version of the directory\nCommit: A change made to a version of the directory\nPush: Uploads your work to the ‘official’ remote server"
+  },
+  {
+    "objectID": "materials/01-git.html#git-basics-8",
+    "href": "materials/01-git.html#git-basics-8",
+    "title": "",
+    "section": "Git Basics",
+    "text": "Git Basics\n\nRepository: a directory in which file history is preserved\nClone: downloading an existing repository\nLocal: “on your personal machine”\nRemote: “on the official server”\nBranch: A version of the directory\nCommit: A change made to a version of the directory\nPush: Uploads your work to the ‘official’ remote server\nFetch/Pull: Checks for available updates on a remote"
+  },
+  {
+    "objectID": "materials/01-git.html#git-basics-9",
+    "href": "materials/01-git.html#git-basics-9",
+    "title": "",
+    "section": "Git Basics",
+    "text": "Git Basics\n\nRepository: a directory in which file history is preserved\nClone: downloading an existing repository\nLocal: “on your personal machine”\nRemote: “on the official server”\nBranch: A version of the directory\nCommit: A change made to a version of the directory\nPush: Uploads your work to the ‘official’ remote server\nFetch/Pull: Checks for available updates on a remote\nSwitch/Checkout: Switches your local copy to a version of the directory"
+  },
+  {
+    "objectID": "materials/01-git.html#git-basics-10",
+    "href": "materials/01-git.html#git-basics-10",
+    "title": "",
+    "section": "Git Basics",
+    "text": "Git Basics\n\nRepository: a directory in which file history is preserved\nClone: downloading an existing repository\nLocal: “on your personal machine”\nRemote: “on the official server”\nBranch: A version of the directory\nCommit: A change made to a version of the directory\nPush: Uploads your work to the ‘official’ remote server\nFetch/Pull: Checks for available updates on a remote\nSwitch/Checkout: Switches your local copy to a version of the directory\nPull Request: A request to merge one branch into another"
+  },
+  {
+    "objectID": "materials/01-git.html#creating-a-new-repo-1",
+    "href": "materials/01-git.html#creating-a-new-repo-1",
+    "title": "",
+    "section": "Creating a New Repo",
+    "text": "Creating a New Repo\nGit is highly structured way of managing a set of files, called a repository.\n\nWe’ll often work by cloning an already established repository in order introduce changes, meaning that we are inheriting a set of files. . . .\nBut it’s really worth knowing how to create a repository from scratch."
+  },
+  {
+    "objectID": "materials/01-git.html#creating-a-new-repo-2",
+    "href": "materials/01-git.html#creating-a-new-repo-2",
+    "title": "",
+    "section": "Creating a New Repo",
+    "text": "Creating a New Repo\nWe want to create a new project called git-started.\n\nWe want to create a new GitHub repository.\n\n\nWe want to create a new RStudio project.\n\n\nWe want to connect RStudio to GitHub so our project is connected with our repository."
+  },
+  {
+    "objectID": "materials/01-git.html#section-57",
+    "href": "materials/01-git.html#section-57",
+    "title": "",
+    "section": "",
+    "text": "We can do this in a couple of different ways, starting in either GitHub or RStudio."
+  },
+  {
+    "objectID": "materials/01-git.html#github---rstudio",
+    "href": "materials/01-git.html#github---rstudio",
+    "title": "",
+    "section": "GitHub -> RStudio",
+    "text": "GitHub -&gt; RStudio\n\nGo to GitHub.com and sign in with your account\nClick on Repositories.\nClick on New repository."
+  },
+  {
+    "objectID": "materials/01-git.html#github---rstudio-1",
+    "href": "materials/01-git.html#github---rstudio-1",
+    "title": "",
+    "section": "GitHub -> RStudio",
+    "text": "GitHub -&gt; RStudio\n\nGo to GitHub.com and sign in with your account\nClick on Repositories.\nClick on New repository.\nName the repository\nInitialize the repository with a README"
+  },
+  {
+    "objectID": "materials/01-git.html#github---rstudio-2",
+    "href": "materials/01-git.html#github---rstudio-2",
+    "title": "",
+    "section": "GitHub -> RStudio",
+    "text": "GitHub -&gt; RStudio\n\nGo to GitHub.com and sign in with your account\nClick on Repositories.\nClick on New repository.\nName the repository\nInitialize the repository with a README\nClick Create repository."
+  },
+  {
+    "objectID": "materials/01-git.html#github---rstudio-3",
+    "href": "materials/01-git.html#github---rstudio-3",
+    "title": "",
+    "section": "GitHub -> RStudio",
+    "text": "GitHub -&gt; RStudio\n\nGo to GitHub.com and sign in with your account\nClick on Repositories.\nClick on New repository.\nName the repository\nInitialize the repository with a README\nClick Create repository.\n\nThis creates a new repository on GitHub, but we still need to connect it to RStudio. To do this, we need to clone this repo from RStudio."
+  },
+  {
+    "objectID": "materials/01-git.html#github---rstudio-4",
+    "href": "materials/01-git.html#github---rstudio-4",
+    "title": "",
+    "section": "GitHub -> RStudio",
+    "text": "GitHub -&gt; RStudio\n\nGo to GitHub.com and sign in with your account\nClick on Repositories.\nClick on New repository.\nName the repository\nInitialize the repository with a README\nClick Create repository.\nOpen a New Project in RStudio\nCreate from Version Control"
+  },
+  {
+    "objectID": "materials/01-git.html#github---rstudio-5",
+    "href": "materials/01-git.html#github---rstudio-5",
+    "title": "",
+    "section": "GitHub -> RStudio",
+    "text": "GitHub -&gt; RStudio\n\nGo to GitHub.com and sign in with your account\nClick on Repositories.\nClick on New repository.\nName the repository\nInitialize the repository with a README\nClick Create repository.\nOpen a New Project on RStudio\nCreate from Version Control\nPaste in your Repository URL from GitHub"
+  },
+  {
+    "objectID": "materials/01-git.html#github---rstudio-6",
+    "href": "materials/01-git.html#github---rstudio-6",
+    "title": "",
+    "section": "GitHub -> RStudio",
+    "text": "GitHub -&gt; RStudio\n\nGo to GitHub.com and sign in with your account\nClick on Repositories.\nClick on New repository.\nName the repository\nInitialize the repository with a README\nClick Create repository.\nOpen a New Project on RStudio\nCreate from Version Control\nSet Repository URL to link of GitHub repo\nSet name and location of project\nCreate project"
+  },
+  {
+    "objectID": "materials/01-git.html#github---rstudio-7",
+    "href": "materials/01-git.html#github---rstudio-7",
+    "title": "",
+    "section": "GitHub -> RStudio",
+    "text": "GitHub -&gt; RStudio\nThese steps inside of RStudio can also be taken care of by using the usethis package, but I tend to just go through the process each time.\n\nusethis::create_from_github(\"https://github.com/phenrickson/git-started.git\")"
+  },
+  {
+    "objectID": "materials/01-git.html#github---rstudio-8",
+    "href": "materials/01-git.html#github---rstudio-8",
+    "title": "",
+    "section": "GitHub -> RStudio",
+    "text": "GitHub -&gt; RStudio\nThese steps inside of RStudio can also be taken care of by using the usethis package, but I tend to just go through the process each time.\nUnder the hood, this last bit is essentially just:\n\ngit clone “https://github.com/YOU/YOUR_REPO.git”"
+  },
+  {
+    "objectID": "materials/01-git.html#rstudio---github",
+    "href": "materials/01-git.html#rstudio---github",
+    "title": "",
+    "section": "RStudio -> Github",
+    "text": "RStudio -&gt; Github\nCreating a new project with GitHub first then cloning with RStudio is what I would tend to recommend.\n\nIt’s the same process as cloning repositories from other people, plus it takes care of some pieces behind the scenes.\n\n\nYou can however also start by first creating an RStudio project, then initialize a GitHub repository second. This process can be useful to know if you want to set up a GitHub repo for an existing project."
+  },
+  {
+    "objectID": "materials/01-git.html#rstudio---github-1",
+    "href": "materials/01-git.html#rstudio---github-1",
+    "title": "",
+    "section": "RStudio -> Github",
+    "text": "RStudio -&gt; Github\n\nCreate a new RStudio project.\nCheck ‘Create a git repository’"
+  },
+  {
+    "objectID": "materials/01-git.html#rstudio---github-2",
+    "href": "materials/01-git.html#rstudio---github-2",
+    "title": "",
+    "section": "RStudio -> Github",
+    "text": "RStudio -&gt; Github\n\nCreate a new RStudio project\nCheck ‘Create a git repository’\nusethisthis::use_git() to initialize a local repository, add and commit your initial files\nusethis::use_github() to create a repository on GitHub and connect your R project"
+  },
+  {
+    "objectID": "materials/01-git.html#rstudio---github-3",
+    "href": "materials/01-git.html#rstudio---github-3",
+    "title": "",
+    "section": "RStudio -> Github",
+    "text": "RStudio -&gt; Github"
+  },
+  {
+    "objectID": "materials/01-git.html#section-68",
+    "href": "materials/01-git.html#section-68",
+    "title": "",
+    "section": "",
+    "text": "We now have a repository, but we want Git to track our files.\n\nI created my git-started repo from RStudio -&gt; GitHub, which means I didn’t initialize a README. I want to add a README to the repo."
+  },
+  {
+    "objectID": "materials/01-git.html#section-70",
+    "href": "materials/01-git.html#section-70",
+    "title": "",
+    "section": "",
+    "text": "I create the file in my working directory, which causes it to appear in my Git tab in RStudio."
+  },
+  {
+    "objectID": "materials/01-git.html#section-72",
+    "href": "materials/01-git.html#section-72",
+    "title": "",
+    "section": "",
+    "text": "Checking the file adds it to staging."
+  },
+  {
+    "objectID": "materials/01-git.html#section-74",
+    "href": "materials/01-git.html#section-74",
+    "title": "",
+    "section": "",
+    "text": "We can then commit the file."
+  },
+  {
+    "objectID": "materials/01-git.html#three-states-of-tracked-files",
+    "href": "materials/01-git.html#three-states-of-tracked-files",
+    "title": "",
+    "section": "Three States of (Tracked) Files",
+    "text": "Three States of (Tracked) Files\nFiles in your repository can generally take on one of three states: . . .\nModified means that you made changes to a file but have not committed those changes to your repository yet.\n\nStaged means that you have marked a modified file in its current version to go into your next commit.\n\n\nCommitted means that the snapshot is safely stored in your local repository"
+  },
+  {
+    "objectID": "materials/01-git.html#section-78",
+    "href": "materials/01-git.html#section-78",
+    "title": "",
+    "section": "",
+    "text": "If you haven’t yet added a file but it’s in your working directory, it will appear as “untracked”. It will only be added to your repository if you add it, by first staging it and then committing it."
+  },
+  {
+    "objectID": "materials/01-git.html#section-80",
+    "href": "materials/01-git.html#section-80",
+    "title": "",
+    "section": "",
+    "text": "Let’s go back to the first image. I don’t know how important it is to dwell on this, but if we want to get an understanding of what’s happening under the hood with Git, we can get a sense of how Git works."
+  },
+  {
+    "objectID": "materials/01-git.html#three-sections-of-git",
+    "href": "materials/01-git.html#three-sections-of-git",
+    "title": "",
+    "section": "Three Sections of Git",
+    "text": "Three Sections of Git\nThis last image highlights the three main sections of a Git project - what you’re going through painstaking effort to set up.\n\n\nThe Working Directory (Tree) is a single checkout of one version of a project\n\n\n\n\nThe Staging Area refers to a file (index) that lives in your .git directory that tracks information about what will go into your next commit\n\n\n\n\nThe Git Directory is where Git stores the metadata and object database for your project"
+  },
+  {
+    "objectID": "materials/01-git.html#section-83",
+    "href": "materials/01-git.html#section-83",
+    "title": "",
+    "section": "",
+    "text": "If you open up a the folder where you created git-started, you’ll notice that there’s a hidden .git folder."
+  },
+  {
+    "objectID": "materials/01-git.html#section-85",
+    "href": "materials/01-git.html#section-85",
+    "title": "",
+    "section": "",
+    "text": "If you open up a the folder where you created git-started, you’ll notice that there’s a hidden .git folder.\nYeah, don’t mess with that; that’s basically what you’re configuring when you initialize a repo, add/commit files, and sync with a remote."
+  },
+  {
+    "objectID": "materials/01-git.html#section-87",
+    "href": "materials/01-git.html#section-87",
+    "title": "",
+    "section": "",
+    "text": "Cloning someone else’s repo from GitHub operates in much the same way as before.\n\n\nCopy the GitHub Repository URL\nOpen a New Project on RStudio\nCreate from Version Control\nPaste Repository URL from GitHub repo\nSet name and location of project\nCreate project"
+  },
+  {
+    "objectID": "materials/01-git.html#branches-and-pull-requests-1",
+    "href": "materials/01-git.html#branches-and-pull-requests-1",
+    "title": "",
+    "section": "Branches and Pull Requests",
+    "text": "Branches and Pull Requests\nA typical commit history for one branch might look something like this. We have a series of commits that tracks the history of the project from left to right.\n\n\n\n\ngitGraph\ncommit\ncommit\ncommit\ncommit type:HIGHLIGHT"
+  },
+  {
+    "objectID": "materials/01-git.html#section-88",
+    "href": "materials/01-git.html#section-88",
+    "title": "",
+    "section": "",
+    "text": "We could just keep working out of one branch, tracking the history of the project via our commits.\n\n\n\n\ngitGraph\ncommit\ncommit\ncommit\ncommit\ncommit\ncommit\ncommit type:HIGHLIGHT\n\n\n\n\n\n\nThis has some appeal because of its simplicity; if we ever want to see our previous work, we just flip back through our history of commits."
+  },
+  {
+    "objectID": "materials/01-git.html#section-89",
+    "href": "materials/01-git.html#section-89",
+    "title": "",
+    "section": "",
+    "text": "How often should we commit our code?\n\n\nUsing a Git commit is like using anchors and other protection when climbing. If you’re crossing a dangerous rock face you want to make sure you’ve used protection to catch you if you fall. Commits play a similar role: if you make a mistake, you can’t fall past the previous commit.\n\n\n\n\nCoding without commits is like free-climbing: you can travel much faster in the short-term, but in the long-term the chances of catastrophic failure are high! Like rock climbing protection, you want to be judicious in your use of commits.\n\n\n\n\nCommitting too frequently will slow your progress; use more commits when you’re in uncertain or dangerous territory. Commits are also helpful to others, because they show your journey, not just the destination.\n\nhttps://r-pkgs.org/software-development-practices.html#git-commit"
+  },
+  {
+    "objectID": "materials/01-git.html#section-90",
+    "href": "materials/01-git.html#section-90",
+    "title": "",
+    "section": "",
+    "text": "Suppose you’re at a point in your project where you’re not certain about the next direction you want to take. You could keep making a series of small commits and then revert all the way back to where you were originally.\n\n\n\n\ngitGraph\ncommit\ncommit\ncommit\ncommit type:HIGHLIGHT\ncommit\ncommit\ncommit"
+  },
+  {
+    "objectID": "materials/01-git.html#section-91",
+    "href": "materials/01-git.html#section-91",
+    "title": "",
+    "section": "",
+    "text": "But a better approach is to use branches. Branching amounts to creating a detour from the main stream of commits; it allows you to work without any fear of disrupting the work in main.\n\n\n\n\ngitGraph\ncommit\ncommit\ncommit\ncommit\nbranch dev\ncheckout dev\ncommit\ncommit\ncommit"
+  },
+  {
+    "objectID": "materials/01-git.html#section-92",
+    "href": "materials/01-git.html#section-92",
+    "title": "",
+    "section": "",
+    "text": "Once you’ve completed your work, you can then choose to merge it back into main; this can be done via a pull request on GitHub.\n\n\n\n\ngitGraph\ncommit\ncommit\ncommit\ncommit\nbranch dev\ncheckout dev\ncommit\ncommit\ncommit\ncheckout main\nmerge dev"
+  },
+  {
+    "objectID": "materials/01-git.html#section-93",
+    "href": "materials/01-git.html#section-93",
+    "title": "",
+    "section": "",
+    "text": "Or, you can just stop working on the branch and go back to working on main, letting the branch become stale.\n\n\n\n\ngitGraph\ncommit\ncommit\ncommit\ncommit\nbranch dev\ncheckout dev\ncommit\ncommit\ncommit\ncheckout main\ncommit\ncommit"
+  },
+  {
+    "objectID": "materials/01-git.html#section-94",
+    "href": "materials/01-git.html#section-94",
+    "title": "",
+    "section": "",
+    "text": "Branching allows teams of developers to do their work on separate branches without overwriting or getting in the way of each other’s work."
+  },
+  {
+    "objectID": "materials/01-git.html#section-95",
+    "href": "materials/01-git.html#section-95",
+    "title": "",
+    "section": "",
+    "text": "Typically, it is common to block direct commits to main and only allow new commits to main via pull requests.\nThis pattern requires creating new branches, such as dev, where developers commit their work. dev is then merged back into main pending an approval process.\n\n\n\n\ngitGraph\ncommit\nbranch dev\ncheckout dev\ncommit\ncommit\ncommit\ncommit\ncheckout main\nmerge dev tag: \"draft\"\n\n\n\n\n\nWith larger development teams, it’s more common to see branching strategies involving a number of common branchdes main, dev, feature, hotfix."
+  },
+  {
+    "objectID": "materials/01-git.html#section-96",
+    "href": "materials/01-git.html#section-96",
+    "title": "",
+    "section": "",
+    "text": "main: releases, most controlled branch\ndev: where completed work is staged for release\nfeature: in-progress work; mostly a sandbox for individual developers\n\n\n\n\ngitGraph\ncommit\ncommit\nbranch dev\ncheckout dev\ncommit\ncommit\ncommit\nbranch feature\ncommit\ncommit\ncheckout dev\nmerge feature\ncommit\ncheckout main\nmerge dev tag: \"release 1\""
+  },
+  {
+    "objectID": "materials/01-git.html#guidelines",
+    "href": "materials/01-git.html#guidelines",
+    "title": "",
+    "section": "Guidelines",
+    "text": "Guidelines\n\nDelete branches when merging\nDisallow direct commits to main\nMinimize direct commits to develop\nRequire reviewer approval on pull requests into main\nLimit PR approval to project leads\nUse tags to mark milestones/releases\n\n\n\n\n\ngitGraph\ncommit\nbranch hotfix\ncheckout hotfix\ncommit\nbranch develop\ncheckout develop\ncommit tag:\"draft\"\nbranch featureB\ncheckout featureB\ncommit type:HIGHLIGHT\ncheckout main\ncheckout hotfix\ncommit type:NORMAL\ncheckout develop\ncommit\ncheckout featureB\ncommit\ncheckout main\nmerge hotfix\ncheckout featureB\ncommit\ncheckout develop\nbranch featureA\ncommit\ncheckout develop\nmerge hotfix\ncheckout featureA\ncommit\ncheckout featureB\ncommit\ncheckout develop\nmerge featureA\ncheckout main\nmerge develop"
+  },
+  {
+    "objectID": "materials/01-git.html#section-97",
+    "href": "materials/01-git.html#section-97",
+    "title": "",
+    "section": "",
+    "text": "How does data science differ from traditional software development?\n\n\n\n\n\ngitGraph\ncommit\ncommit\nbranch data\ncheckout data\ncommit\ncommit\nbranch stable/model\ncheckout stable/model\nbranch dev/model\ncheckout dev/model\ncommit\nbranch dev/glmnet\ncheckout dev/glmnet\ncommit\ncheckout dev/model\nmerge dev/glmnet\nbranch dev/xgboost\ncheckout dev/xgboost\ncommit\ncheckout dev/model\nmerge dev/xgboost\ncommit\ncheckout stable/model\nmerge dev/model\ncheckout main\nmerge stable/model tag: \"v1\""
+  },
+  {
+    "objectID": "materials/01-git.html#cloning-vs-forking",
+    "href": "materials/01-git.html#cloning-vs-forking",
+    "title": "",
+    "section": "Cloning vs Forking",
+    "text": "Cloning vs Forking\nOkay so we can see what you all did in your own separate repos, but there’s a problem. Let’s say I wanted to merge a change that you made into the original Star Wars repo - right now, there’s no way to do that.\n\nWhen you create a Git repo locally, you eventually need to connect that repo to a remote location."
+  },
+  {
+    "objectID": "materials/01-git.html#section-99",
+    "href": "materials/01-git.html#section-99",
+    "title": "",
+    "section": "",
+    "text": "You typically create a copy of that repo at your remote location (GitHub), which is owned by you and you have full access to push/pull/merge to your heart’s content.\nThe remote is typically known as origin."
+  },
+  {
+    "objectID": "materials/01-git.html#section-100",
+    "href": "materials/01-git.html#section-100",
+    "title": "",
+    "section": "",
+    "text": "Cloning someone else’s repo creates a local copy of their repo, where the origin is owned by someone else.\nIn this case, you can pull and execute code, but you have no way of pushing changes to it; the owner of that repo has configured origin to be read-only for others."
+  },
+  {
+    "objectID": "materials/01-git.html#section-101",
+    "href": "materials/01-git.html#section-101",
+    "title": "",
+    "section": "",
+    "text": "So what the heck? If Git and GitHub are supposed to be collaborative, how do we configure things so that we can push and pull and work within the same repository?\n\nOne option is to just provide permissions to origin by adding others as collaborators. The source repo is owned by someone else, or an organization, but you have permissions to make changes."
+  },
+  {
+    "objectID": "materials/01-git.html#section-102",
+    "href": "materials/01-git.html#section-102",
+    "title": "",
+    "section": "",
+    "text": "The other option is to use forking, where you fork the original repo to create a copy for yourself that becomes your remote origin, where you have full permissions to read and write.\nThe original source repo is typically referred to as upstream - you can pull changes from it but you can’t push directly to it."
+  },
+  {
+    "objectID": "materials/01-git.html#section-103",
+    "href": "materials/01-git.html#section-103",
+    "title": "",
+    "section": "",
+    "text": "If you want your changes to make it upstream, you push your code to your origin, then create a pull request for the repo owner to consider merging in your changes."
+  },
+  {
+    "objectID": "materials/01-git.html#section-104",
+    "href": "materials/01-git.html#section-104",
+    "title": "",
+    "section": "",
+    "text": "Forking and cloning directly from Github entails a couple of additional steps to ensure that you are tracking the original source repo."
+  },
+  {
+    "objectID": "materials/01-git.html#section-105",
+    "href": "materials/01-git.html#section-105",
+    "title": "",
+    "section": "",
+    "text": "The first step is to add an additional remote that is pointed to the source repo. The original (source) repo in this case is typically referred to as upstream. This can be done by running:\n\ngit remote add upstream https://github.com/OWNER/REPO.git\n\nAfter adding the upstream remote, you will then want to look for any changes that have happened to the source\n\ngit fetch upstream\n\nYou’ll probably want to set your local main branch to track the upstream/main branch, so you can easily see if any changes have occurred in the source repo. This is optional, but in a fork-and-clone situation it’s the standard.\n\ngit branch –set-upstream-to upstream/main"
+  },
+  {
+    "objectID": "materials/01-git.html#section-106",
+    "href": "materials/01-git.html#section-106",
+    "title": "",
+    "section": "",
+    "text": "Alternatively, you can always use the helpful functions from usethis, which will take care of the upstream tracking on one go. You simply need to open a new RStudio session (note: not in a project) and run the following:\n\nusethis::create_from_github(\n  repo_spec = \"https://github.com/OWNER/REPO.git\",\n  destdir = \"~/path/to/your/local/repos\",\n  fork = TRUE\n)\n\nThis will fork and clone the repository at repo_spec and create a local RStudio project in destdir."
+  },
+  {
+    "objectID": "materials/01-git.html#section-107",
+    "href": "materials/01-git.html#section-107",
+    "title": "",
+    "section": "",
+    "text": "We hit something of a snag with installing the requisite packages for that one, eh? We’ll talk about that shortly.\n\nBut next, let’s review everyone’s work and complete a pull request. We’ll then work off one of these branches, and proceed to add some new pieces."
+  },
+  {
+    "objectID": "materials/02-renv.html#section",
+    "href": "materials/02-renv.html#section",
+    "title": "",
+    "section": "",
+    "text": "To this point, we haven’t really talked about how we should organize a repository. A repository is just a set of files to track over time, but how do we organize those files?\n\nI am arguably not the best guide for this, as I am generally a disorganized person and it shows in my older repos."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-3",
+    "href": "materials/02-renv.html#section-3",
+    "title": "",
+    "section": "",
+    "text": "On some level, this is to be expected with data analysis/data science - we rarely work in a linear progression with the same set of files from project to project.\n\nBut I’ve started to use a specific style for organization that seems to suit data science projects well."
+  },
+  {
+    "objectID": "materials/02-renv.html#cookiecutter-data-science-1",
+    "href": "materials/02-renv.html#cookiecutter-data-science-1",
+    "title": "",
+    "section": "CookieCutter Data Science",
+    "text": "CookieCutter Data Science\n\nIt’s no secret that good analyses are often the result of very scattershot and serendipitous explorations. Tentative experiments and rapidly testing approaches that might not work out are all part of the process for getting to the good stuff, and there is no magic bullet to turn data exploration into a simple, linear progression.\n\n\n\nA well-defined, standard project structure means that a newcomer can begin to understand an analysis without digging in to extensive documentation. It also means that they don’t necessarily have to read 100% of the code before knowing where to look for very specific things."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-5",
+    "href": "materials/02-renv.html#section-5",
+    "title": "",
+    "section": "",
+    "text": "It’s less important to have the perfect organization for a given project than it is to have some sort of standard that everyone understands and uses.\n\nThe goal is to organize projects in a way that will make it easier for others and your future self to remember."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-7",
+    "href": "materials/02-renv.html#section-7",
+    "title": "",
+    "section": "",
+    "text": "Sadly, this template is intended for Python, but we can adapt it for R easily enough. Let’s zoom in a bit on specific pieces."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-8",
+    "href": "materials/02-renv.html#section-8",
+    "title": "",
+    "section": "",
+    "text": "├── Makefile        &lt;- Makefile with commands like `make data` or `make train`\n├── README.md       &lt;- The top-level README for developers\n├── data\n│   ├── external    &lt;- Data from third party sources.\n│   ├── interim     &lt;- Intermediate data that has been transformed.\n│   ├── processed   &lt;- The final, canonical data sets for modeling.\n│   └── raw         &lt;- The original, immutable data dump.\n\n\nAlways include a README as an organizing guide\nData generally isn’t stored in repos, but if it is you can follow this organization that tracks the lineage of the data\nOne of the guiding principles for CookieCutter Data Science is to treat data as immutable. The point of a project is interact and work with data, but we never change it from its raw sources.\nWe will shortly discuss the R equivalent of a Makefile, with the aim that our project is organized to do one specific thing"
+  },
+  {
+    "objectID": "materials/02-renv.html#section-9",
+    "href": "materials/02-renv.html#section-9",
+    "title": "",
+    "section": "",
+    "text": "├── models    &lt;- Trained and serialized models, model predictions, or model summaries\n│\n├── notebooks   &lt;- Jupyter notebooks. Naming convention is a number (for ordering),\n|                 the creator's initials, and a short `-` delimited description, e.g.\n|                 `1.0-jqp-initial-data-exploration`.\n│\n├── references    &lt;- Data dictionaries, manuals, and all other explanatory materials.\n│\n├── reports         &lt;- Generated analysis as HTML, PDF, LaTeX, etc.\n│   └── figures     &lt;- Generated graphics and figures to be used in reporting\n│\n\n\nSimilarly, models typically aren’t stored in a repo, but we might want to save summaries or model cards\nNotebooks are places for exploratory analysis and should be treated mostly as a sandbox\nStore all background documentation, project discussion, articles that has been used and discussed in references"
+  },
+  {
+    "objectID": "materials/02-renv.html#section-10",
+    "href": "materials/02-renv.html#section-10",
+    "title": "",
+    "section": "",
+    "text": "├── requirements.txt    &lt;- The requirements file for reproducing  the analysis environment.\n│\n├── src                &lt;- Source code for use in this project.\n│   ├── data           &lt;- Scripts to download or generate data\n│   │   └── make_dataset.py\n│   │\n│   ├── features       &lt;- Scripts to turn raw data into features for modeling\n│   │   └── build_features.py\n│   │\n│   ├── models         &lt;- Scripts to train models and then use trained models to make\n│   │   │                 predictions\n│   │   ├── predict_model.py\n│   │   └── train_model.py\n│   │\n│   └── visualization  &lt;- Scripts to create exploratory and results oriented visualizations\n│       └── visualize.py\n\n\nThe repo must detail the requirements for someone to reproduce the project.\nIn Python this is requirements.txt we will discuss the R equivalent via renv next.\nAll code used in the project is stored and organized in src"
+  },
+  {
+    "objectID": "materials/02-renv.html#data-is-immutable",
+    "href": "materials/02-renv.html#data-is-immutable",
+    "title": "",
+    "section": "Data is Immutable",
+    "text": "Data is Immutable\n\nDon’t ever edit your raw data, especially not manually, and especially not in Excel. Don’t overwrite your raw data. Don’t save multiple versions of the raw data. Treat the data (and its format) as immutable.\n\n\nThe code you write should move the raw data through a pipeline to your final analysis. You shouldn’t have to run all of the steps every time you want to make a new figure (see Analysis is a DAG), but anyone should be able to reproduce the final products with only the code in src and the data in data/raw.\n\n\nAlso, if data is immutable, it doesn’t need source control in the same way that code does. Therefore, by default, the data folder is included in the .gitignore file"
+  },
+  {
+    "objectID": "materials/02-renv.html#analysis-is-a-dag",
+    "href": "materials/02-renv.html#analysis-is-a-dag",
+    "title": "",
+    "section": "Analysis is a DAG",
+    "text": "Analysis is a DAG\n\nOften in an analysis you have long-running steps that preprocess data or train models. If these steps have been run already (and you have stored the output somewhere like the data/interim directory), you don’t want to wait to rerun them every time. We prefer make for managing steps that depend on each other, especially the long-running ones.\n\n\nThis will be the point of emphasis in using targets, bringing Make-like functionality to R."
+  },
+  {
+    "objectID": "materials/02-renv.html#functional-programming",
+    "href": "materials/02-renv.html#functional-programming",
+    "title": "",
+    "section": "Functional Programming",
+    "text": "Functional Programming\n\nIt’s hard to describe exactly what a functional style is, but generally I think it means decomposing a big problem into smaller pieces, then solving each piece with a function or combination of functions. When using a functional style, you strive to decompose components of the problem into isolated functions that operate independently. Each function taken by itself is simple and straightforward to understand; complexity is handled by composing functions in various ways.\n\n\nCookieCutter Data Science doesn’t go into much detail on what your src code should look like, but I have found it naturally suits a functional programming style.\nRather than writing scripts that execute tasks, it’s generally better to write a series of functions that are then called and used in a pipeline."
+  },
+  {
+    "objectID": "materials/02-renv.html#a-repo-should-be-one-project",
+    "href": "materials/02-renv.html#a-repo-should-be-one-project",
+    "title": "",
+    "section": "A Repo Should Be One Project",
+    "text": "A Repo Should Be One Project\nAnother thing that Cookie Cutter Data Science helps address: what should even be a repo? When we’re working on a project, how do we define and organize our code?\nDo we create one repository for all of our data science projects? Do we create one repository per project?\n\nThis more or less becomes an argument between monorepos vs multi-repos."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-11",
+    "href": "materials/02-renv.html#section-11",
+    "title": "",
+    "section": "",
+    "text": "Monorepo vs Multi-repo\nA monorepo is one repository that contains code for a lot of different projects and tasks.\nImagine you have one big project you’re working on, containing a lot of separate pieces and code. The monorepo approach says, throw it all in into the same repo."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-12",
+    "href": "materials/02-renv.html#section-12",
+    "title": "",
+    "section": "",
+    "text": "Monorepo vs Multi-repo\nAs opposed to a multi-repo, where aspects of a larger project are isolated and separated into individual repositories.\n##"
+  },
+  {
+    "objectID": "materials/02-renv.html#a-repo-should-be-one-project-1",
+    "href": "materials/02-renv.html#a-repo-should-be-one-project-1",
+    "title": "",
+    "section": "A Repo Should Be One Project",
+    "text": "A Repo Should Be One Project\nThe Cookie Cutter Data Science approach is much more conducive towards the multi-repo approach:\n\nA repository exists for a specific task.\nThe code in the repository executes that task.\nThe requirements for running that code are defined in the repository.\n\n\nIt becomes a lot harder to define requirements and reproduce the environment to run code when you have a gigantic, monolithic repository."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-14",
+    "href": "materials/02-renv.html#section-14",
+    "title": "",
+    "section": "",
+    "text": "But what if we want to re-use code across multiple repositories!\n\nMore on this later, but basically this is where submodules might come into play. . . .\nOr, just create another repo in the form of a package that can be used across multiple projects."
+  },
+  {
+    "objectID": "materials/02-renv.html#cookiecutter-data-science-for-r",
+    "href": "materials/02-renv.html#cookiecutter-data-science-for-r",
+    "title": "",
+    "section": "CookieCutter Data Science (for R)",
+    "text": "CookieCutter Data Science (for R)\nGiven these principles, most of my repos end up being organized in the following way:\n\n├── _targets    &lt;- stores the metadata and objects of your pipeline\n├── renv        &lt;- information relating to your R packages and dependencies\n├── data        &lt;- data sources used as an input into the pipeline\n├── src         &lt;- functions used in project/targets pipeline\n|   ├── data    &lt;- functions relating to loading and cleaning data\n|   ├── models    &lt;- functions involved with training models\n|   ├── reports   &lt;- functions used in generating tables and visualizations for reports\n├── _targets.R    &lt;- script that runs the targets pipeline\n├── renv.lock     &lt;- lockfile detailing project requirements and dependencies\n\n\nAgain, I’m not saying that this is THE OBJECTIVELY CORRECT WAY TO ORGANIZE AN R PROJECT. But it’s been a useful starting point for me in my work.\n\n\nOne of the key pillars to this organization is renv."
+  },
+  {
+    "objectID": "materials/02-renv.html#renv-1",
+    "href": "materials/02-renv.html#renv-1",
+    "title": "",
+    "section": "renv",
+    "text": "renv\nLet’s go back to the issues we had in running certain files in the starwars or board_games repo.\n\nHow often do you want to run someone else’s code, only to find that you need to install additional packages?\n\n\nHow often do you try to run someone else’s code only to discover that they’re using a deprecated function?\n\n\nHow many times have you gotten a headache because dplyr can’t make up its mind between mutate_if, mutate_at, mutate_all, and mutate(across())?"
+  },
+  {
+    "objectID": "materials/02-renv.html#section-16",
+    "href": "materials/02-renv.html#section-16",
+    "title": "",
+    "section": "",
+    "text": "The renv package aims to solve most of these problems by helping you to create reproducible environments for R projects."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-17",
+    "href": "materials/02-renv.html#section-17",
+    "title": "",
+    "section": "",
+    "text": "renv allows you to scan and find packages used in your project. This produces a list of packages with their current versions and dependencies. Using renv with a project adds three pieces to your repo:\n\nrenv/library: a library that contains all packages currently used by your project.\n\n\n\nThis is the key magic that makes renv work: instead of having one library containing the packages used in every project, renv gives you a separate library for each project\n\n\n\n\nrenv.lock: a lockfile that records metadata about every package used in the project; this allows the project’s packages to be reinstalled on a new machine\n\n\n\n\n.Rprofile: adds a file that runs everytime you open up the project; this file runs renv::activate() and configures your project to use the renv/library"
+  },
+  {
+    "objectID": "materials/02-renv.html#section-18",
+    "href": "materials/02-renv.html#section-18",
+    "title": "",
+    "section": "",
+    "text": "We then add (pieces) of renv/library, renv.lock, and .Rprofile to our repository and commit them.\n\nIf we make a change to our code, we use renv to track whether that code has introduced, removed, or changed our dependencies. When we commit the change to our code, we will also commit a change to our renv.lock file.\n\n\nIn this way, using Git + renv allows us to store a history of how our project dependencies have changed with every commit."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-20",
+    "href": "materials/02-renv.html#section-20",
+    "title": "",
+    "section": "",
+    "text": "So, how do we do this?\nWe will need to get to know a few functions from renv."
+  },
+  {
+    "objectID": "materials/02-renv.html#renv-key-functions",
+    "href": "materials/02-renv.html#renv-key-functions",
+    "title": "",
+    "section": "renv key functions",
+    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\n\n\n\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages\n\n\n\n\nrenv::snapshot() creates or updates a lockfile with the current state of packages used in the project\n\n\n\n\nrenv::status() compares the current dependencies of your project vs the dependencies detailed in the lockfile.\n\n\n\n\nrenv::restore() restores a project’s dependencies from a lockfile. This is typically the first command when working with a repo that has an existing lockfile."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-21",
+    "href": "materials/02-renv.html#section-21",
+    "title": "",
+    "section": "",
+    "text": "renv::restore() restores a project’s dependencies from a lockfile. This is typically the first command when working with a repo that has an existing lockfile."
+  },
+  {
     "objectID": "workshop-materials.html",
     "href": "workshop-materials.html",
     "title": "Workshop Materials",

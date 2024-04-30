@@ -3,4 +3,3 @@ project:
   output-dir: docs
   render:
     - "*.qmd"
-    - "!materials/"

@@ -8,7 +8,7 @@ title: "Workshop Materials"
 #| include: false
 library(dplyr)
 library(purrr)
-work_files <- fs::dir_info("materials/", glob = "*.qmd", recurse = TRUE)|> 
+work_files <- fs::dir_info("materials/", glob = "*.qmd", recurse = TRUE) |> 
   mutate(file = fs::path_file(path),
          folder = fs::path_dir(path)) |> 
   # mutate(folder = gsub(x = folder, pattern = "materials/workshop/",  replacement = "")) |> 
