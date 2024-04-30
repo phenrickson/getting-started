@@ -879,7 +879,7 @@
     "href": "materials/02-renv.html#section-5",
     "title": "",
     "section": "",
-    "text": "It’s less important to have the perfect organization for a given project than it is to have some sort of standard that everyone understands and uses.\n\nThe goal is to organize projects in a way that will make it easier for others and your future self to remember."
+    "text": "It’s less important to have the perfect organization for a given project than it is to have some sort of standard that everyone understands and uses.\n\nThe goal is to organize projects in a way that will make it easier for others and your future self to remember.\n\n\nThe CookieCutter Data Science approach is one such way. This might feel overwhelming to start.\n\n\nDon’t panic."
   },
   {
     "objectID": "materials/02-renv.html#section-7",
@@ -893,7 +893,7 @@
     "href": "materials/02-renv.html#section-8",
     "title": "",
     "section": "",
-    "text": "├── Makefile        &lt;- Makefile with commands like `make data` or `make train`\n├── README.md       &lt;- The top-level README for developers\n├── data\n│   ├── external    &lt;- Data from third party sources.\n│   ├── interim     &lt;- Intermediate data that has been transformed.\n│   ├── processed   &lt;- The final, canonical data sets for modeling.\n│   └── raw         &lt;- The original, immutable data dump.\n\n\nAlways include a README as an organizing guide\nData generally isn’t stored in repos, but if it is you can follow this organization that tracks the lineage of the data\nOne of the guiding principles for CookieCutter Data Science is to treat data as immutable. The point of a project is interact and work with data, but we never change it from its raw sources.\nWe will shortly discuss the R equivalent of a Makefile, with the aim that our project is organized to do one specific thing"
+    "text": "├── Makefile        &lt;- Makefile with commands like `make data` or `make train`\n├── README.md       &lt;- The top-level README for developers\n├── data\n│   ├── external    &lt;- Data from third party sources.\n│   ├── interim     &lt;- Intermediate data that has been transformed.\n│   ├── processed   &lt;- The final, canonical data sets for modeling.\n│   └── raw         &lt;- The original, immutable data dump.\n\n\nWe will shortly discuss the R equivalent of a Makefile, with the aim that our project is organized to do one specific thing\nAlways include a README as an organizing guide\nData generally isn’t stored in repos, but if it is you can follow this organization that tracks the lineage of the data\nOne of the guiding principles for CookieCutter Data Science is to treat data as immutable. The point of a project is interact and work with data, but we never change it from its raw sources."
   },
   {
     "objectID": "materials/02-renv.html#section-9",
@@ -907,49 +907,77 @@
     "href": "materials/02-renv.html#section-10",
     "title": "",
     "section": "",
-    "text": "├── requirements.txt    &lt;- The requirements file for reproducing  the analysis environment.\n│\n├── src                &lt;- Source code for use in this project.\n│   ├── data           &lt;- Scripts to download or generate data\n│   │   └── make_dataset.py\n│   │\n│   ├── features       &lt;- Scripts to turn raw data into features for modeling\n│   │   └── build_features.py\n│   │\n│   ├── models         &lt;- Scripts to train models and then use trained models to make\n│   │   │                 predictions\n│   │   ├── predict_model.py\n│   │   └── train_model.py\n│   │\n│   └── visualization  &lt;- Scripts to create exploratory and results oriented visualizations\n│       └── visualize.py\n\n\nThe repo must detail the requirements for someone to reproduce the project.\nIn Python this is requirements.txt we will discuss the R equivalent via renv next.\nAll code used in the project is stored and organized in src"
-  },
-  {
-    "objectID": "materials/02-renv.html#data-is-immutable",
-    "href": "materials/02-renv.html#data-is-immutable",
-    "title": "",
-    "section": "Data is Immutable",
-    "text": "Data is Immutable\n\nDon’t ever edit your raw data, especially not manually, and especially not in Excel. Don’t overwrite your raw data. Don’t save multiple versions of the raw data. Treat the data (and its format) as immutable.\n\n\nThe code you write should move the raw data through a pipeline to your final analysis. You shouldn’t have to run all of the steps every time you want to make a new figure (see Analysis is a DAG), but anyone should be able to reproduce the final products with only the code in src and the data in data/raw.\n\n\nAlso, if data is immutable, it doesn’t need source control in the same way that code does. Therefore, by default, the data folder is included in the .gitignore file"
-  },
-  {
-    "objectID": "materials/02-renv.html#analysis-is-a-dag",
-    "href": "materials/02-renv.html#analysis-is-a-dag",
-    "title": "",
-    "section": "Analysis is a DAG",
-    "text": "Analysis is a DAG\n\nOften in an analysis you have long-running steps that preprocess data or train models. If these steps have been run already (and you have stored the output somewhere like the data/interim directory), you don’t want to wait to rerun them every time. We prefer make for managing steps that depend on each other, especially the long-running ones.\n\n\nThis will be the point of emphasis in using targets, bringing Make-like functionality to R."
-  },
-  {
-    "objectID": "materials/02-renv.html#functional-programming",
-    "href": "materials/02-renv.html#functional-programming",
-    "title": "",
-    "section": "Functional Programming",
-    "text": "Functional Programming\n\nIt’s hard to describe exactly what a functional style is, but generally I think it means decomposing a big problem into smaller pieces, then solving each piece with a function or combination of functions. When using a functional style, you strive to decompose components of the problem into isolated functions that operate independently. Each function taken by itself is simple and straightforward to understand; complexity is handled by composing functions in various ways.\n\n\nCookieCutter Data Science doesn’t go into much detail on what your src code should look like, but I have found it naturally suits a functional programming style.\nRather than writing scripts that execute tasks, it’s generally better to write a series of functions that are then called and used in a pipeline."
-  },
-  {
-    "objectID": "materials/02-renv.html#a-repo-should-be-one-project",
-    "href": "materials/02-renv.html#a-repo-should-be-one-project",
-    "title": "",
-    "section": "A Repo Should Be One Project",
-    "text": "A Repo Should Be One Project\nAnother thing that Cookie Cutter Data Science helps address: what should even be a repo? When we’re working on a project, how do we define and organize our code?\nDo we create one repository for all of our data science projects? Do we create one repository per project?\n\nThis more or less becomes an argument between monorepos vs multi-repos."
+    "text": "├── requirements.txt    &lt;- The requirements file for reproducing  the analysis environment.\n│\n├── src                &lt;- Source code for use in this project.\n│   ├── data           &lt;- Scripts to download or generate data\n│   │   └── make_dataset.py\n│   │\n│   ├── features       &lt;- Scripts to turn raw data into features for modeling\n│   │   └── build_features.py\n│   │\n│   ├── models         &lt;- Scripts to train models and then use trained models to make\n│   │   │                 predictions\n│   │   ├── predict_model.py\n│   │   └── train_model.py\n│   │\n│   └── visualization  &lt;- Scripts to create exploratory and results oriented visualizations\n│       └── visualize.py\n\n\nThe repo must detail the requirements for someone to reproduce the project.\nIn Python this is requirements.txt; we will discuss the R equivalent via renv next.\nAll code used in the project is stored and organized in src. This could also be called R if you’re only planning to use R."
   },
   {
     "objectID": "materials/02-renv.html#section-11",
     "href": "materials/02-renv.html#section-11",
     "title": "",
     "section": "",
-    "text": "Monorepo vs Multi-repo\nA monorepo is one repository that contains code for a lot of different projects and tasks.\nImagine you have one big project you’re working on, containing a lot of separate pieces and code. The monorepo approach says, throw it all in into the same repo."
+    "text": "The CookieCutter approach has a few underlying principles that are worth discussing.\n\n\nData is Immutable\nAnalysis is a DAG\nNotebooks Are For Exploration, Not Production\nUse Functional Programming\nA Repo Should Be One Project"
+  },
+  {
+    "objectID": "materials/02-renv.html#data-is-immutable",
+    "href": "materials/02-renv.html#data-is-immutable",
+    "title": "",
+    "section": "Data is Immutable",
+    "text": "Data is Immutable\n\nDon’t ever edit your raw data, especially not manually, and especially not in Excel. Don’t overwrite your raw data. Don’t save multiple versions of the raw data. Treat the data (and its format) as immutable.\n\n\n\nThe code you write should move the raw data through a pipeline to your final analysis. You shouldn’t have to run all of the steps every time you want to make a new figure (see Analysis is a DAG), but anyone should be able to reproduce the final products with only the code in src and the data in data/raw.\n\n\n\n\nAlso, if data is immutable, it doesn’t need source control in the same way that code does. Therefore, by default, the data folder is included in the .gitignore file"
+  },
+  {
+    "objectID": "materials/02-renv.html#analysis-is-a-directed-acyclic-graph-dag",
+    "href": "materials/02-renv.html#analysis-is-a-directed-acyclic-graph-dag",
+    "title": "",
+    "section": "Analysis is a Directed Acyclic Graph (DAG)",
+    "text": "Analysis is a Directed Acyclic Graph (DAG)\n\nOften in an analysis you have long-running steps that preprocess data or train models. If these steps have been run already (and you have stored the output somewhere like the data/interim directory), you don’t want to wait to rerun them every time. We prefer make for managing steps that depend on each other, especially the long-running ones.\n\n\n\nThis will be the point of emphasis in using targets, bringing Make-like functionality to R.\nWe should aim to minimize repetition when possible, storing our code in a logical way that can reproduce the output for both ourselves and a newcomer."
+  },
+  {
+    "objectID": "materials/02-renv.html#notebooks-are-for-exploration-not-production",
+    "href": "materials/02-renv.html#notebooks-are-for-exploration-not-production",
+    "title": "",
+    "section": "Notebooks Are For Exploration, Not Production",
+    "text": "Notebooks Are For Exploration, Not Production\n\nLiterate programming tools like Jupyter notebooks, RMarkdown, Quarto are great for exploratory work and communicating results.\n\n\n\nBut, it is generally bad practice to rely on notebooks for putting our work into production; they are harder to version control and can facilitate bad coding practices."
+  },
+  {
+    "objectID": "materials/02-renv.html#use-functional-programming",
+    "href": "materials/02-renv.html#use-functional-programming",
+    "title": "",
+    "section": "Use Functional Programming",
+    "text": "Use Functional Programming\n\nIt’s hard to describe exactly what a functional style is, but generally I think it means decomposing a big problem into smaller pieces, then solving each piece with a function or combination of functions.\n\n\n\nWhen using a functional style, you strive to decompose components of the problem into isolated functions that operate independently. Each function taken by itself is simple and straightforward to understand; complexity is handled by composing functions in various ways.\n\n\n\n\nCookieCutter Data Science doesn’t go into much detail on what your src code should look like, but I have found it naturally suits a functional programming style.\nRather than writing scripts that execute tasks, it’s generally better to write a series of functions that are then called and used in a pipeline."
+  },
+  {
+    "objectID": "materials/02-renv.html#a-repo-should-be-one-project",
+    "href": "materials/02-renv.html#a-repo-should-be-one-project",
+    "title": "",
+    "section": "A Repo Should Be One Project",
+    "text": "A Repo Should Be One Project\nAnother thing that Cookie Cutter Data Science helps address: what should even be a repo? When we’re working on a project, how do we define and organize our code?\n\nDo we create one repository for all of our data science projects? Do we create one repository per project?\n\n\nThis more or less becomes an argument between monorepos vs multi-repos."
   },
   {
     "objectID": "materials/02-renv.html#section-12",
     "href": "materials/02-renv.html#section-12",
     "title": "",
     "section": "",
-    "text": "Monorepo vs Multi-repo\nAs opposed to a multi-repo, where aspects of a larger project are isolated and separated into individual repositories.\n##"
+    "text": "Monorepo vs Multi-repo\nA monorepo is one repository that contains code for a lot of different projects and tasks.\nImagine you have one big project you’re working on, containing a lot of separate pieces and code. The monorepo approach says, throw it all in into the same repo."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-13",
+    "href": "materials/02-renv.html#section-13",
+    "title": "",
+    "section": "",
+    "text": "This was how I started with some of my boardgame data projects.\n\nI had one repo that contained code for API calls, writing to a data warehouse, training models for the bgg community, training models for collections, building Shiny dashboards…\n\n\nIt basically became a gigantic mess."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-14",
+    "href": "materials/02-renv.html#section-14",
+    "title": "",
+    "section": "",
+    "text": "Monorepo vs Multi-repo\nAs opposed to a multi-repo, where aspects of a larger project are isolated and separated into individual repositories."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-15",
+    "href": "materials/02-renv.html#section-15",
+    "title": "",
+    "section": "",
+    "text": "I’ve ended up splitting the main pieces of these projects into separate repositories that encapsulate a specific task.\n\nAPI calls and creating a data warehouse? That’s a repo.\n\n\nTraining models for the BGG community? That’s a repo.\n\n\nTraining models for user collections? That’s a repo.\n\n\nBuilding Shiny dashboards to examine the data? That’s a repo.\n\n\nCreating a series of helper functions that can be used across all of these projects? That’s an R package.\n\n\nIn a repo."
   },
   {
     "objectID": "materials/02-renv.html#a-repo-should-be-one-project-1",
@@ -959,8 +987,8 @@
     "text": "A Repo Should Be One Project\nThe Cookie Cutter Data Science approach is much more conducive towards the multi-repo approach:\n\nA repository exists for a specific task.\nThe code in the repository executes that task.\nThe requirements for running that code are defined in the repository.\n\n\nIt becomes a lot harder to define requirements and reproduce the environment to run code when you have a gigantic, monolithic repository."
   },
   {
-    "objectID": "materials/02-renv.html#section-14",
-    "href": "materials/02-renv.html#section-14",
+    "objectID": "materials/02-renv.html#section-17",
+    "href": "materials/02-renv.html#section-17",
     "title": "",
     "section": "",
     "text": "But what if we want to re-use code across multiple repositories!\n\nMore on this later, but basically this is where submodules might come into play. . . .\nOr, just create another repo in the form of a package that can be used across multiple projects."
@@ -980,46 +1008,186 @@
     "text": "renv\nLet’s go back to the issues we had in running certain files in the starwars or board_games repo.\n\nHow often do you want to run someone else’s code, only to find that you need to install additional packages?\n\n\nHow often do you try to run someone else’s code only to discover that they’re using a deprecated function?\n\n\nHow many times have you gotten a headache because dplyr can’t make up its mind between mutate_if, mutate_at, mutate_all, and mutate(across())?"
   },
   {
-    "objectID": "materials/02-renv.html#section-16",
-    "href": "materials/02-renv.html#section-16",
-    "title": "",
-    "section": "",
-    "text": "The renv package aims to solve most of these problems by helping you to create reproducible environments for R projects."
-  },
-  {
-    "objectID": "materials/02-renv.html#section-17",
-    "href": "materials/02-renv.html#section-17",
-    "title": "",
-    "section": "",
-    "text": "renv allows you to scan and find packages used in your project. This produces a list of packages with their current versions and dependencies. Using renv with a project adds three pieces to your repo:\n\nrenv/library: a library that contains all packages currently used by your project.\n\n\n\nThis is the key magic that makes renv work: instead of having one library containing the packages used in every project, renv gives you a separate library for each project\n\n\n\n\nrenv.lock: a lockfile that records metadata about every package used in the project; this allows the project’s packages to be reinstalled on a new machine\n\n\n\n\n.Rprofile: adds a file that runs everytime you open up the project; this file runs renv::activate() and configures your project to use the renv/library"
-  },
-  {
-    "objectID": "materials/02-renv.html#section-18",
-    "href": "materials/02-renv.html#section-18",
-    "title": "",
-    "section": "",
-    "text": "We then add (pieces) of renv/library, renv.lock, and .Rprofile to our repository and commit them.\n\nIf we make a change to our code, we use renv to track whether that code has introduced, removed, or changed our dependencies. When we commit the change to our code, we will also commit a change to our renv.lock file.\n\n\nIn this way, using Git + renv allows us to store a history of how our project dependencies have changed with every commit."
-  },
-  {
-    "objectID": "materials/02-renv.html#section-20",
-    "href": "materials/02-renv.html#section-20",
-    "title": "",
-    "section": "",
-    "text": "So, how do we do this?\nWe will need to get to know a few functions from renv."
-  },
-  {
-    "objectID": "materials/02-renv.html#renv-key-functions",
-    "href": "materials/02-renv.html#renv-key-functions",
-    "title": "",
-    "section": "renv key functions",
-    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\n\n\n\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages\n\n\n\n\nrenv::snapshot() creates or updates a lockfile with the current state of packages used in the project\n\n\n\n\nrenv::status() compares the current dependencies of your project vs the dependencies detailed in the lockfile.\n\n\n\n\nrenv::restore() restores a project’s dependencies from a lockfile. This is typically the first command when working with a repo that has an existing lockfile."
-  },
-  {
     "objectID": "materials/02-renv.html#section-21",
     "href": "materials/02-renv.html#section-21",
     "title": "",
     "section": "",
-    "text": "renv::restore() restores a project’s dependencies from a lockfile. This is typically the first command when working with a repo that has an existing lockfile."
+    "text": "The renv package aims to solve most of these problems by helping you to create reproducible environments for R projects.\n\nThe following figure shows how renv works, in a nutshell.\n\n\nI promise that this figure will make sense in a little bit."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-23",
+    "href": "materials/02-renv.html#section-23",
+    "title": "",
+    "section": "",
+    "text": "renv allows you to scan and find packages used in your project. This produces a list of packages with their current versions and dependencies.\nUsing renv with a project adds three pieces to your repo:\n\n\nrenv/library: a library that contains all packages currently used by your project.\n\n\n\n\nrenv.lock: a lockfile that records metadata about every package used in the project; this allows the project’s packages to be reinstalled on a new machine\n\n\n\n\n.Rprofile: adds a file that runs everytime you open up the project; this file runs renv::activate() and configures your project to use the renv/library"
+  },
+  {
+    "objectID": "materials/02-renv.html#section-24",
+    "href": "materials/02-renv.html#section-24",
+    "title": "",
+    "section": "",
+    "text": "We then add (pieces) of renv/library, renv.lock, and .Rprofile to our repository and commit them.\n\nIf we make a change to our code, we use renv to track whether that code has introduced, removed, or changed our dependencies.\n\n\nWhen we commit the change to our code, we will also commit a change to our renv.lock file.\n\n\nIn this way, using Git + renv allows us to store a history of how our project dependencies have changed with every commit."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-26",
+    "href": "materials/02-renv.html#section-26",
+    "title": "",
+    "section": "",
+    "text": "Let’s dive into this picture."
+  },
+  {
+    "objectID": "materials/02-renv.html#renv-key-functions-1",
+    "href": "materials/02-renv.html#renv-key-functions-1",
+    "title": "",
+    "section": "renv key functions",
+    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-27",
+    "href": "materials/02-renv.html#section-27",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nThis is what our starwars project might look like before add renv to our project."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-28",
+    "href": "materials/02-renv.html#section-28",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nWe open up the project and run renv::init(), which tells us which packages and their versions are in use."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-30",
+    "href": "materials/02-renv.html#section-30",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nThis adds these packages to our renv/library, and stores information about the packages and version of R that are in use in renv.lock"
+  },
+  {
+    "objectID": "materials/02-renv.html#section-32",
+    "href": "materials/02-renv.html#section-32",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nThis is what our project looks like afterwards, as we have now added a renv folder, a renv.lock file, and an .Rprofile (which is typically hidden)."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-33",
+    "href": "materials/02-renv.html#section-33",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nrenv.lock is what renv will use in order to restore dependencies and track changes in packages that are being used.\nThis file is generated by renv; don’t mess with it."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-35",
+    "href": "materials/02-renv.html#section-35",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nThe renv folder contains a library with all packages that are currently being used by the project."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-37",
+    "href": "materials/02-renv.html#section-37",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nThe renv folder contains a library with all packages that are currently being used by the project.\n\nThis is the key magic that makes renv work: instead of having one library containing the packages used in every project, renv gives you a separate library for each project.\n\n. . .\n\nThis gives you the benefits of isolation: different projects can use different versions of packages, and installing, updating, or removing packages in one project doesn’t affect any other project."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-38",
+    "href": "materials/02-renv.html#section-38",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nThere’s another nice bonus here with how renv uses a global cache for packages.\n. . .\n\nOne of renv’s primary features is the global package cache, which is shared across all projects.\n\n. . .\nThis means that even though projects are isolated, if you have installed tidyverse in one project, if you install the same version of tidyverse in another project it will install directly from the cache, saving time and space.\n. . .\nThis becomes really critical when using Github Actions and Docker builds."
+  },
+  {
+    "objectID": "materials/02-renv.html#renv-key-functions-2",
+    "href": "materials/02-renv.html#renv-key-functions-2",
+    "title": "",
+    "section": "renv key functions",
+    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages"
+  },
+  {
+    "objectID": "materials/02-renv.html#renv-key-functions-3",
+    "href": "materials/02-renv.html#renv-key-functions-3",
+    "title": "",
+    "section": "renv key functions",
+    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages\nrenv::status() compares the current dependencies of your project vs the dependencies detailed in the lockfile."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-41",
+    "href": "materials/02-renv.html#section-41",
+    "title": "",
+    "section": "",
+    "text": "renv::status()\nSuppose we just wrote a new function, or added a new piece of code that required installing some new packages."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-44",
+    "href": "materials/02-renv.html#section-44",
+    "title": "",
+    "section": "",
+    "text": "renv::status()\nRunning renv::status() will alert us to the fact that we are in an inconsistent state; we have have new packages in use in the project that are not recorded in the lockfile."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-45",
+    "href": "materials/02-renv.html#section-45",
+    "title": "",
+    "section": "",
+    "text": "renv::status()\nThis will only alert us to the fact that we are in an inconsistent state; it won’t actually change or modify our lockfile.\n. . .\nIf we want to update our lockfile to our new state, we need to take a snapshot of our new dependencies."
+  },
+  {
+    "objectID": "materials/02-renv.html#renv-key-functions-4",
+    "href": "materials/02-renv.html#renv-key-functions-4",
+    "title": "",
+    "section": "renv key functions",
+    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages\nrenv::status() compares the current dependencies of your project vs the dependencies detailed in the lockfile.\nrenv::snapshot() creates or updates a lockfile with the current state of packages used in the project"
+  },
+  {
+    "objectID": "materials/02-renv.html#section-46",
+    "href": "materials/02-renv.html#section-46",
+    "title": "",
+    "section": "",
+    "text": "renv::snapshot()\nrenv::snapshot() will update the lockfile with the new dependencies, adding new packages that are in use and removing any that are no longer in use."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-48",
+    "href": "materials/02-renv.html#section-48",
+    "title": "",
+    "section": "",
+    "text": "renv::snapshot()\nWe can then commit the change we made to our code, along with the change to the lockfile, which will allow us revert to prior commits and restore the dependencies that were in place."
+  },
+  {
+    "objectID": "materials/02-renv.html#renv-key-functions-5",
+    "href": "materials/02-renv.html#renv-key-functions-5",
+    "title": "",
+    "section": "renv key functions",
+    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages\nrenv::status() compares the current dependencies of your project vs the dependencies detailed in the lockfile.\nrenv::snapshot() creates or updates a lockfile with the current state of packages used in the project\n\n\n\nrenv::restore() restores a project’s dependencies from a lockfile. This is typically the first command when working with a repo that has an existing lockfile."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-51",
+    "href": "materials/02-renv.html#section-51",
+    "title": "",
+    "section": "",
+    "text": "How are we feeling about this picture?"
+  },
+  {
+    "objectID": "materials/02-renv.html#section-52",
+    "href": "materials/02-renv.html#section-52",
+    "title": "",
+    "section": "",
+    "text": "renv is an excellent tool that should become mandatory for your projects.\n\nBut it isn’t going to solve every possible problem for reproducibility."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-53",
+    "href": "materials/02-renv.html#section-53",
+    "title": "",
+    "section": "",
+    "text": "Why isn’t my package being added to the lockfile?\nA package is only recorded in the lockfile if:\n. . .\n\nThe package is installed in your project library\nThe package is used in the project, as determiend by renv::dependencies()\n\n. . .\nThere are some instances where renv will not detect dependencies completely; doublecheck to see how the package is being used. You might need to explicitly library the package, or change your snapshot settings from “implict” to “all”."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-54",
+    "href": "materials/02-renv.html#section-54",
+    "title": "",
+    "section": "",
+    "text": "Where are packages being stored exactly?\nrenv installs packages in global cache, which can be shared across projects and across users.\nYou can find that location by running renv::paths$cache()\n. . .\nOne thing to consider for an organization is to set everyone to be pointed to the same global cache, which will speed up installations for everyone."
   },
   {
     "objectID": "workshop-materials.html",
