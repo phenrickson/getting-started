@@ -1,0 +1,44 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "What They Didn’t Teach You About Data Science",
+    "section": "",
+    "text": "This workshop focuses on using R/RStudio with Git, renv, and targets. This will be pretty hands on, so it will be helpful to configure as much as possible in advance. I can help debug if we have any issues on the day.\n\n\nThese are the following pieces to set up in advance:\n\nRegister a GitHub account\nInstall/update R and RStudio\nInstall Git\nInstall Quarto\n\n\n\n\nThe materials used in this workshop can be found in the ds-workshop repository.\n\n\n\n\nIntro\nGit + GitHub\nrenv\ntargets"
+  },
+  {
+    "objectID": "index.html#setup",
+    "href": "index.html#setup",
+    "title": "What They Didn’t Teach You About Data Science",
+    "section": "",
+    "text": "These are the following pieces to set up in advance:\n\nRegister a GitHub account\nInstall/update R and RStudio\nInstall Git\nInstall Quarto"
+  },
+  {
+    "objectID": "index.html#materials",
+    "href": "index.html#materials",
+    "title": "What They Didn’t Teach You About Data Science",
+    "section": "",
+    "text": "The materials used in this workshop can be found in the ds-workshop repository."
+  },
+  {
+    "objectID": "index.html#schedule",
+    "href": "index.html#schedule",
+    "title": "What They Didn’t Teach You About Data Science",
+    "section": "",
+    "text": "Intro\nGit + GitHub\nrenv\ntargets"
+  },
+  {
+    "objectID": "workshop-materials.html",
+    "href": "workshop-materials.html",
+    "title": "Workshop Materials",
+    "section": "",
+    "text": "folder\nfile\n\n\n\n\nmaterials\n00-intro.qmd\n\n\nmaterials\n01-git.qmd\n\n\nmaterials\n02-renv.qmd\n\n\nmaterials\n03-targets.qmd"
+  },
+  {
+    "objectID": "workshop-materials.html#materials",
+    "href": "workshop-materials.html#materials",
+    "title": "Workshop Materials",
+    "section": "",
+    "text": "folder\nfile\n\n\n\n\nmaterials\n00-intro.qmd\n\n\nmaterials\n01-git.qmd\n\n\nmaterials\n02-renv.qmd\n\n\nmaterials\n03-targets.qmd"
+  }
+]
