@@ -3,6 +3,7 @@ title: "What They Didn't Teach You <br> About Data Science"
 subtitle: "Or, How I Learned to Stop Worrying and Love the Git"
 format:
   revealjs:
+    self-contained: true
     slide-number: c/t
     width: 1600
     height: 900
@@ -12,8 +13,6 @@ format:
     code-block-border-left: "#4f6952"
     code-block-bg: true
     code-link: true
-    chalkboard:
-      src: drawings.json
 editor: source
 ---
 

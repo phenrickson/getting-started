@@ -1,6 +1,7 @@
 ---
 format:
   revealjs:
+    self-contained: true
     slide-number: c/t
     width: 1600
     height: 900
@@ -10,8 +11,6 @@ format:
     code-block-border-left: "#4f6952"
     code-block-bg: true
     code-link: true
-    chalkboard:
-      src: drawings.json
 editor: source
 ---
 
@@ -329,7 +328,7 @@ starwars_tokenized |>
   head(15) |>
   gt::gt() |>
   gt::as_raw_html()
- 
+
 ```
 
 ### Output
@@ -585,7 +584,7 @@ plot_character_lines_with_sentiment = function(data,
     mutate(run_sentiment = cumsum(sentiment)) |>
     ggplot(aes(x=row_number, y=run_sentiment, color = sentiment, label = show)) +
     geom_step()+
-  #  geom_point(size = 0.5) +
+    #  geom_point(size = 0.5) +
     ggrepel::geom_label_repel(size=2.5, max.overlaps=30)+
     facet_wrap(episode + document+character~.,
                ncol = ncol)+
@@ -770,12 +769,12 @@ Visualized as a timeline from left to right, the history of our work might look 
 %%| fig-width: 12
 %%| fig-height: 6
 %%| rotateCommitLabel: true
- 
+
 gitGraph
-    commit id: "initial"
-    commit id: "afinn"
-    commit id: "bing"
-    commit id: "sentimentr"
+commit id: "initial"
+commit id: "afinn"
+commit id: "bing"
+commit id: "sentimentr"
 ```
 
 
@@ -843,19 +842,19 @@ We typically don't build all of this at once and have everything finalized from 
 ```{mermaid}
 %%| fig-height: 10
 flowchart LR
-  raw[Raw Data] --> clean[Clean Data]
-  clean --> train[Training Set]
-  clean --> valid[Validation Set]
-  train --> preprocessor(Preprocessor)
-  preprocessor --> resamples[Resamples]
-  resamples --> model(Model Spec)
-  model --> features(Features)
-  features --> tuning(Tuning)
-  tuning --> valid
-  preprocessor --> valid
-  valid --> evaluation[Model Evaluation]
-  train --> final(Model)
-  valid --> final
+raw[Raw Data] --> clean[Clean Data]
+clean --> train[Training Set]
+clean --> valid[Validation Set]
+train --> preprocessor(Preprocessor)
+preprocessor --> resamples[Resamples]
+resamples --> model(Model Spec)
+model --> features(Features)
+features --> tuning(Tuning)
+tuning --> valid
+preprocessor --> valid
+valid --> evaluation[Model Evaluation]
+train --> final(Model)
+valid --> final
 ```
 
 ##
@@ -864,10 +863,10 @@ We build incrementally, typically testing and experimenting with different piece
 
 ```{mermaid}
 flowchart LR
-  raw[Raw Data] --> clean[Clean Data]
-  clean --> train[Training Set]
-  clean --> valid[Validation Set]
-  train --> model(Baseline Model)
+raw[Raw Data] --> clean[Clean Data]
+clean --> train[Training Set]
+clean --> valid[Validation Set]
+train --> model(Baseline Model)
 ```
 
 We might start out the project by training a simple baseline model.
@@ -879,19 +878,19 @@ Then maybe we decide to add in some feature engineering and tune a ridge regress
 ```{mermaid}
 
 flowchart LR
-  raw[Raw Data] --> clean[Clean Data]
-  clean --> train[Training Set]
-  clean --> valid[Validation Set]
-  train --> preprocessor(Preprocessor)
-  preprocessor --> resamples[Bootstraps]
-  resamples --> model(glmnet)
-  model --> features(Impute + Normalize)
-  features --> tuning(Tuning)
-  tuning --> valid
-  preprocessor --> valid
-  valid --> evaluation[Model Evaluation]
-  train --> final(Model)
-  valid --> final
+raw[Raw Data] --> clean[Clean Data]
+clean --> train[Training Set]
+clean --> valid[Validation Set]
+train --> preprocessor(Preprocessor)
+preprocessor --> resamples[Bootstraps]
+resamples --> model(glmnet)
+model --> features(Impute + Normalize)
+features --> tuning(Tuning)
+tuning --> valid
+preprocessor --> valid
+valid --> evaluation[Model Evaluation]
+train --> final(Model)
+valid --> final
 
 ```
 
@@ -900,19 +899,19 @@ Then maybe we decide to try out a more flexible model like lightgbm with minimal
 ```{mermaid}
 
 flowchart LR
-  raw[Raw Data] --> clean[Clean Data]
-  clean --> train[Training Set]
-  clean --> valid[Validation Set]
-  train --> preprocessor(Preprocessor)
-  preprocessor --> resamples[Cross validation]
-  resamples --> model(lightgbm)
-  model --> features(Minimal)
-  features --> tuning(Tuning)
-  tuning --> valid
-  preprocessor --> valid
-  valid --> evaluation[Model Evaluation]
-  train --> final(Model)
-  valid --> final
+raw[Raw Data] --> clean[Clean Data]
+clean --> train[Training Set]
+clean --> valid[Validation Set]
+train --> preprocessor(Preprocessor)
+preprocessor --> resamples[Cross validation]
+resamples --> model(lightgbm)
+model --> features(Minimal)
+features --> tuning(Tuning)
+tuning --> valid
+preprocessor --> valid
+valid --> evaluation[Model Evaluation]
+train --> final(Model)
+valid --> final
 
 ```
 
@@ -943,32 +942,32 @@ This can start to get complicated.
 %%| rotateCommitLabel: true
 
 gitGraph
-    commit
-    commit
-    branch data
-    checkout data
-    commit
-    commit
-    branch stable/model
-    checkout stable/model
-    branch dev/model
-    checkout dev/model
-    commit
-    branch dev/glmnet
-    checkout dev/glmnet
-    commit
-    checkout dev/model
-    merge dev/glmnet
-    branch dev/xgboost
-    checkout dev/xgboost
-    commit
-    checkout dev/model
-    merge dev/xgboost
-    commit
-    checkout stable/model
-    merge dev/model
-    checkout main
-    merge stable/model tag: "v1"
+commit
+commit
+branch data
+checkout data
+commit
+commit
+branch stable/model
+checkout stable/model
+branch dev/model
+checkout dev/model
+commit
+branch dev/glmnet
+checkout dev/glmnet
+commit
+checkout dev/model
+merge dev/glmnet
+branch dev/xgboost
+checkout dev/xgboost
+commit
+checkout dev/model
+merge dev/xgboost
+commit
+checkout stable/model
+merge dev/model
+checkout main
+merge stable/model tag: "v1"
 
 ```
 
@@ -1167,16 +1166,16 @@ GitHub has additional features for managing projects and automating aspects of a
 %%| rotateCommitLabel: true
 
 gitGraph
-    commit id: "Initial commit"
-    commit
-    branch dev
-    checkout dev
-    commit
-    commit
-    checkout main
-    merge dev
-    commit
-    commit
+commit id: "Initial commit"
+commit
+branch dev
+checkout dev
+commit
+commit
+checkout main
+merge dev
+commit
+commit
 
 ```
 
@@ -1435,7 +1434,7 @@ Let's go back to the first image. I don't know how important it is to dwell on t
 This last image highlights the three main sections of a Git project - what you're going through painstaking effort to set up.
 
 . . .
- 
+
 - The **Working Directory (Tree)** is a single checkout of one version of a project
 
 . . .
@@ -1506,10 +1505,10 @@ A typical commit history for one branch might look something like this. We have 
 %%| rotateCommitLabel: true
 
 gitGraph
-    commit
-    commit
-    commit
-    commit type:HIGHLIGHT
+commit
+commit
+commit
+commit type:HIGHLIGHT
 
 ```
 
@@ -1524,13 +1523,13 @@ We could just keep working out of one branch, tracking the history of the projec
 %%| rotateCommitLabel: true
 
 gitGraph
-    commit
-    commit
-    commit
-    commit
-    commit
-    commit
-    commit type:HIGHLIGHT
+commit
+commit
+commit
+commit
+commit
+commit
+commit type:HIGHLIGHT
 
 ```
 
@@ -1565,13 +1564,13 @@ Suppose you're at a point in your project where you're not certain about the nex
 %%| rotateCommitLabel: true
 
 gitGraph
-    commit
-    commit
-    commit
-    commit type:HIGHLIGHT
-    commit
-    commit
-    commit
+commit
+commit
+commit
+commit type:HIGHLIGHT
+commit
+commit
+commit
 
 ```
 
@@ -1586,15 +1585,15 @@ But a better approach is to use **branches**. Branching amounts to creating a de
 %%| rotateCommitLabel: true
 
 gitGraph
-    commit
-    commit
-    commit
-    commit
-    branch dev
-    checkout dev
-    commit
-    commit
-    commit
+commit
+commit
+commit
+commit
+branch dev
+checkout dev
+commit
+commit
+commit
 
 ```
 
@@ -1610,17 +1609,17 @@ Once you've completed your work, you can then choose to **merge** it back into m
 %%| rotateCommitLabel: true
 
 gitGraph
-    commit
-    commit
-    commit
-    commit
-    branch dev
-    checkout dev
-    commit
-    commit
-    commit
-    checkout main
-    merge dev
+commit
+commit
+commit
+commit
+branch dev
+checkout dev
+commit
+commit
+commit
+checkout main
+merge dev
 
 ```
 
@@ -1636,18 +1635,18 @@ Or, you can just stop working on the branch and go back to working on main, lett
 %%| rotateCommitLabel: true
 
 gitGraph
-    commit
-    commit
-    commit
-    commit
-    branch dev
-    checkout dev
-    commit
-    commit
-    commit
-    checkout main
-    commit
-    commit
+commit
+commit
+commit
+commit
+branch dev
+checkout dev
+commit
+commit
+commit
+checkout main
+commit
+commit
 
 ```
 
@@ -1668,15 +1667,15 @@ This pattern requires creating new branches, such as **dev**, where developers c
 %%| fig-height: 4
 %%| rotateCommitLabel: true
 gitGraph
-    commit
-    branch dev
-    checkout dev
-    commit
-    commit
-    commit
-    commit
-    checkout main
-    merge dev tag: "draft"
+commit
+branch dev
+checkout dev
+commit
+commit
+commit
+commit
+checkout main
+merge dev tag: "draft"
 ```
 
 With larger development teams, it's more common to see branching strategies involving a number of common branchdes **main**, **dev**, **feature**, **hotfix**. 
@@ -1696,21 +1695,21 @@ With larger development teams, it's more common to see branching strategies invo
 %%| fig-height: 8
 %%| rotateCommitLabel: true
 gitGraph
-    commit
-    commit
-    branch dev
-    checkout dev
-    commit
-    commit
-    commit
-    branch feature
-    commit
-    commit
-    checkout dev
-    merge feature
-    commit
-    checkout main
-    merge dev tag: "release 1"
+commit
+commit
+branch dev
+checkout dev
+commit
+commit
+commit
+branch feature
+commit
+commit
+checkout dev
+merge feature
+commit
+checkout main
+merge dev tag: "release 1"
 ```
 
 ## Guidelines
@@ -1730,40 +1729,40 @@ requests into main
 %%| rotateCommitLabel: true
 
 gitGraph
-    commit
-    branch hotfix
-    checkout hotfix
-    commit
-    branch develop
-    checkout develop
-    commit tag:"draft"
-    branch featureB
-    checkout featureB
-    commit type:HIGHLIGHT
-    checkout main
-    checkout hotfix
-    commit type:NORMAL
-    checkout develop
-    commit
-    checkout featureB
-    commit
-    checkout main
-    merge hotfix
-    checkout featureB
-    commit
-    checkout develop
-    branch featureA
-    commit
-    checkout develop
-    merge hotfix
-    checkout featureA
-    commit
-    checkout featureB
-    commit
-    checkout develop
-    merge featureA
-    checkout main
-    merge develop
+commit
+branch hotfix
+checkout hotfix
+commit
+branch develop
+checkout develop
+commit tag:"draft"
+branch featureB
+checkout featureB
+commit type:HIGHLIGHT
+checkout main
+checkout hotfix
+commit type:NORMAL
+checkout develop
+commit
+checkout featureB
+commit
+checkout main
+merge hotfix
+checkout featureB
+commit
+checkout develop
+branch featureA
+commit
+checkout develop
+merge hotfix
+checkout featureA
+commit
+checkout featureB
+commit
+checkout develop
+merge featureA
+checkout main
+merge develop
 
 ```
 
@@ -1778,32 +1777,32 @@ How does data science differ from traditional software development?
 %%| rotateCommitLabel: true
 
 gitGraph
-    commit
-    commit
-    branch data
-    checkout data
-    commit
-    commit
-    branch stable/model
-    checkout stable/model
-    branch dev/model
-    checkout dev/model
-    commit
-    branch dev/glmnet
-    checkout dev/glmnet
-    commit
-    checkout dev/model
-    merge dev/glmnet
-    branch dev/xgboost
-    checkout dev/xgboost
-    commit
-    checkout dev/model
-    merge dev/xgboost
-    commit
-    checkout stable/model
-    merge dev/model
-    checkout main
-    merge stable/model tag: "v1"
+commit
+commit
+branch data
+checkout data
+commit
+commit
+branch stable/model
+checkout stable/model
+branch dev/model
+checkout dev/model
+commit
+branch dev/glmnet
+checkout dev/glmnet
+commit
+checkout dev/model
+merge dev/glmnet
+branch dev/xgboost
+checkout dev/xgboost
+commit
+checkout dev/model
+merge dev/xgboost
+commit
+checkout stable/model
+merge dev/model
+checkout main
+merge stable/model tag: "v1"
 
 ```
 
