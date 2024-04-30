@@ -257,5 +257,5 @@ To get to this point, we'll need to cover:
 
 1. Git (and Github)
 2. [renv](https://rstudio.github.io/renv/index.html)
-3. [targets](https://docs.ropensci.org/targets/)'
+3. [targets](https://docs.ropensci.org/targets/)
 
