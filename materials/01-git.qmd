@@ -1467,7 +1467,7 @@ Yeah, don't mess with that; that's basically what you're configuring when you in
 
 # Cloning a Repo
 
-## {background-image="images/clones.gif" background-position="center" background-color="white" background-size="contain"}
+## {background-image="images/clone.webp" background-position="center" background-color="white" background-size="contain"}
 
 ## 
 
