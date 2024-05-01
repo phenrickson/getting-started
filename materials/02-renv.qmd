@@ -1,0 +1,684 @@
+---
+format:
+  revealjs:
+    self-contained: true
+    slide-number: c/t
+    width: 1600
+    height: 900
+    css: ["theme/theme.css"]
+    theme: simple
+    highlight-style: github
+    code-block-border-left: "#4f6952"
+    code-block-bg: true
+    code-link: true
+editor: source
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+library(renv)
+library(countdown)
+
+knitr::opts_chunk$set(
+  comment = '#>', fig.width = 6, fig.height = 6
+)
+
+countdown_timer <- function(
+    minutes = 1, 
+    play_sound = TRUE, 
+    font_size = "2em", 
+    ...
+) {
+  countdown(
+    minutes = minutes,
+    # Fanfare when it's over
+    play_sound = play_sound,
+    # Set timer theme to match solarized colors
+    color_border              = "#404041",
+    color_text                = "white",
+    color_background = "#447099",
+    color_running_background  = "#72994E",
+    color_running_text        = "white",
+    color_finished_background = "#EE6331",
+    color_finished_text       = "white",
+    font_size = font_size,
+    ...
+  )
+}
+```
+
+
+# Organization and <br> Reproducibility: <br> renv and <br> CookieCutter <br> Data Science {
+background-image="images/xkcd_will_it_work.png" 
+background-size="contain" 
+background-position="right" 
+background-color="white"
+}
+
+# Organizing a Repo
+
+## 
+
+To this point, we haven't really talked about how we should organize a repository. A repository is just a set of files to track over time, but how do we organize those files?
+
+. . .
+
+I am arguably not the best guide for this, as I am generally a disorganized person and it shows in my older repos.
+
+## {background-image="images/organization_bgg_models.png" background-position="center" background-color="white" background-size="contain"}
+
+
+## {background-image="images/organization_bgg.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+On some level, this is to be expected with data analysis/data science - we rarely work in a linear progression with the same set of files from project to project. 
+
+. . .
+
+But I've started to use a specific style for organization that seems to suit data science projects well.
+
+# CookieCutter Data Science
+
+## {background-image="images/cookiecutter_data_science.png" background-position="center" background-color="white" background-size="contain"}
+
+## CookieCutter Data Science
+
+> It's no secret that good analyses are often the result of very scattershot and serendipitous explorations. Tentative experiments and rapidly testing approaches that might not work out are all part of the process for getting to the good stuff, and **there is no magic bullet to turn data exploration into a simple, linear progressio**n.
+
+. . .
+
+> A **well-defined, standard project structure** means that **a newcomer can begin to understand an analysis without digging in to extensive documentation**. It also means that they don't necessarily have to read 100% of the code before knowing where to look for very specific things.
+
+##
+
+It's less important to have the **perfect** organization for a given project than it is to have **some sort of standard that everyone understands and uses**.
+
+. . .
+
+The goal is to organize projects in a way that will make it easier for others and your future self to remember.
+
+. . .
+
+The CookieCutter Data Science approach is one such way. This might feel overwhelming to start. 
+
+. . .
+
+Don't panic.
+
+## {background-image="images/cookiecutter_python.png" background-position="center" background-color="white" background-size="contain"}
+
+##
+
+Sadly, this template is intended for Python, but we can adapt it for R easily enough. Let's zoom in a bit on specific pieces.
+
+##
+
+
+```
+├── Makefile        <- Makefile with commands like `make data` or `make train`
+├── README.md       <- The top-level README for developers
+├── data
+│   ├── external    <- Data from third party sources.
+│   ├── interim     <- Intermediate data that has been transformed.
+│   ├── processed   <- The final, canonical data sets for modeling.
+│   └── raw         <- The original, immutable data dump.
+```
+
+. . .
+
+- We will shortly discuss the R equivalent of a **Makefile**, with the aim that our project is organized to do one specific thing
+- Always include a README as an organizing guide
+- Data generally isn't stored in repos, but if it is you can follow this organization that tracks the lineage of the data
+- One of the guiding principles for CookieCutter Data Science is to **treat data as immutable**. The point of a project is interact and work with data, but we never change it from its raw sources.
+
+
+## 
+
+```
+├── models    <- Trained and serialized models, model predictions, or model summaries
+│
+├── notebooks   <- Jupyter notebooks. Naming convention is a number (for ordering),
+|                 the creator's initials, and a short `-` delimited description, e.g.
+|                 `1.0-jqp-initial-data-exploration`.
+│
+├── references    <- Data dictionaries, manuals, and all other explanatory materials.
+│
+├── reports         <- Generated analysis as HTML, PDF, LaTeX, etc.
+│   └── figures     <- Generated graphics and figures to be used in reporting
+│
+```
+
+. . .
+
+- Similarly, **models** typically aren't stored in a repo, but we might want to save summaries or model cards 
+- **Notebooks** are places for exploratory analysis and should be treated mostly as a sandbox
+- Store all background documentation, project discussion, articles that has been used and discussed in **references**
+
+## 
+
+```
+├── requirements.txt    <- The requirements file for reproducing  the analysis environment.
+│
+├── src                <- Source code for use in this project.
+│   ├── data           <- Scripts to download or generate data
+│   │   └── make_dataset.py
+│   │
+│   ├── features       <- Scripts to turn raw data into features for modeling
+│   │   └── build_features.py
+│   │
+│   ├── models         <- Scripts to train models and then use trained models to make
+│   │   │                 predictions
+│   │   ├── predict_model.py
+│   │   └── train_model.py
+│   │
+│   └── visualization  <- Scripts to create exploratory and results oriented visualizations
+│       └── visualize.py
+```
+
+. . .
+
+- The repo must detail the **requirements** for someone to reproduce the project. 
+- In Python this is *requirements.txt*; we will discuss the R equivalent via `renv` next.
+- All code used in the project is stored and organized in **src**. This could also be called R if you're only planning to use R. 
+
+## 
+
+The CookieCutter approach has a few underlying principles that are worth discussing. 
+
+. . .
+
+- Data is Immutable
+- Analysis is a DAG
+- Notebooks Are For Exploration, Not Production
+- Use Functional Programming
+- A Repo Should Be One Project
+
+
+## Data is Immutable
+
+> Don't ever edit your raw data, especially not manually, and especially not in Excel. Don't overwrite your raw data. Don't save multiple versions of the raw data. Treat the data (and its format) as immutable. 
+
+. . .
+
+> The code you write should **move the raw data through a pipeline to your final analysis**. You shouldn't have to run all of the steps every time you want to make a new figure (see Analysis is a DAG), but anyone should be able to reproduce the final products with only the code in src and the data in data/raw.
+
+. . .
+
+> Also, **if data is immutable, it doesn't need source control in the same way that code does**. Therefore, by default, the data folder is included in the .gitignore file
+
+## Analysis is a Directed Acyclic Graph (DAG)
+
+> Often in an analysis you have long-running steps that preprocess data or train models. **If these steps have been run already (and you have stored the output somewhere like the data/interim directory), you don't want to wait to rerun them every time**. We prefer make for managing steps that depend on each other, especially the long-running ones.
+
+. . .
+
+- This will be the point of emphasis in using **targets**, bringing Make-like functionality to R.
+
+- We should aim to minimize repetition when possible, storing our code in a logical way that can reproduce the output for both ourselves and a newcomer.
+
+## Notebooks Are For Exploration, Not Production
+
+- Literate programming tools like Jupyter notebooks, RMarkdown, Quarto are great for exploratory work and communicating results.
+
+. . .
+
+- But, it is generally bad practice to rely on notebooks for putting our work into production; they are harder to version control and can facilitate bad coding practices.
+
+## Use Functional Programming
+
+> It’s hard to describe exactly what a functional style is, but generally **I think it means decomposing a big problem into smaller pieces, then solving each piece with a function or combination of functions**. 
+
+. . .
+
+> When using a functional style, you strive to decompose components of the problem into isolated functions that operate independently. Each function taken by itself is simple and straightforward to understand; complexity is handled by composing functions in various ways.
+
+. . .
+
+- CookieCutter Data Science doesn't go into much detail on what your **src** code should look like, but I have found it naturally suits a functional programming style.
+
+- Rather than **writing scripts that execute tasks**, it's generally better to **write a series of functions** that are then called and used in a pipeline.
+
+## A Repo Should Be One Project
+
+Another thing that Cookie Cutter Data Science helps address: what should even be a repo? When we're working on a project, how do we define and organize our code?
+
+. . .
+
+Do we create one repository for all of our data science projects? Do we create one repository per project?
+
+. . .
+
+This more or less becomes an argument between **monorepos** vs **multi-repos**.
+
+##
+
+### Monorepo vs Multi-repo
+
+A **monorepo** is one repository that contains code for a lot of different projects and tasks.
+
+Imagine you have one big project you're working on, containing a lot of separate pieces and code. The monorepo approach says, throw it all in into the same repo. 
+
+![](images/mono_repo.png){fig-align="center"}
+
+##
+
+This was how I started with some of my boardgame data projects.
+
+. . .
+
+I had one repo that contained code for API calls, writing to a data warehouse, training models for the bgg community, training models for collections, building Shiny dashboards...
+
+. . .
+
+It basically became a gigantic mess.
+
+##
+
+### Monorepo vs Multi-repo
+
+As opposed to a **multi-repo**, where aspects of a larger project are isolated and separated into individual repositories.
+
+![](images/multi_repo.png){fig-align="center"}
+
+## 
+
+I've ended up splitting the main pieces of these projects into separate repositories that encapsulate a specific task. 
+
+. . .
+
+API calls and creating a data warehouse? That's a repo.
+
+. . .
+
+Training models for the BGG community? That's a repo.
+
+. . .
+
+Training models for user collections? That's a repo.
+
+. . .
+
+Building Shiny dashboards to examine the data? That's a repo.
+
+. . .
+
+Creating a series of helper functions that can be used across all of these projects? That's an R package. 
+
+. . .
+
+In a repo.
+
+
+## {background-image="images/mono-vs-multi.png" background-position="center" background-color="white" background-size="contain"}
+
+## A Repo Should Be One Project
+
+The Cookie Cutter Data Science approach is much more conducive towards the **multi-repo** approach:
+
+- A repository exists for a specific task.
+- The code in the repository executes that task.
+- The requirements for running that code are defined in the repository.
+
+. . .
+
+It becomes a lot harder to define requirements and reproduce the environment to run code when you have a gigantic, monolithic repository.
+
+##
+
+But what if we want to re-use code across multiple repositories!
+
+. . .
+
+More on this later, but basically this is where **submodules** might come into play. 
+. . .
+
+Or, just create another repo in the form of a package that can be used across multiple projects.
+
+## CookieCutter Data Science (for R)
+
+Given these principles, most of my repos end up being organized in the following way:
+
+. . .
+
+```
+├── _targets    <- stores the metadata and objects of your pipeline
+├── renv        <- information relating to your R packages and dependencies
+├── data        <- data sources used as an input into the pipeline
+├── src         <- functions used in project/targets pipeline
+|   ├── data    <- functions relating to loading and cleaning data
+|   ├── models    <- functions involved with training models
+|   ├── reports   <- functions used in generating tables and visualizations for reports
+├── _targets.R    <- script that runs the targets pipeline
+├── renv.lock     <- lockfile detailing project requirements and dependencies
+```
+
+. . .
+
+Again, I'm not saying that this is **THE OBJECTIVELY CORRECT WAY TO ORGANIZE AN R PROJECT**. But it's been a useful starting point for me in my work.
+
+. . .
+
+One of the key pillars to this organization is `renv`.
+
+# `renv`
+
+## {background-image="images/renv.png" background-position="center" background-color="white" background-size="contain"}
+
+## `renv`
+
+Let's go back to the issues we had in running certain files in the **starwars** or **board_games** repo. 
+
+. . .
+
+How often do you want to run someone else's code, only to find that you need to install additional packages? 
+
+. . .
+
+How often do you try to run someone else's code only to discover that they're using a deprecated function?
+
+. . .
+
+How many times have you gotten a headache because **dplyr** can't make up its mind between **mutate_if**, **mutate_at**, **mutate_all**, and **mutate(across())**?
+
+## {background-image="images/goddamn_hadley.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/goddamn_hadley.png" background-position="center" background-color="white" background-size="contain"}
+
+![](images/this_is_the_bad_place.gif){fig-align="center"}
+
+
+## 
+
+The `renv` package aims to solve most of these problems by helping you to create **reproducible environments** for R projects.
+
+. . .
+
+The following figure shows how `renv` works, in a nutshell. 
+
+. . .
+
+I promise that this figure will make sense in a little bit.
+
+##
+
+![](images/renv_nutshell.png){fig-align="center"}
+
+## 
+
+`renv` allows you to scan and find packages used in your project. This produces a list of packages with their current versions and dependencies. 
+
+Using renv with a project adds three pieces to your repo:
+
+. . .
+
+- **renv/library**: a library that contains all packages currently used by your project.
+
+. . .
+
+- **renv.lock**: a lockfile that records metadata about every package used in the project; this allows the project's packages to be reinstalled on a new machine
+
+. . .
+
+- **.Rprofile**: adds a file that runs everytime you open up the project; this file runs **renv::activate()** and configures your project to use the **renv/library**
+
+##
+
+We then add (pieces) of **renv/library**, **renv.lock**, and **.Rprofile** to our repository and commit them.
+
+. . .
+
+If we make a change to our code, we use `renv` to track whether that code has introduced, removed, or changed our dependencies. 
+
+. . .
+
+When we commit the change to our code, we will also commit a change to our **renv.lock** file.
+
+. . .
+
+In this way, using Git + renv allows us to **store a history of how our project dependencies have changed with every commit**.
+
+## {background-image="images/renv_nutshell.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+Let's dive into this picture.
+
+# `renv` key functions
+
+## `renv` key functions
+
+- `renv::init()` initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.
+
+## 
+
+### `renv::init()`
+
+This is what our **starwars** project might look like before add `renv` to our project.
+
+![](images/starwars_before_renv.png){fig-align="center"}
+
+##
+
+### `renv::init()`
+
+We open up the project and run `renv::init()`, which tells us which packages and their versions are in use.
+
+## {background-image="images/starwars_renv_init.png" background-position="center" background-color="white" background-size="contain"}
+
+##
+
+### `renv::init()`
+
+This adds these packages to our **renv/library**, and stores information about the packages and version of R that are in use in **renv.lock**
+
+## {background-image="images/starwars_renv_init_2.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+### `renv::init()`
+
+This is what our project looks like afterwards, as we have now added a `renv` folder, a **renv.lock** file, and an **.Rprofile** (which is typically hidden).
+
+![](images/starwars_after_renv.png){fig-align="center"}
+
+## 
+
+### `renv::init()`
+
+**renv.lock** is what renv will use in order to restore dependencies and track changes in packages that are being used.
+
+This file is generated by `renv`; don't mess with it.
+
+## {background-image="images/starwars_renv_lock.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+### `renv::init()`
+
+The `renv` folder contains a library with all packages that are currently being used by the project.
+
+## {background-image="images/starwars_renv_library_list.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+### `renv::init()`
+
+The `renv` folder contains a library with all packages that are currently being used by the project.
+
+> **This is the key magic that makes renv work**: instead of having one library containing the packages used in every project, renv gives you a separate library for each project. 
+
+. . .
+
+> This gives you **the benefits of isolation: different projects can use different versions of packages**, and installing, updating, or removing packages in one project doesn’t affect any other project.
+
+
+## 
+
+### `renv::init()`
+
+There's another nice bonus here with how `renv` uses a global cache for packages.
+
+. . .
+
+> One of renv’s primary features is the **global package cache**, which is shared across all projects.
+
+. . .
+
+This means that even though projects are isolated, if you have installed `tidyverse` in one project, if you install the same version of `tidyverse` in another project it will install directly from the cache, saving time and space.
+
+. . .
+
+This becomes really critical when using Github Actions and Docker builds.
+
+## {background-image="images/renv_install.png" background-position="center" background-color="white" background-size="contain"}
+
+## `renv` key functions
+
+- `renv::init()` initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.
+
+- `renv::dependencies()` scans for dependencies and finds which scripts make use of packages
+
+## {background-image="images/starwars_renv_dependencies.png" background-position="center" background-color="white" background-size="contain"}
+
+## `renv` key functions
+
+- `renv::init()` initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.
+
+- `renv::dependencies()` scans for dependencies and finds which scripts make use of packages
+
+- `renv::status()` compares the current dependencies of your project vs the dependencies detailed in the lockfile. 
+
+##
+
+### `renv::status()`
+
+Suppose we just wrote a new function, or added a new piece of code that required installing some new packages.
+
+## {background-image="images/starwars_new_package.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/starwars_network.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+### `renv::status()`
+
+Running `renv::status()` will alert us to the fact that we are in an inconsistent state; we have have new packages in use in the project that are not recorded in the lockfile.
+
+![](images/starwars_new_dependencies.png){fig-align="center"}
+
+##
+
+### `renv::status()`
+
+This will only alert us to the fact that we are in an inconsistent state; it won't actually change or modify our lockfile.
+
+. . .
+
+If we want to update our lockfile to our new state, we need to take a snapshot of our new dependencies. 
+
+## `renv` key functions
+
+- `renv::init()` initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.
+
+- `renv::dependencies()` scans for dependencies and finds which scripts make use of packages
+
+- `renv::status()` compares the current dependencies of your project vs the dependencies detailed in the lockfile. 
+
+- `renv::snapshot()` creates or updates a lockfile with the current state of packages used in the project
+
+## 
+
+### `renv::snapshot()`
+
+`renv::snapshot()` will update the lockfile with the new dependencies, adding new packages that are in use and removing any that are no longer in use.
+
+## {background-image="images/starwars_snapshot.png" background-position="center" background-color="white" background-size="contain"}
+
+##
+
+### `renv::snapshot()`
+
+We can then commit the change we made to our code, along with the change to the lockfile, which will allow us revert to prior commits and restore the dependencies that were in place.
+
+## {background-image="images/starwars_renv_lock_diff.png" background-position="center" background-color="white" background-size="contain"}
+
+## `renv` key functions
+
+- `renv::init()` initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.
+
+- `renv::dependencies()` scans for dependencies and finds which scripts make use of packages
+
+- `renv::status()` compares the current dependencies of your project vs the dependencies detailed in the lockfile. 
+
+- `renv::snapshot()` creates or updates a lockfile with the current state of packages used in the project
+
+. . .
+
+- `renv::restore()` restores a project's dependencies from a lockfile. This is typically the first command when working with a repo that has an existing lockfile.
+
+## {background-image="images/renv_nutshell.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+How are we feeling about this picture?
+
+# `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
+
+- Fork and clone the **guns-data** repository
+- Create a new branch
+- Initialize `renv` with `renv::init()`.
+- Find dependencies via `renv::dependencies()`. What packages are in use?
+- Install a new package via `renv::install()`. 
+- Check the status of your lockfile via `renv::status()` What does it say?
+- Add a new script that uses a new package.
+- Check the status via `renv::status()`. What happens now?
+- Update the lockfile via `renv::snapshot()`
+- Commit `renv`, `renv.lock`, and `.Rprofile`
+- Create a pull request for **your branch** into the upstream **dev** branch
+
+```{r}
+#| echo: false
+countdown_timer(15)
+```
+
+
+# additional `renv` notes
+
+##
+
+`renv` is an excellent tool that should become mandatory for your projects. 
+
+. . .
+
+But it isn't going to solve every possible problem for reproducibility.
+
+##
+
+### Why isn't my package being added to the lockfile?
+
+A package is only recorded in the lockfile if:
+
+. . .
+
+1. The package is installed in your project library
+1. The package is used in the project, as determiend by `renv::dependencies()`
+
+. . .
+
+There are some instances where `renv` will not detect dependencies completely; doublecheck to see how the package is being used. You might need to explicitly `library` the package, or change your snapshot settings from "implict" to "all".
+
+##
+
+### Where are packages being stored exactly?
+
+`renv` installs packages in global cache, which can be shared across projects and across users.
+
+You can find that location by running `renv::paths$cache()`
+
+. . .
+
+One thing to consider for an organization is to set everyone to be pointed to the same global cache, which will speed up installations for everyone.
