@@ -1,0 +1,665 @@
+---
+format:
+  revealjs:
+    self-contained: true
+    slide-number: c/t
+    width: 1600
+    height: 900
+    css: ["theme/theme.css"]
+    theme: simple
+    highlight-style: github
+    code-block-border-left: "#4f6952"
+    code-block-bg: true
+    code-link: true
+editor: source
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+library(renv)
+library(countdown)
+
+knitr::opts_chunk$set(
+  comment = '#>', fig.width = 6, fig.height = 6
+)
+
+countdown_timer <- function(
+    minutes = 1, 
+    play_sound = TRUE, 
+    font_size = "2em", 
+    ...
+) {
+  countdown(
+    minutes = minutes,
+    # Fanfare when it's over
+    play_sound = play_sound,
+    # Set timer theme to match solarized colors
+    color_border              = "#404041",
+    color_text                = "white",
+    color_background = "#447099",
+    color_running_background  = "#72994E",
+    color_running_text        = "white",
+    color_finished_background = "#EE6331",
+    color_finished_text       = "white",
+    font_size = font_size,
+    ...
+  )
+}
+```
+
+# pipelines in R: <br> `targets` {
+background-image="images/pipeline.jpeg"
+background-size="contain" 
+background-position="right" 
+background-color="white"
+}
+
+## Organizing a Repo
+
+Let's go back to my 'template' for organizing an R repo.
+
+. . .
+
+```
+├── _targets    <- stores the metadata and objects of your pipeline
+├── renv        <- information relating to your R packages and dependencies
+├── data        <- data sources used as an input into the pipeline
+├── src         <- functions used in project/targets pipeline
+|   ├── data    <- functions relating to loading and cleaning data
+|   ├── models    <- functions involved with training models
+|   ├── reports   <- functions used in generating tables and visualizations for reports
+├── _targets.R    <- script that runs the targets pipeline
+├── renv.lock     <- lockfile detailing project requirements and dependencies
+```
+
+. . .
+
+Now that we've covered Git, GitHub, and `renv`, we can start talking about the third pillar here, which is the `targets` package.
+
+## The Problem
+
+A predictive modeling workflow typically consists of a number of interconnected steps.
+
+```{mermaid}
+
+flowchart LR
+raw[Raw Data] --> clean[Clean Data]
+clean --> train[Training Set]
+clean --> valid[Validation Set]
+train --> preprocessor(Preprocessor)
+preprocessor --> resamples[Bootstraps]
+resamples --> model(glmnet)
+model --> features(Impute + Normalize)
+features --> tuning(Tuning)
+tuning --> valid
+preprocessor --> valid
+valid --> evaluation[Model Evaluation]
+train --> final(Model)
+valid --> final
+
+```
+
+. . .
+
+We typically build these pieces incrementally, starting from loading the data, preparing it, then ultimately training and assessing models.
+
+. . .
+
+The end result can look nice and tidy, and maybe you get really clever and assemble a series of scripts or notebooks that detail the steps in your project.
+
+## The Problem
+
+Your project might end up looking something like this:
+
+- `01-load.R`
+- `02-tidy.R`
+- `03-model.R`
+- `04-evaluate.R`
+- `05-deploy.R`
+- `06-report.R`
+
+. . .
+
+And you might have some sort of meta script that runs them all.
+
+. . .
+
+And this is working fine... until you discover an issue with a function in `02-tidy.R`, or want to make a change to how you're evaluating the model in `03-evalaute.R`.
+
+## {background-image="images/notebook-based-1.png" background-position="center" background-color="white" background-size="contain"}
+
+## The Problem
+
+How do you insert a change into this process? Like, if you make a change to a function, how do you know what needs to be re run?
+
+. . .
+
+How many times do you just end up rerunning everything to be safe?
+
+## {background-image="images/notebook-based-2.png" background-position="center" background-color="white" background-size="contain"}
+
+## The Problem
+
+This pattern of **developing**, **changing**, **re-running** can consume a lot of time, especially with time-consuming tasks like training models.
+
+. . .
+
+This is the basic motivation for the `targets` package:
+
+## {background-image="images/workflows-1.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/workflows-2.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/workflows-3.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/sisyphus.jpeg" background-position="center" background-color="white" background-size="contain"}
+
+## The Problem
+
+It might not be too bad when you're actively working on a project, but suppose you're coming back to something after a few months away. 
+
+. . .
+
+Or suppose you look at someone else's repo for the first time, and you have to try to figure out how to put the pieces together to produce their result.
+
+. . .
+
+We'd like an easier way to keep track of dependencies so that we are only re-running things when necessary, as well as provide others with a clear path to reproduce our work.
+
+# `targets`
+
+## what is `targets`
+
+> Data analysis can be slow. A round of scientific computation can take several minutes, hours, or even days to complete. After it finishes, if you update your code or data, your hard-earned results may no longer be valid. Unchecked, this invalidation creates a chronic Sisyphean loop
+
+. . .
+
+> 1. Launch the code.
+> 2. Wait while it runs
+> 3. Discover an issue.
+> 4. Restart from scratch.
+
+. . .
+
+https://books.ropensci.org/targets/
+
+## 
+
+The solution to this problem is to develop **pipelines**, which track dependencies between steps, or "targets", of a workflow.
+
+. . .
+
+When running the pipeline, it first **checks to see if the upstream targets have changed since the previous run**.
+
+. . .
+
+If the upstream targets are **up to date**, the pipeline will skip them and proceed to running the next step.
+
+. . .
+
+If **everything is up to date**, the pipeline will skip everything and inform you that nothing changed.
+
+## 
+
+Most pipeline tools, such as **Make**, are either language agnostic or depend on using Python.
+
+. . .
+
+`targets` lets you build **Make**-style pipelines using R
+
+. . .
+
+::: {#fig-pipelines layout-ncol=2}
+
+![api requests](images/targets_bgg_data.png){#fig-bgg_data}
+
+![training models](images/targets_bgg_models.png){#fig-bgg_models}
+
+pipeline examples
+:::
+
+## {background-image="images/targets_bgg_data.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/targets_bgg_models.png" background-position="center" background-color="white" background-size="contain"}
+
+##
+
+```
+├── _targets    <- stores the metadata and objects of your pipeline
+├── renv        <- information relating to your R packages and dependencies
+├── data        <- data sources used as an input into the pipeline
+├── src         <- functions used in project/targets pipeline
+|   ├── data   <- functions relating to loading and cleaning data
+├── _targets.R    <- script that runs the targets pipeline
+├── renv.lock     <- lockfile detailing project requirements and dependencies
+```
+
+`targets` adds two main pieces to a project:
+
+. . .
+
+1. `targets.R` is the script that will implement our pipeline. This is what we will build and develop.
+
+. . .
+
+1. `_targets` is a folder containing **metadata** for the steps defined in `targets.R`, as well as **cached objects** from the latest run of the pipeline
+
+Note: by default, `_targets` objects are stored locally. But you can configure `targets` to store objects in a cloud bucket (GCP/AWS)
+
+. . .
+
+When you use `targets` locally, it will store objects from the latest run of the pipeline. If you use a cloud bucket for storage, you can enable versioning so that all runs are stored.
+
+##
+
+What is `targets.R`?
+
+Running `targets::use_targets()` will create a template for the `targets.R` script, which all follow a similar structure.
+
+. . .
+
+```{r}
+#| eval: false
+#| echo: true
+
+# Created by use_targets().
+# Follow the comments below to fill in this target script.
+# Then follow the manual to check and run the pipeline:
+#   https://books.ropensci.org/targets/walkthrough.html#inspect-the-pipeline
+
+# Load packages required to define the pipeline:
+library(targets)
+# library(tarchetypes) # Load other packages as needed.
+
+# Set target options:
+tar_option_set(
+  packages = c("tibble") # Packages that your targets need for their tasks.
+  # format = "qs", # Optionally set the default storage format. qs is fast.
+)
+
+# Run the R scripts in the R/ folder with your custom functions:
+tar_source()
+# tar_source("other_functions.R") # Source other scripts as needed.
+
+# Replace the target list below with your own:
+list(
+  tar_target(
+    name = data,
+    command = tibble(x = rnorm(100), y = rnorm(100))
+    # format = "qs" # Efficient storage for general data objects.
+  ),
+  tar_target(
+    name = model,
+    command = coefficients(lm(y ~ x, data = data))
+  )
+)
+
+```
+
+## An Example - Star Wars
+
+Going back to our Star Wars sentiment analysis, we can build a simple targets pipeline to recreate what we did earlier. The basic steps of our pipeline will look something like this:
+
+. . .
+
+1. Load Star Wars text data
+1. Clean and prepare dialogue
+1. Get sentences from dialogue
+4. Calculate sentiment
+
+## 
+
+This is what the resulting pipeline will look like:
+
+::: panel-tabset
+
+### Code
+
+```{r}
+#| eval: false
+#| echo: true
+library(targets)
+
+# set options
+tar_option_set(packages = c("readr", "dplyr", "sentimentr", "here"))
+
+# functions to be used
+
+# load starwars data
+load_data = function(file = here::here('materials', 'data', 'starwars_text.csv')) {
+  
+  read_csv(file)
+  
+}
+
+# prepare data
+clean_data = function(data) {
+  
+  data |>
+    mutate(episode = case_when(document == 'a new hope' ~ 'iv',
+                               document == 'the empire strikes back' ~ 'v',
+                               document == 'return of the jedi' ~ 'vi')) |>
+    mutate(character = case_when(character == 'BERU' ~ 'AUNT BERU',
+                                 character == 'LURE' ~ 'LUKE',
+                                 TRUE ~ character)) |>
+    select(episode, everything())
+}
+
+# calculate sentiment
+calculate_sentiment = function(data,
+                               by = c("document", "character", "line_number")) {
+  
+  data |>
+    sentiment_by(by = by) |>
+    sentimentr::uncombine()
+}
+
+# define targets
+list(
+  tar_target(
+    name = starwars,
+    command = 
+      load_data() |>
+      clean_data()
+  ),
+  tar_target(
+    name = sentences,
+    command = 
+      starwars |>
+      get_sentences()
+  ),
+  tar_target(
+    name = sentiment,
+    command = 
+      sentences |>
+      calculate_sentiment()
+  )
+)
+
+```
+
+### Output
+
+```{r}
+#| eval: true
+#| echo: false
+library(targets)
+
+# set options
+tar_option_set(packages = c("readr", "dplyr", "sentimentr", "here"))
+
+# functions to be used
+
+# load starwars data
+load_data = function(file = here::here('materials', 'data', 'starwars_text.csv')) {
+  
+  read_csv(file)
+  
+}
+
+# prepare data
+clean_data = function(data) {
+  
+  data |>
+    mutate(episode = case_when(document == 'a new hope' ~ 'iv',
+                               document == 'the empire strikes back' ~ 'v',
+                               document == 'return of the jedi' ~ 'vi')) |>
+    mutate(character = case_when(character == 'BERU' ~ 'AUNT BERU',
+                                 character == 'LURE' ~ 'LUKE',
+                                 TRUE ~ character)) |>
+    select(episode, everything())
+}
+
+# calculate sentiment
+calculate_sentiment = function(data,
+                               by = c("document", "character", "line_number")) {
+  
+  data |>
+    sentiment_by(by = by) |>
+    sentimentr::uncombine()
+}
+# define targets
+list(
+  tar_target(
+    name = starwars,
+    command = 
+      load_data() |>
+      clean_data()
+  ),
+  tar_target(
+    name = sentences,
+    command = 
+      starwars |>
+      get_sentences()
+  ),
+  tar_target(
+    name = sentiment,
+    command = 
+      sentences |>
+      calculate_sentiment()
+  )
+)
+
+```
+
+:::
+
+## 
+
+We can view the steps that will be carried out by pipeline using `tar_manifest()`
+
+```{r}
+
+targets::tar_manifest(
+  script = here::here("_targets.R")
+) |>
+  as.data.frame()
+
+```
+
+. . .
+
+Or, we can visualize the pipeline using `tar_glimpse()`.
+
+```{r}
+#| fig-align: center
+#| fig-width: 12
+targets::tar_glimpse(
+  script = here::here("_targets.R")
+) 
+
+```
+
+
+## 
+
+`tar_visnetwork()` provides a more detailed breakdown of the pipeline, including the status of individual targets, as well as the functions and where they are used.
+
+```{r}
+#| fig-align: center
+#| fig-width: 12
+targets::tar_visnetwork(
+  script = here::here("_targets.R")
+) 
+```
+
+
+## 
+
+We then run the pipeline using `tar_make()`, which will detail the steps that are being carried out and whether they were re-run or skipped.
+
+```{r}
+#| eval: false
+#| echo: true
+
+targets::tar_make()
+
+```
+
+
+```{r}
+
+targets::tar_make(
+  script = here::here("_targets.R")
+) 
+
+```
+
+
+##
+
+We can then load the objects using `tar_read()` or `tar_load()`.
+
+```{r}
+#| eval: false
+#| echo: true
+tar_load(sentiment)
+
+sentiment |>
+  head(10) |>
+  gt::gt()
+
+```
+
+```{r}
+
+sentiment = 
+  tar_read(
+    "sentiment",
+    store = here::here("_targets")
+  )
+
+sentiment |> 
+  head(10) |>
+  gt::gt() |>
+  gt::as_raw_html()
+
+```
+
+## 
+
+This might seem like a lot of overhead for little gain; if re-running is relatively painless, then is the it worth the time to set up a pipeline?
+
+. . .
+
+I, and the author of the package, will argue that yes, yes it is.
+
+## Embracing Functions
+
+> targets expects users to adopt a **function-oriented** style of programming. User-defined R functions are essential to express the complexities of data generation, analysis, and reporting. 
+
+https://books.ropensci.org/targets/functions.html
+
+## 
+
+> Traditional data analysis projects consist of **imperative scripts**, often with with numeric prefixes.
+
+```
+01-data.R
+02-model.R
+03-plot.R
+```
+> To run the project, the user runs each of the scripts in order.
+
+```{r}
+#| eval: false
+#| echo: true
+source("01-data.R")
+source("02-model.R")
+source("03-plot.R")
+```
+
+
+## 
+
+As we've previously discussed, this type of approach inherently creates problems with dependencies and trying to figure out which pieces need to be rerun. 
+
+. . .
+
+But even more than that, this approach doesn't do a great job explaining what exactly is happening with a project, and it can be a pain to test.
+
+. . .
+
+> Every time you look at it, you need to read it carefully and relearn what it does. And test it, you need to copy the entire block into the R console.
+
+##
+
+For example, rather than write a script that loads, cleans, and outputs the Star Wars data, I simply wrote two functions, which we can easily call and run as needed to get the data.
+
+```{r}
+#| eval: false
+
+load_data() |>
+  clean_data()
+
+```
+
+. . .
+
+> ...instead of invoking a whole block of text, all you need to do is type a small reusable command. The function name speaks for itself, so **you can recall what it does without having to mentally process all the details again**.
+
+## 
+
+Embracing functions makes it easier for us to track dependencies, explain our work, and build in small pieces that can be tested and put together to complete the larger project.
+
+. . .
+
+It also can really help when we have time consuming steps.
+
+## `targets` demo - College Football and Elo Ratings
+
+- View repo organization for **https:://github.com/ds-workshop/cfb_elo**
+- Examine `targets.R`
+- Show `_targets` metadata
+- Show `_targets` objects
+
+# `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
+
+- Fork and clone **https:://github.com/ds-workshop/cfb_elo**
+- Read the README and follow its instructions
+- Create a new branch
+- Make a change to the pipeline and run it
+- Commit and push your changes
+
+```{R}
+#| echo: false
+countdown_timer(15)
+```
+
+# putting it all together
+
+`git` + `targets` + `renv` for predictive modeling projects
+
+##
+
+Let's revisit some of the original motivations for this workshop.
+
+##
+
+How do I share my code with you, so that you can run my code, make changes, and let me know what you've changed? 
+
+. . .
+
+How can a group of people work on the same project without getting in each other's way? 
+
+. . .
+
+How do we ensure that we are running the same code and avoid conflicts from packages being out of date?
+
+. . .
+
+How can we run experiments and test out changes without breaking the current project?
+
+## 
+
+Let's talk about using `targets` to build predictive models.
+
+
+
+
+
+
+

@@ -167,6 +167,16 @@
       ],
       "Hash": "543776ae6848fde2f48ff3816d0628bc"
     },
+    "base64url": {
+      "Package": "base64url",
+      "Version": "1.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "backports"
+      ],
+      "Hash": "0c54cf3a08cc0e550fbd64ad33166143"
+    },
     "bggUtils": {
       "Package": "bggUtils",
       "Version": "0.2.0",
@@ -1024,6 +1034,29 @@
       ],
       "Hash": "99df65cfef20e525ed38c3d2577f7190"
     },
+    "igraph": {
+      "Package": "igraph",
+      "Version": "2.0.3",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "Matrix",
+        "R",
+        "cli",
+        "cpp11",
+        "grDevices",
+        "graphics",
+        "lifecycle",
+        "magrittr",
+        "methods",
+        "pkgconfig",
+        "rlang",
+        "stats",
+        "utils",
+        "vctrs"
+      ],
+      "Hash": "c3b7d801d722e26e4cd888e042bf9af5"
+    },
     "isoband": {
       "Package": "isoband",
       "Version": "0.2.7",
@@ -1692,6 +1725,16 @@
       ],
       "Hash": "c19df082ba346b0ffa6f833e92de34d1"
     },
+    "secretbase": {
+      "Package": "secretbase",
+      "Version": "0.5.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "c476c18b22b21849c9f4d29b3cd720a5"
+    },
     "selectr": {
       "Package": "selectr",
       "Version": "0.4-2",
@@ -1804,6 +1847,34 @@
         "zoo"
       ],
       "Hash": "894c8d45de6a15c2dc1a1b3832c95586"
+    },
+    "targets": {
+      "Package": "targets",
+      "Version": "1.7.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "R6",
+        "base64url",
+        "callr",
+        "cli",
+        "codetools",
+        "data.table",
+        "igraph",
+        "knitr",
+        "ps",
+        "rlang",
+        "secretbase",
+        "stats",
+        "tibble",
+        "tidyselect",
+        "tools",
+        "utils",
+        "vctrs",
+        "yaml"
+      ],
+      "Hash": "27ee47827a89430be0d38b78c0cb8fb7"
     },
     "textclean": {
       "Package": "textclean",

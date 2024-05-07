@@ -1,0 +1,8 @@
+name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+calculate_sentiment|function|a217d71d6932ae3f|||||||||||||||
+clean_data|function|b3bb0bb9395c38b2|||||||||||||||
+load_data|function|9ea45e3926845b4b|||||||||||||||
+sentences|stem|9db985dda8a8914f|7b916b1d29c338cb|0932adff130659ce|1111189654||t19844.9931635226s|900a693c9bd39950|81410|rds|local|vector|||0.135||
+sentiment|stem|89a0cea6ff506786|24acad5194e9902f|e7a69cabbecf5b25|-274651921||t19844.9931710578s|e2f7b7cd01c76988|1229223|rds|local|vector|||0.47||
+starwars|stem|ee95c7d1c63f02d5|a6babeb0d5ffad71|b7a187dc7351e55b|-1349944342||t19845.0347888975s|44d4c46de2edbf97|66366|rds|local|vector|||0.175||
+starwars_raw|stem|347167fd0ae37599|7c214b853ba45ade|e42d2b694de5ce3b|-271262743||t19844.9957413146s|f1a616186aea36a5|66285|rds|local|vector|||0.169||
