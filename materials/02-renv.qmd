@@ -665,7 +665,7 @@ A package is only recorded in the lockfile if:
 . . .
 
 1. The package is installed in your project library
-1. The package is used in the project, as determiend by `renv::dependencies()`
+1. The package is used in the project, as determined by `renv::dependencies()`
 
 . . .
 

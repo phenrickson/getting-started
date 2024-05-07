@@ -851,7 +851,7 @@
     "href": "materials/01-git.html#section-107",
     "title": "",
     "section": "",
-    "text": "We hit something of a snag with installing the requisite packages for that one, eh? We’ll talk about that shortly.\n\nBut next, let’s review everyone’s work and complete a pull request. We’ll then work off one of these branches, and proceed to add some new pieces."
+    "text": "Okay, so you have submitted pull requests, which I, the reviewer, have taken a look at.\n\nI completed a pull request that was submitted and it went through without issues; let’s go take a look.\n\n\nhttps://github.com/ds-workshop/board_games/pull/8"
   },
   {
     "objectID": "materials/02-renv.html#section",
@@ -1202,5 +1202,313 @@
     "title": "Workshop Materials",
     "section": "",
     "text": "folder\nfile\n\n\n\n\nmaterials\n00-intro.qmd\n\n\nmaterials\n01-git.qmd\n\n\nmaterials\n02-renv.qmd\n\n\nmaterials\n03-targets.qmd"
+  },
+  {
+    "objectID": "materials/03-targets.html#section",
+    "href": "materials/03-targets.html#section",
+    "title": "",
+    "section": "",
+    "text": "To this point, we haven’t really talked about how we should organize a repository. A repository is just a set of files to track over time, but how do we organize those files?"
+  },
+  {
+    "objectID": "materials/03-targets.html#organizing-a-repo",
+    "href": "materials/03-targets.html#organizing-a-repo",
+    "title": "",
+    "section": "Organizing a Repo",
+    "text": "Organizing a Repo\nLet’s go back to my ‘template’ for organizing an R repo.\n\n├── _targets    &lt;- stores the metadata and objects of your pipeline\n├── renv        &lt;- information relating to your R packages and dependencies\n├── data        &lt;- data sources used as an input into the pipeline\n├── src         &lt;- functions used in project/targets pipeline\n|   ├── data    &lt;- functions relating to loading and cleaning data\n|   ├── models    &lt;- functions involved with training models\n|   ├── reports   &lt;- functions used in generating tables and visualizations for reports\n├── _targets.R    &lt;- script that runs the targets pipeline\n├── renv.lock     &lt;- lockfile detailing project requirements and dependencies\n\n\nNow that we’ve covered Git, GitHub, and renv, we can start talking about the third pillar here, which is the targets package."
+  },
+  {
+    "objectID": "materials/03-targets.html#the-problem",
+    "href": "materials/03-targets.html#the-problem",
+    "title": "",
+    "section": "The Problem",
+    "text": "The Problem\nA predictive modeling workflow typically consists of a number of interconnected steps.\n\n\n\n\nflowchart LR\nraw[Raw Data] --&gt; clean[Clean Data]\nclean --&gt; train[Training Set]\nclean --&gt; valid[Validation Set]\ntrain --&gt; preprocessor(Preprocessor)\npreprocessor --&gt; resamples[Bootstraps]\nresamples --&gt; model(glmnet)\nmodel --&gt; features(Impute + Normalize)\nfeatures --&gt; tuning(Tuning)\ntuning --&gt; valid\npreprocessor --&gt; valid\nvalid --&gt; evaluation[Model Evaluation]\ntrain --&gt; final(Model)\nvalid --&gt; final\n\n\n\n\n\n\n\nWe typically build these pieces incrementally, starting from loading the data, preparing it, then ultimately training and assessing models.\n\n\nThe end result can look nice and tidy, and maybe you get really clever and assemble a series of scripts or notebooks that detail the steps in your project."
+  },
+  {
+    "objectID": "materials/03-targets.html#the-problem-1",
+    "href": "materials/03-targets.html#the-problem-1",
+    "title": "",
+    "section": "The Problem",
+    "text": "The Problem\nYour project might end up looking something like this:\n\n01-load.R\n02-tidy.R\n03-model.R\n04-evaluate.R\n05-deploy.R\n06-report.R\n\n\nAnd you might have some sort of meta script that runs them all.\n\n\nAnd this is working fine… until you discover an issue with a function in 02-tidy.R, or want to make a change to how you’re evaluating the model in 03-evalaute.R."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-1",
+    "href": "materials/03-targets.html#section-1",
+    "title": "",
+    "section": "",
+    "text": "So you end up"
+  },
+  {
+    "objectID": "materials/03-targets.html#the-problem-2",
+    "href": "materials/03-targets.html#the-problem-2",
+    "title": "",
+    "section": "The Problem",
+    "text": "The Problem\nHow do you insert a change into this process? Like, if you make a change to a function, how do you know what needs to be re run?\n\nHow many times do you just end up rerunning everything to be safe?"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-3",
+    "href": "materials/03-targets.html#section-3",
+    "title": "",
+    "section": "",
+    "text": "Stop"
+  },
+  {
+    "objectID": "materials/03-targets.html#the-problem-3",
+    "href": "materials/03-targets.html#the-problem-3",
+    "title": "",
+    "section": "The Problem",
+    "text": "The Problem\nThis pattern of developing, changing, re-running can consume a lot of time, especially with time-consuming tasks like training models.\n\nThis is the basic motivation for the targets package:"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-5",
+    "href": "materials/03-targets.html#section-5",
+    "title": "",
+    "section": "",
+    "text": "Now that we’re familiar with Git/GitHub and we’ve covered project environments with renv, we’re ready to"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-6",
+    "href": "materials/03-targets.html#section-6",
+    "title": "",
+    "section": "",
+    "text": "The solution to this problem is to develop pipelines, which track dependencies between steps, or “targets”, of a workflow.\n\nWhen running the pipeline, it first checks to see if the upstream targets have changed since the previous run.\n\n\nIf the upstream targets are up to date, the pipeline will skip them and proceed to running the next step.\n\n\nIf everything is up to date, the pipeline will skip everything and inform you that nothing changed."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-4",
+    "href": "materials/03-targets.html#section-4",
+    "title": "",
+    "section": "",
+    "text": "Stop"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-2",
+    "href": "materials/03-targets.html#section-2",
+    "title": "",
+    "section": "",
+    "text": "This pattern of developing, changing, re-running can consume a lot of time, especially with time-consuming tasks like training models."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-7",
+    "href": "materials/03-targets.html#section-7",
+    "title": "",
+    "section": "",
+    "text": "Most pipeline tools, such as Make, are either language agnostic or depend on using Python.\n\ntargets lets you build Make-style pipelines using R\n\n\n\n\n\n\n\n\n\n(a) api requests\n\n\n\n\n\n\n\n(b) training models\n\n\n\n\nFigure 1: pipeline examples"
+  },
+  {
+    "objectID": "materials/03-targets.html#what-is-targets",
+    "href": "materials/03-targets.html#what-is-targets",
+    "title": "",
+    "section": "what is targets",
+    "text": "what is targets\n\nData analysis can be slow. A round of scientific computation can take several minutes, hours, or even days to complete. After it finishes, if you update your code or data, your hard-earned results may no longer be valid. Unchecked, this invalidation creates a chronic Sisyphean loop\n\n\n\nLaunch the code.\nWait while it runs\nDiscover an issue.\nRestart from scratch.\n\n\n\nhttps://books.ropensci.org/targets/"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-8",
+    "href": "materials/03-targets.html#section-8",
+    "title": "",
+    "section": "",
+    "text": "The solution to this problem is to develop pipelines, which track dependencies between steps, or “targets”, of a workflow.\n\nWhen running the pipeline, it first checks to see if the upstream targets have changed since the previous run. . . .\nIf the upstream targets are up to date, the pipeline will skip them and proceed to running the next step.\n\n\nIf everything is up to date, the pipeline will simply skip everything and inform you that everything is up to date."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-9",
+    "href": "materials/03-targets.html#section-9",
+    "title": "",
+    "section": "",
+    "text": "Most pipeline tools, such as Make, are either language agnostic or depend on using Python.\n\ntargets lets you build Make-style pipelines using R\n\n\n\n\n\n\n\n\n\n(a) api requests\n\n\n\n\n\n\n\n(b) training models\n\n\n\n\nFigure 1:  pipeline examples"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-12",
+    "href": "materials/03-targets.html#section-12",
+    "title": "",
+    "section": "",
+    "text": "This is what the resulting pipeline will look like:\n\nCodeOutput\n\n\n\nlibrary(targets)\n\n# set options\ntar_option_set(packages = c(\"readr\", \"dplyr\", \"sentimentr\", \"here\"))\n\n# functions to be used\n\n# load starwars data\nload_data = function(file = here::here('materials', 'data', 'starwars_text.csv')) {\n  \n  read_csv(file)\n  \n}\n\n# prepare data\nclean_data = function(data) {\n  \n  data |&gt;\n    mutate(episode = case_when(document == 'a new hope' ~ 'iv',\n                               document == 'the empire strikes back' ~ 'v',\n                               document == 'return of the jedi' ~ 'vi')) |&gt;\n    mutate(character = case_when(character == 'BERU' ~ 'AUNT BERU',\n                                 character == 'LURE' ~ 'LUKE',\n                                 TRUE ~ character)) |&gt;\n    select(episode, everything())\n}\n\n# calculate sentiment\ncalculate_sentiment = function(data,\n                               by = c(\"document\", \"character\", \"line_number\")) {\n  \n  data |&gt;\n    sentiment_by(by = by) |&gt;\n    sentimentr::uncombine()\n}\n\n# define targets\nlist(\n  tar_target(\n    name = starwars,\n    command = \n      load_data() |&gt;\n      clean_data()\n  ),\n  tar_target(\n    name = sentences,\n    command = \n      starwars |&gt;\n      get_sentences()\n  ),\n  tar_target(\n    name = sentiment,\n    command = \n      sentences |&gt;\n      calculate_sentiment()\n  )\n)\n\n\n\n\n\n#&gt; [[1]]\n#&gt; &lt;tar_stem&gt; \n#&gt;   name: starwars \n#&gt;   description:  \n#&gt;   command:\n#&gt;     clean_data(load_data()) \n#&gt;   format: rds \n#&gt;   repository: local \n#&gt;   iteration method: vector \n#&gt;   error mode: stop \n#&gt;   memory mode: persistent \n#&gt;   storage mode: main \n#&gt;   retrieval mode: main \n#&gt;   deployment mode: worker \n#&gt;   priority: 0 \n#&gt;   resources:\n#&gt;     list() \n#&gt;   cue:\n#&gt;     mode: thorough\n#&gt;     command: TRUE\n#&gt;     depend: TRUE\n#&gt;     format: TRUE\n#&gt;     repository: TRUE\n#&gt;     iteration: TRUE\n#&gt;     file: TRUE\n#&gt;     seed: TRUE \n#&gt;   packages:\n#&gt;     readr\n#&gt;     dplyr\n#&gt;     sentimentr\n#&gt;     here \n#&gt;   library:\n#&gt;     NULL\n#&gt; [[2]]\n#&gt; &lt;tar_stem&gt; \n#&gt;   name: sentences \n#&gt;   description:  \n#&gt;   command:\n#&gt;     get_sentences(starwars) \n#&gt;   format: rds \n#&gt;   repository: local \n#&gt;   iteration method: vector \n#&gt;   error mode: stop \n#&gt;   memory mode: persistent \n#&gt;   storage mode: main \n#&gt;   retrieval mode: main \n#&gt;   deployment mode: worker \n#&gt;   priority: 0 \n#&gt;   resources:\n#&gt;     list() \n#&gt;   cue:\n#&gt;     mode: thorough\n#&gt;     command: TRUE\n#&gt;     depend: TRUE\n#&gt;     format: TRUE\n#&gt;     repository: TRUE\n#&gt;     iteration: TRUE\n#&gt;     file: TRUE\n#&gt;     seed: TRUE \n#&gt;   packages:\n#&gt;     readr\n#&gt;     dplyr\n#&gt;     sentimentr\n#&gt;     here \n#&gt;   library:\n#&gt;     NULL\n#&gt; [[3]]\n#&gt; &lt;tar_stem&gt; \n#&gt;   name: sentiment \n#&gt;   description:  \n#&gt;   command:\n#&gt;     calculate_sentiment(sentences) \n#&gt;   format: rds \n#&gt;   repository: local \n#&gt;   iteration method: vector \n#&gt;   error mode: stop \n#&gt;   memory mode: persistent \n#&gt;   storage mode: main \n#&gt;   retrieval mode: main \n#&gt;   deployment mode: worker \n#&gt;   priority: 0 \n#&gt;   resources:\n#&gt;     list() \n#&gt;   cue:\n#&gt;     mode: thorough\n#&gt;     command: TRUE\n#&gt;     depend: TRUE\n#&gt;     format: TRUE\n#&gt;     repository: TRUE\n#&gt;     iteration: TRUE\n#&gt;     file: TRUE\n#&gt;     seed: TRUE \n#&gt;   packages:\n#&gt;     readr\n#&gt;     dplyr\n#&gt;     sentimentr\n#&gt;     here \n#&gt;   library:\n#&gt;     NULL"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-13",
+    "href": "materials/03-targets.html#section-13",
+    "title": "",
+    "section": "",
+    "text": "We can view the steps that will be carried out by pipeline using tar_manifest()\n\n\n#&gt;        name                        command\n#&gt; 1  starwars        clean_data(load_data())\n#&gt; 2 sentences        get_sentences(starwars)\n#&gt; 3 sentiment calculate_sentiment(sentences)\n\n\n\nOr, we can visualize the pipeline using tar_glimpse()."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-15",
+    "href": "materials/03-targets.html#section-15",
+    "title": "",
+    "section": "",
+    "text": "We then run the pipeline using tar_make(), which will detail the steps that are being carried out and whether they were re-run or skipped.\n\ntargets::tar_make()\n\n\n\n#&gt; v skipped target starwars\n#&gt; v skipped target sentences\n#&gt; v skipped target sentiment\n#&gt; v skipped pipeline [0.049 seconds]"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-17",
+    "href": "materials/03-targets.html#section-17",
+    "title": "",
+    "section": "",
+    "text": "This might seem like a lot of overhead for little gain; if re-running is relatively painless, then is the it worth the time to set up a pipeline?\n\nI, and the author of the package, will argue that yes, yes it is."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-18",
+    "href": "materials/03-targets.html#section-18",
+    "title": "",
+    "section": "",
+    "text": "Traditional data analysis projects consist of imperative scripts, often with with numeric prefixes.\n\n01-data.R\n02-model.R\n03-plot.R\n\nTo run the project, the user runs each of the scripts in order.\n\n\nsource(\"01-data.R\")\nsource(\"02-model.R\")\nsource(\"03-plot.R\")"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-19",
+    "href": "materials/03-targets.html#section-19",
+    "title": "",
+    "section": "",
+    "text": "As we’ve previously discussed, this type of approach inherently creates problems with dependencies and trying to figure out which pieces need to be rerun.\n\nBut even more than that, this approach doesn’t do a great job explaining what exactly is happening with a project, and it can be a pain to test.\n\n\n\nEvery time you look at it, you need to read it carefully and relearn what it does. And test it, you need to copy the entire block into the R console."
+  },
+  {
+    "objectID": "materials/03-targets.html#an-example---college-football-and-elo-ratings",
+    "href": "materials/03-targets.html#an-example---college-football-and-elo-ratings",
+    "title": "",
+    "section": "An Example - College Football and Elo Ratings",
+    "text": "An Example - College Football and Elo Ratings\nSuppose we are interested in college football. We want to predict games and measure how a team has performed over time.\n\nWe want to measure how team’s have\n\n\nR users have targets,\nThe"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-10",
+    "href": "materials/03-targets.html#section-10",
+    "title": "",
+    "section": "",
+    "text": "├── _targets    &lt;- stores the metadata and objects of your pipeline\n├── renv        &lt;- information relating to your R packages and dependencies\n├── data        &lt;- data sources used as an input into the pipeline\n├── src         &lt;- functions used in project/targets pipeline\n|   ├── data   &lt;- functions relating to loading and cleaning data\n├── _targets.R    &lt;- script that runs the targets pipeline\n├── renv.lock     &lt;- lockfile detailing project requirements and dependencies\ntargets adds two main pieces to a project:\n\n\ntargets.R is the script that will implement our pipeline. This is what we will build and develop.\n\n\n\n\n_targets is a folder containing metadata for the steps defined in targets.R, as well as cached objects from the latest run of the pipeline\n\nNote: by default, _targets objects are stored locally. But you can configure targets to store objects in a cloud bucket (GCP/AWS)\n\n\nWhen you use targets locally, it will store objects from the latest run of the pipeline. If you use a cloud bucket for storage, you can enable versioning so that all runs are stored."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-14",
+    "href": "materials/03-targets.html#section-14",
+    "title": "",
+    "section": "",
+    "text": "tar_visnetwork() provides a more detailed breakdown of the pipeline, including the status of individual targets, as well as the functions and where they are used."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-16",
+    "href": "materials/03-targets.html#section-16",
+    "title": "",
+    "section": "",
+    "text": "We can then load the objects using tar_read() or tar_load().\n\ntar_load(sentiment)\n\nsentiment |&gt;\n  head(10) |&gt;\n  gt::gt()\n\n\n\n\n\n  \n  \n  \n    \n      episode\n      document\n      line_number\n      character\n      dialogue\n      element_id\n      sentence_id\n      word_count\n      sentiment\n    \n  \n  \n    iv\na new hope\n1\nTHREEPIO\nDid you hear that?\n1\n1\n4\n0.00000000\n    iv\na new hope\n1\nTHREEPIO\nThey've shut down the main reactor.\n1\n2\n6\n-0.24494897\n    iv\na new hope\n1\nTHREEPIO\nWe'll be destroyed for sure.\n1\n3\n5\n-0.60373835\n    iv\na new hope\n1\nTHREEPIO\nThis is madness!\n1\n4\n3\n-0.57735027\n    iv\na new hope\n2\nTHREEPIO\nWe're doomed!\n2\n1\n2\n-0.70710678\n    iv\na new hope\n3\nTHREEPIO\nThere'll be no escape for the Princess this time.\n3\n1\n9\n-0.11666667\n    iv\na new hope\n4\nTHREEPIO\nWhat's that?\n4\n1\n2\n0.00000000\n    iv\na new hope\n5\nTHREEPIO\nI should have known better than to trust the logic of a half-sized thermocapsulary dehousing assister...\n5\n1\n17\n0.06063391\n    iv\na new hope\n6\nLUKE\nHurry up!\n6\n1\n2\n0.00000000\n    iv\na new hope\n6\nLUKE\nCome with me!\n6\n2\n3\n0.00000000"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-20",
+    "href": "materials/03-targets.html#section-20",
+    "title": "",
+    "section": "",
+    "text": "For example, rather than write a script that loads, cleans, and outputs the Star Wars data, I simply wrote two functions, which we can easily call and run as needed to get the data.\n\n\n…instead of invoking a whole block of text, all you need to do is type a small reusable command. The function name speaks for itself, so you can recall what it does without having to mentally process all the details again."
+  },
+  {
+    "objectID": "materials/03-targets.html#the-problem-4",
+    "href": "materials/03-targets.html#the-problem-4",
+    "title": "",
+    "section": "The Problem",
+    "text": "The Problem\nIt might not be too bad when you’re actively working on a project, but suppose you’re coming back to something after a few months away.\n\nOr suppose you look at someone else’s repo for the first time, and you have to try to figure out how to put the pieces together to produce their result.\n\n\nWe’d like an easier way to keep track of dependencies so that we are only re-running things when necessary, as well as provide others with a clear path to reproduce our work."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-11",
+    "href": "materials/03-targets.html#section-11",
+    "title": "",
+    "section": "",
+    "text": "What is targets.R?\nRunning targets::use_targets() will create a template for the targets.R script, which all follow a similar structure.\n\n\n# Created by use_targets().\n# Follow the comments below to fill in this target script.\n# Then follow the manual to check and run the pipeline:\n#   https://books.ropensci.org/targets/walkthrough.html#inspect-the-pipeline\n\n# Load packages required to define the pipeline:\nlibrary(targets)\n# library(tarchetypes) # Load other packages as needed.\n\n# Set target options:\ntar_option_set(\n  packages = c(\"tibble\") # Packages that your targets need for their tasks.\n  # format = \"qs\", # Optionally set the default storage format. qs is fast.\n)\n\n# Run the R scripts in the R/ folder with your custom functions:\ntar_source()\n# tar_source(\"other_functions.R\") # Source other scripts as needed.\n\n# Replace the target list below with your own:\nlist(\n  tar_target(\n    name = data,\n    command = tibble(x = rnorm(100), y = rnorm(100))\n    # format = \"qs\" # Efficient storage for general data objects.\n  ),\n  tar_target(\n    name = model,\n    command = coefficients(lm(y ~ x, data = data))\n  )\n)"
+  },
+  {
+    "objectID": "materials/03-targets.html#targets-key-functions",
+    "href": "materials/03-targets.html#targets-key-functions",
+    "title": "",
+    "section": "targets key functions",
+    "text": "targets key functions\ntar_target() is the workhorse for defining the steps in a workflow; we’ll go through this in more detail shortly."
+  },
+  {
+    "objectID": "materials/03-targets.html#an-example---star-wars",
+    "href": "materials/03-targets.html#an-example---star-wars",
+    "title": "",
+    "section": "An Example - Star Wars",
+    "text": "An Example - Star Wars\nGoing back to our Star Wars sentiment analysis, we can build a simple targets pipeline to recreate what we did earlier. The basic steps of our pipeline will look something like this:\n\n\nLoad Star Wars text data\nClean and prepare dialogue\nGet sentences from dialogue\nCalculate sentiment"
+  },
+  {
+    "objectID": "materials/03-targets.html#embracing-functions",
+    "href": "materials/03-targets.html#embracing-functions",
+    "title": "",
+    "section": "Embracing Functions",
+    "text": "Embracing Functions\n\ntargets expects users to adopt a function-oriented style of programming. User-defined R functions are essential to express the complexities of data generation, analysis, and reporting.\n\nhttps://books.ropensci.org/targets/functions.html"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-21",
+    "href": "materials/03-targets.html#section-21",
+    "title": "",
+    "section": "",
+    "text": "Embracing functions makes it easier for us to track dependencies, explain our work, and build in small pieces that can be tested and put together to complete the larger project.\n\nIt also can really help when we have time consuming steps."
+  },
+  {
+    "objectID": "materials/03-targets.html#targets-demo---college-football-and-elo-ratings",
+    "href": "materials/03-targets.html#targets-demo---college-football-and-elo-ratings",
+    "title": "",
+    "section": "targets demo - College Football and Elo Ratings",
+    "text": "targets demo - College Football and Elo Ratings\n\nView repo organization for https:://github.com/ds-workshop/cfb_elo\nExamine targets.R\nShow _targets metadata\nShow _targets objects"
+  },
+  {
+    "objectID": "materials/01-git.html#section-108",
+    "href": "materials/01-git.html#section-108",
+    "title": "",
+    "section": "",
+    "text": "This pull request went into main, when we wanted to submit it into feature.\n\nOkay, this might not be a problem. The purpose of this exercise was to get the completed exercise into main, right?\n\n\nLet’s go look at the commit that was pulled into main.\nview commit"
+  },
+  {
+    "objectID": "materials/01-git.html#section-109",
+    "href": "materials/01-git.html#section-109",
+    "title": "",
+    "section": "",
+    "text": "I, the reviewer, did not notice that this pull request didn’t have a completed analysis.\n\nI should have instead grabbed one of the other pull requests, which was finished.\nview other pull request"
+  },
+  {
+    "objectID": "materials/01-git.html#section-110",
+    "href": "materials/01-git.html#section-110",
+    "title": "",
+    "section": "",
+    "text": "How do we resolve this situation? The point of using Git + GitHub is that we’re never really in trouble, we can always just go back to a previous commit.\n\nSo how do we do that?"
+  },
+  {
+    "objectID": "materials/01-git.html#section-111",
+    "href": "materials/01-git.html#section-111",
+    "title": "",
+    "section": "",
+    "text": "What has been our process for making any sort of change to a repository?\n\n\nCheckout a branch (a commit)\nCreate a new branch\nMake a change\nCommit the change\nPush the change\nMerge (pull request) the change to the original branch\n\n\n\nSo, how would we “undo” a commit?"
+  },
+  {
+    "objectID": "materials/01-git.html#section-112",
+    "href": "materials/01-git.html#section-112",
+    "title": "",
+    "section": "",
+    "text": "With pull requests, we always have the option to revert directly on Github."
+  },
+  {
+    "objectID": "materials/01-git.html#section-113",
+    "href": "materials/01-git.html#section-113",
+    "title": "",
+    "section": "",
+    "text": "Under the hood, this amounts to:\n\nChecking out the repository at the previous commit\nCreating a new branch revert-name-of-last-pr\nMerging revert-name-of-last-pr into main\n\n\nThis adds the pull request we made, then reverted, to the history of the project.\n\n\nWe could use rebase to try to “clean up” this history, but in practice I’d prefer to keep the lineage."
+  },
+  {
+    "objectID": "materials/01-git.html#handy-git-functions-to-know",
+    "href": "materials/01-git.html#handy-git-functions-to-know",
+    "title": "",
+    "section": "Handy Git Functions to know",
+    "text": "Handy Git Functions to know\ngit log is a handy way to view a history of commits\ngit log -n 5 will show the last 5 commits"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-22",
+    "href": "materials/03-targets.html#section-22",
+    "title": "",
+    "section": "",
+    "text": "Let’s revisit some of the original motivations for this workshop."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-23",
+    "href": "materials/03-targets.html#section-23",
+    "title": "",
+    "section": "",
+    "text": "How do I share my code with you, so that you can run my code, make changes, and let me know what you’ve changed?\n\nHow can a group of people work on the same project without getting in each other’s way?\n\n\nHow do we ensure that we are running the same code and avoid conflicts from packages being out of date?\n\n\nHow can we run experiments and test out changes without breaking the current project?"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-24",
+    "href": "materials/03-targets.html#section-24",
+    "title": "",
+    "section": "",
+    "text": "Let’s talk about using targets to build predictive models."
   }
 ]

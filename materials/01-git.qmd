@@ -1934,7 +1934,7 @@ This will fork and clone the repository at *repo_spec*  and create a local RStud
 - Answer the questions
 - Commit your answers
 - Push your answers
-- Create a pull request for your branch into ds-workshop/feature
+- Create a pull request for your branch into `ds-workshop/feature`
 
 ```{R}
 #| echo: false
@@ -1943,23 +1943,102 @@ countdown_timer(15)
 
 ## 
 
-We hit something of a snag with installing the requisite packages for that one, eh? We'll talk about that shortly.
+Okay, so you have submitted pull requests, which I, the reviewer, have taken a look at.
 
 . . .
 
-But next, let's review everyone's work and complete a pull request. We'll then work off one of these branches, and proceed to add some new pieces.
+I completed a pull request that was submitted and it went through without issues; let's go take a look.
 
-# `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
+. . .
 
-- Checkout main
-- Pull upstream/main to ensure you are caught up with new changes
-- Examine the new questions in **analysis.qmd**
-- Create a new branch for development
-- Commit your answers
-- Push your answers
-- Create a pull request for your branch into ds-workshop/main
+https://github.com/ds-workshop/board_games/pull/8
 
-```{R}
-#| echo: false
-countdown_timer(15)
-```
+## 
+
+This pull request went into `main`, when we wanted to submit it into `feature`.
+
+. . .
+
+Okay, this might not be a problem. The purpose of this exercise was to get the completed exercise into main, right?
+
+. . .
+
+Let's go look at the commit that was pulled into `main`.
+
+[view commit](https://github.com/ds-workshop/board_games/blob/553d1fbf323b5ad59778299b5ff80a61da9739c8/analysis.md)
+
+## 
+
+I, the reviewer, did not notice that this pull request didn't have a completed analysis. 
+
+. . .
+
+I should have instead grabbed one of the other pull requests, which was finished.
+
+[view other pull request](https://github.com/ds-workshop/board_games/pull/7/files)
+
+
+## 
+
+How do we resolve this situation? The point of using Git + GitHub is that we're never really in trouble, we can always just go back to a previous commit.
+
+. . .
+
+So how do we do that?
+
+##
+
+What has been our process for making any sort of change to a repository?
+
+. . .
+
+- Checkout a branch (a commit)
+- Create a new branch
+- Make a change
+- Commit the change
+- Push the change
+- Merge (pull request) the change to the original branch
+
+. . .
+
+So, how would we "undo" a commit?
+
+## 
+
+
+With pull requests, we always have the option to `revert` directly on Github.
+
+![](images/revert.png){fig-align="center"}
+
+## 
+
+Under the hood, this amounts to:
+
+1. Checking out the repository at the previous commit
+2. Creating a new branch `revert-name-of-last-pr`
+3. Merging `revert-name-of-last-pr` into main
+
+. . .
+
+This adds the pull request we made, then reverted, to the history of the project.
+
+. . .
+
+We could use `rebase` to try to "clean up" this history, but in practice I'd prefer to keep the lineage.
+
+## {background-image="images/revert-history.png" background-position="center" background-color="white" background-size="contain"}
+
+<!-- # `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"} -->
+
+<!-- - Checkout  -->
+<!-- - Pull upstream/main to ensure you are caught up with new changes -->
+<!-- - Examine the new questions in **analysis.qmd** -->
+<!-- - Create a new branch for development -->
+<!-- - Commit your answers -->
+<!-- - Push your answers -->
+<!-- - Create a pull request for your branch into ds-workshop/main -->
+
+<!-- ```{R} -->
+<!-- #| echo: false -->
+<!-- countdown_timer(15) -->
+<!-- ``` -->
