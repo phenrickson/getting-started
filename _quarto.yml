@@ -3,3 +3,9 @@ project:
   output-dir: docs
   render:
     - "*.qmd"
+    
+format:
+  html:
+    theme: cerulean
+    css: styles.css
+    toc: true
