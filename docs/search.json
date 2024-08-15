@@ -1355,7 +1355,7 @@
     "href": "materials/03-targets.html#section-15",
     "title": "",
     "section": "",
-    "text": "We then run the pipeline using tar_make(), which will detail the steps that are being carried out and whether they were re-run or skipped.\n\ntargets::tar_make()\n\n\n\n#&gt; v skipped target starwars\n#&gt; v skipped target sentences\n#&gt; v skipped target sentiment\n#&gt; v skipped pipeline [0.047 seconds]"
+    "text": "We then run the pipeline using tar_make(), which will detail the steps that are being carried out and whether they were re-run or skipped.\n\ntargets::tar_make()\n\n\n\n#&gt; v skipped target starwars\n#&gt; v skipped target sentences\n#&gt; v skipped target sentiment\n#&gt; v skipped pipeline [0.041 seconds]"
   },
   {
     "objectID": "materials/03-targets.html#section-16",
