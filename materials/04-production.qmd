@@ -588,40 +588,13 @@ This enables us to create *separate* environments in which we can do our develop
 
 ## 
 
-Okay, so let's 
+This style of thinking is typically focused on things like software/applications, where different versions are incrementally developed, tested, and released as updates.
 
-##
+. . .
 
-> The DevOps way to deploy code is called CI/CD, which is short for Continuous Integration and Continuous Deployment and Continuous Delivery (yes, the CD stands for two different things). 
+How does data science differ?
 
-> A few of the principles of CI/CD workflows include:
-
-> Central availability of source code, almost always in version control, that allows you to build the project from scratch.
-> Frequent and incremental additions to the production version of the code.
-> Automation for carrying out the actual deployment.
-> Automated testing on a pre-deployment version of the code.
-
-## project 
-
-What would we need to 
-
-we have to date covered:
-
-- Git/GitHub for versioning and sharing our code
-- `renv` for reproducing our code dependencies
-- `targets` for creating repeatable pipelines
-
-
-putting things into production is a matter of managing environments
-
-# environment
-
-- code
-- packages
-- system
-- hardware
-
-## project architecture
+## data science project architecture
 
 What is the typical output of a data science project?
 
@@ -629,15 +602,29 @@ What is the typical output of a data science project?
 
 - a job: a script that trains a model, updates a dataset, writes to a database
 
+. . .
+
 - an app: created in Shiny, Streamlit, Dash, 
+
+. . .
 
 - a report: a presentation, book, article, that is rendered from code
 
+. . .
+
 - an API
 
+##
 
-## 
+thing back to where we left our `flights` project.
 
+<!-- ## -->
 
+<!-- > The DevOps way to deploy code is called CI/CD, which is short for Continuous Integration and Continuous Deployment and Continuous Delivery (yes, the CD stands for two different things).  -->
 
+<!-- > A few of the principles of CI/CD workflows include: -->
 
+<!-- > Central availability of source code, almost always in version control, that allows you to build the project from scratch. -->
+<!-- > Frequent and incremental additions to the production version of the code. -->
+<!-- > Automation for carrying out the actual deployment. -->
+<!-- > Automated testing on a pre-deployment version of the code. -->

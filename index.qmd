@@ -5,7 +5,7 @@ format: html
 
 # About
 
-This workshop focuses on using R/RStudio with Git, renv, and targets. This will be pretty hands on, so it will be helpful to configure as much as possible in advance. I can help debug if we have any issues on the day.
+This workshop focuses on using R/RStudio with Git/GitHub, `renv`, and `targets`. This will be pretty hands on, so it will be helpful to configure as much as possible in advance. I can help debug if we have any issues on the day.
 
 ## Setup
 
@@ -26,3 +26,4 @@ The materials used in this workshop can be found in the [ds-workshop](https://gi
 1. [Git + GitHub](materials/01-git.html)
 1. [renv](materials/02-renv.html)
 1. [targets](materials/03-targets.html)
+1. [production](materials/04-production.html)
