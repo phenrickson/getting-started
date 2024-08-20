@@ -21,6 +21,9 @@ editor: source
 library(tidyverse)
 library(renv)
 library(countdown)
+library(tidymodels)
+library(glmnet)
+library(rstan)
 
 knitr::opts_chunk$set(
   comment = '#>', fig.width = 6, fig.height = 6
@@ -629,6 +632,169 @@ It also can really help when we have time consuming steps.
 countdown_timer(15)
 ```
 
+
+## 
+
+The `targets` pipeline in `cfb_elo` looked like this:
+
+![](images/cfb_elo.png){fig-align="center"}
+
+
+We configured the pipeline to make API calls to get the full history of college football games, then ran a time-consuming function to calculate Elo ratings for all teams across all available games.
+
+. . .
+
+We were then able to develop a simple model to examine the value of home field advantage and predict the spread of games.
+
+##
+
+Let's not get too distracted by this, but check out how the spread predictions from a simple Elo model compare to Vegas for week 1 of the 2024 season.
+
+## {background-image="images/cfb_2024_1.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/cfb_2024_1_tbl.png" background-position="center" background-color="white" background-size="contain"}
+
+## using `targets`
+
+There are a couple additional things we need to cover about `targets` before we move onto building more complex pipelines for the purpose of putting models and projects into production.
+
+Recall that running a `targets` pipeline creates a `_targets` folder within our project folder. 
+
+- `_targets/meta/`
+- `_targets/objects/`
+
+. . .
+
+![](images/cfb_targets_folder.png){fig-align="center"}
+
+##
+
+The `meta` folder contains metadata relating to the objects you created in your pipeline. This is what determines if your pipeline is up to date and tracks its lineage across different runs.
+
+![](images/targets_meta.png){fig-align="center"}
+
+## 
+
+Note:
+
+This `meta` folder and its contents **are committed to GitHub**, as it is required to run your pipeline, but also by committing it you are *storing the history of how your pipeline has changed* during development.
+
+##
+
+The `objects` folder contains the actual objects created by runs of your pipeline. These are the most up to date versions of the objects in your pipeline from your most recent run with `tar_make()` and can be loaded using `tar_read()` and `tar_load()`.
+
+![](images/targets_objects.png){fig-align="center"}
+
+## 
+
+Importantly, `objects` **are not committed to GitHub**. These objects are the various artifacts of your pipeline runs (data, models, etc) and can be quite large. Git is not intended to handle diffs for objects of this nature, so committing these would be a bad idea.
+
+::: aside
+
+There is thee `gittargets` package that uses Git LFS for data version control, but this is generally on the backburner in favor of cloud versioning.
+:::
+
+
+##
+
+You'll notice that, by default, you can't even commit `_targets/objects` to your repository; this is because by default these are ignored with a special .gitignore.
+
+![](images/targets_objects_gitignore.png){fig-align="center"}
+
+## 
+
+*By default*, the objects you create in your pipeline will be stored **locally** - that is, on the machine running the pipeline. This means, by default, that pipeline runs are isolated from each other.  ^[That is, unless your pipeline creates files/writes data/deploys models to locations outside of our pipeline. Then we'll need to take some additional steps to separate runs.]
+
+. . .
+
+If you want to fiddle with adding a new step to my pipeline, you will have to re-run the entire pipeline; the `objects` stored on my machine will not be available to you.
+
+## 
+
+This also means that, locally, the stored `objects` are always from the last time a target was run via `tar_make()`
+
+![](images/targets_objects_local.png){fig-align="center"}
+
+##
+
+This means that `targets` does not, by default, have **data** version control; you are not storing multiple versions of your objects as your pipeline changes. You are always overwriting old output with new output.
+
+##
+
+However, we can configure `targets` to export the `objects` to a shared cloud location so that:
+
+. . .
+
+1) `objects` are no longer isolated to the machine of the run
+
+. . .
+
+2) multiple versions of `objects` are stored using cloud versioning to preserve the lineage of our pipeline
+
+##
+
+At the top of our `_targets.R` script, we have options we use to define the pipeline. 
+
+This includes setting the packages that should be loaded during the entire pipeline, the format of the targets to be saved, and the location, or *repository* to store the `objects`.
+
+By default, this is set to "local".
+
+```{r}
+#| eval: false
+#| echo: true
+#| 
+# Set target options:
+tar_option_set(
+    packages = c("tidyverse"),
+    format = "qs",
+    repository = "local"
+)
+  
+```
+
+## 
+
+But we can set the repository to a cloud storage location (AWS, GCP), which will then export our objects and their metadata to a cloud bucket.
+
+```{r}
+#| eval: false
+#| echo: true
+# Set target options:
+tar_option_set(
+  packages = c("tidyverse", "cfbfastR"),
+  format = "qs",
+  # for cloud storage
+  resources = 
+    tar_resources(
+      gcp = tar_resources_gcp(
+      bucket = "cfb_models",
+      prefix = 'data'
+    )
+  ),
+  repository = "gcp"
+)
+
+```
+
+
+## {background-image="images/gcp_bucket.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+This is what I tend to do for my own projects, as it shifts all of my storage to the cloud and I can pick up and work on pipelines between different workstations without needing to re-run the pipeline everytime.
+
+. . .
+
+It also stores the lineage of my work historically, so that I can easily revert to past versions if needed.
+
+##
+
+However, using the cloud introduces an added wrinkle of requiring authentication around our pipeline, which we will cover later. 
+
+. . .
+
+Sadly, at the minute, `targets` is only set up to use AWS and GCP out of the box; Azure is in development but would currently require some custom configuration.
+
 # putting it all together
 
 `git` + `targets` + `renv` for predictive modeling projects
@@ -639,11 +805,11 @@ Let's revisit some of the original motivations for this workshop.
 
 ##
 
-How do I share my code with you, so that you can run my code, make changes, and let me know what you've changed? 
+How do I share my code with you, so that you can run my code, make changes, and let me know what you've changed?
 
 . . .
 
-How can a group of people work on the same project without getting in each other's way? 
+How can a group of people work on the same project without getting in each other's way?
 
 . . .
 
@@ -653,13 +819,1042 @@ How do we ensure that we are running the same code and avoid conflicts from pack
 
 How can we run experiments and test out changes without breaking the current project?
 
+. . .
+
+How do we take a project *into production*?
+
+## `targets` and predictive models
+
+Let's talk about building predictive modeling pipelines in `targets`, the thing most of us are ultimately employed to do.
+
+. . .
+
+As with any other type of project, we want to write code that is transparent, reproducible, and allows for collaborative development and testing.
+
+. . .
+
+In principal, Git/GitHub and `renv` are the most important pieces for allowing us to do this; we are not *required* to use targets for training/deploying models. I would
+
+. . .
+
+But I have found its functional, Make-style approach to be well suited for managing the predictive modeling life cycle.
+
+##
+
+Predictive modeling runs are, after all, a DAG.
+
+```{mermaid}
+
+flowchart LR
+raw[Raw Data] --> clean[Clean Data]
+clean --> train[Training Set]
+clean --> valid[Validation Set]
+train --> preprocessor(Preprocessor)
+preprocessor --> resamples[Bootstraps]
+resamples --> model(glmnet)
+model --> features(Impute + Normalize)
+features --> tuning(Tuning)
+tuning --> valid
+preprocessor --> valid
+valid --> evaluation[Model Evaluation]
+train --> final(Model)
+valid --> final
+
+```
+
+
+![](images/flights_dag.png){fig-align="center"}
+
+##
+
+In the sections to come, we will be *splitting/training/finalizing/deploying* predictive models in a `targets` pipeline.
+
+. . .
+
+Most of the examples we're going to work on will assume some level of familiarity with `tidymodels`. What is everyone's famililarity with `tidymodels`?
+
+. . .
+
+Again, in principal, you do not *have* to use `tidymodels` in pipelines, but they provide a standardized way to train models that naturally works well with functional programming.
+
+. . .
+
+Therefore:
+
+
+## a crash course in tidymodels
+
+. . .
+
+`tidymodels` refers to a suite of R packages that bring the design philosophy and grammar of the `tidyverse` to training models
+
+. . .
+
+if you're like me and and originally cut your teeth with the `caret` package, `tidymodels` is its successor from the same person (Max Kuhn, praise his name)
+
+## {background-image="images/tidymodels_package.png" background-position="center" background-color="white" background-size="contain"}
+
+##
+
+fun fact:
+`tidymodels` is basically just a GitHub organization:
+
+## {background-image="images/tidymodels_org.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/workshop_org.png" background-position="center" background-color="white" background-size="contain"}
+
+##
+
+Recall a sample predictive modeling pipeline.
+
+```{mermaid}
+
+flowchart LR
+raw[Raw Data] --> clean[Clean Data]
+clean --> train[Training Set]
+clean --> valid[Validation Set]
+train --> preprocessor(Preprocessor)
+preprocessor --> resamples[Bootstraps]
+resamples --> model(glmnet)
+model --> features(Impute + Normalize)
+features --> tuning(Tuning)
+tuning --> valid
+preprocessor --> valid
+valid --> evaluation[Model Evaluation]
+train --> final(Model)
+valid --> final
+
+```
+
+. . .
+
+Breaking this pipeline down into key parts, we have:
+
+- splitting/resampling (train/valid, bootstraps, cross validation)
+
+- preprocessing (imputation/normalization)
+
+- model specification (glmnet, random forest)
+
+- tuning over parameters (mtry, penalty)
+
+- model assessment (rmse, log loss)
+
+##
+
+Each of these correspond to a key concept/package in `tidymodels`
+
+. . .
+
+- splitting/resampling (train/valid, bootstraps, cross validation) -> `rsets` from `rsample`
+
+- preprocessing (imputation/normalization) -> `recipes`
+
+- model specification (glmnet, random forest) -> `models` from `parsnip`
+
+- tuning over parameters (mtry, penalty) -> `tune` and `dials`
+
+- model assessment (rmse, log loss)  -> `yardstick`
+
+## key `tidymodels` concepts
+
+- `recipes`
+
+- `models` from `parsnip`
+
+- `workflows`
+
+- `splits/resamples` from `rsample`
+
+- `metrics` from `yardstick` and `tune`
+
+<!-- We want to  -->
+
+<!-- - `recipes` capture steps for preprocessing data *before* training a model -->
+
+<!-- - a `model` is a model specification (from `parsnip`) that defines the type of model to be trained ("lm", "ranger", "xgboost"), its model -->
+
+
+## models
+
+. . .
+
+- a `model` is a *specification* (from `parsnip`) that defines the type of model to be trained (linear model, random forest), its mode (classification, regression), and its underlying engine (lm, stan_lm, ranger, xgboost, lightgbm)
+
+. . .
+
+- `parsnip` provides a standardized interface for specifiying models, which allows us to easily run different types of models without having to rewrite our code to accommodate differences
+
+. . .
+
+if you've ever been annoyed with having to create `y` and `x` matrices for glmnet or ranger, `parsnip` is something of a lifesaver
+
+##
+
+a linear model with `lm`
+
+```{r}
+#| echo: true
+
+linear_reg() |>
+  set_engine("lm") |>
+  translate()
+
+```
+. . .
+
+a linear model with `glmnet`
+
+```{r}
+#| echo: true
+
+linear_reg(penalty = 0) |>
+  set_engine("glmnet") |>
+  translate()
+```
+
+
+##
+
+a random forest with `ranger` (specifying tuning over the number of trees and number of randomly selected variables)
+
+```{r}
+
+rand_forest(mtry = tune::tune(),
+            trees = tune::tune()) |>
+  set_engine("ranger") |>
+  set_mode("classification")
+
+```
+. . .
+
+boosted trees with `xgboost`
+
+```{r}
+
+boost_tree(
+  trees = 500,
+  tree_depth = tune::tune(),
+  mtry = tune::tune(),
+  sample_size = tune::tune(),
+  stop_iter = 50) |>
+set_mode("classification") |>
+set_engine("xgboost")
+
+```
+
+##
+
+This allows us to easily fit models in a standardized way despite their engines requiring different formulas/syntax
+
+. . .
+
+to fit a model we simply pass along a formula and a dataset to `fit()`
+
+. . .
+
+fitting a linear model with `lm`
+
+```{r}
+#| echo: true
+#| eval: true
+linear_reg(mode = "regression") |>
+  set_engine("lm") |>
+  fit(mpg ~ hp + wt, data = mtcars)
+
+```
+
+. . .
+
+fitting a ridge regression with `glmnet`
+
+```{r}
+#| echo: true
+
+linear_reg(mode = "regression", penalty = 0) |>
+  set_engine("glmnet") |>
+  fit(mpg ~ hp + wt, data = mtcars)
+
+```
+
+## recipes
+
+`recipes` capture steps for preprocessing data *prior* to training a model.
+
+. . .
+
+a recipe is a type of *preprocessor* that can dynamically apply transformations (imputation, normalization, dummies) to the data we are using to model.
+
+. . .
+
+we create them with `recipe()`, typically specifying a *formula* and a *dataset*. we then add *steps* to recipe of the form `step_` (step_mutate, step_impute, step_nzv, ...)
+
+. . .
+
+```{r}
+#| echo: true
+
+library(splines2)
+
+rec  =
+  recipe(mpg ~ ., data = mtcars) |>
+    step_spline_b("hp", deg_free = 3) |>
+    step_interact(terms = ~ gear:wt) |>
+    step_normalize(all_numeric_predictors())
+
+
+rec$var_info
+
+rec$steps
+
+```
+
+## recipes
+
+. . .
+
+using recipes involves two main steps:
+
+- *preparing* recipes on a dataset with `prep()`
+- *applying* recipes to a dataset with `bake()`
+
+##
+
+- *preparing* recipes on a dataset with `prep()`
+
+. . .
+
+*preparing* a recipe is kind of like training a model; it captures/estimates information on one dataset and will apply those same transformations to a new dataset
+
+. . .
+
+This is really important for things like normalization/imputation, as we want to apply the same transformations to unseen data that were used on the training set
+
+```{r}
+#| echo: true
+#| eval: true
+
+prepped =
+  rec |>
+    prep()
+
+prepped$steps
+
+prepped$term_info
+```
+
+
+##
+
+- *applying* recipes to a dataset with `bake()`
+
+. . .
+
+*baking* a recipe produces the dataframe/matrix that will be used in modeling
+
+```{r}
+#| echo: true
+#| eval: true
+
+rec |>
+  prep() |>
+  bake(new_data = NULL) |>
+  head(5) |>
+  mutate_if(is.numeric, round, 3)
+
+```
+
+##
+
+recipes are especially helpful for handling categorical features, as we can create easily steps for handling novel levels or pooling infrequent levels.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data(ames, package = "modeldata")
+
+ames_rec <-
+  recipe(
+    Sale_Price ~ Neighborhood,
+    data = ames
+  ) |>
+  step_novel(Neighborhood) |>
+  step_other(Neighborhood, threshold = 0.05, other = "Other") |>
+  step_dummy(all_nominal_predictors())
+
+ames_rec |>
+  prep() |>
+  bake(new_data = NULL) |>
+  head(15)
+
+```
+
+## workflows
+
+`workflows` bundle `models` from parsnip and `preprocessors` from recipes into one object, which can then be trained/tuned/fit with a single call.
+
+##
+
+combining a model and recipe into a workflow
+
+```{r}
+#| eval: true
+#| echo: true
+mod =
+  linear_reg(mode = "regression") |>
+  set_engine("lm")
+
+rec  =
+  recipe(mpg ~ ., data = mtcars) |>
+    step_spline_b("hp", deg_free = 3) |>
+    step_interact(terms = ~ gear:wt) |>
+    step_normalize(all_numeric_predictors())
+
+wflow =
+  workflow() |>
+  add_recipe(rec) |>
+  add_model(mod)
+
+wflow
+
+```
+
+##
+
+fitting a workflow with `fit()`  *prepares* our recipe and *trains* our model in one call
+
+```{r}
+#| echo: true
+#| eval: true
+
+# fitting workflow
+fit =
+  wflow |>
+  fit(mtcars)
+
+# examining fit
+fit |>
+  broom::tidy() |>
+  mutate_if(is.numeric, round, 3)
+
+```
+
+
+##
+
+when we are using `targets` to train predictive models, a `workflow` will typically be the final step; it is the object we are trying to produce that can be used to predict new data
+
+. . .
+
+`workflows` make model deployment relatively straightforward, as we just need to export/share/deploy our finalized workflow
+
+. . .
+
+we'll go over this in a bit with the `vetiver` package
+
+
+## key `tidymodels` concepts
+
+- `recipes` &#10003;
+
+- `models` from `parsnip` &#10003;
+
+- `workflows` &#10003;
+
+- `splits/resamples` from `rsample`
+
+- `metrics` from `yardstick` and `tune`
+
+## rsample
+
+splitting our data (train/valid, bootstraps, cross validation) is a standard part of training/assessing predictive models
+
+. . .
+
+the `rsample` package provides a standardized way to do this that works directly with `workflows`
+
+##
+
+creating a train/validation split
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+# train/validation
+split = rsample::validation_split(mtcars, prop = 0.8)
+split
+
+```
+
+
+##
+
+creating bootstraps
+
+```{r}
+#| echo: true
+#| eval: true
+
+# bootstrap
+boots = rsample::bootstraps(mtcars, times =10)
+boots
+
+```
+
+##
+
+creating cross validation folds
+
+```{r}
+#| echo: true
+#| eval: true
+# cross validation
+folds = rsample::vfold_cv(mtcars, v = 5)
+folds
+
+```
+
+##
+
+each individual row contains an `rsplit` object, which has the original data stored as a single training/test split
+
+```{r}
+#| echo: true
+#| eval: true
+
+# grab one split
+one_split =
+boots |>
+pluck("splits", 1)
+
+one_split
+
+```
+
+##
+
+these sets can be extracted via the functions `rsample::training()` or `rsample::testing()`
+
+```{r}
+#| echo: true
+#| eval: true
+# extract training set
+one_split |>
+rsample::training()
+
+# extract test set
+one_split |>
+rsample::testing()
+
+```
+
+##
+
+nested `rsplit` objects make it easy to do tidy evaluation for models across resamples, such as estimate models/parameters
+
+
+### Code
+
+```{r}
+#| echo: true
+#| eval: false
+
+fit_model = function(split) {
+
+  linear_reg(mode = "regression") |>
+    fit(mpg ~ wt + hp + disp, data = training(split)) |>
+    broom::tidy()
+}
+
+# fit model to 500 bootstraps and plot distribution of coefficients
+estimates =
+  mtcars |>
+  rsample::bootstraps(times =500) |>
+  mutate(results = map(splits, fit_model)) |>
+  select(id, results)
+
+estimates
+
+```
+
+### Output
+
+```{r}
+#| echo: false
+#| eval: true
+
+fit_model = function(split) {
+
+  linear_reg(mode = "regression") |>
+    fit(mpg ~ wt + hp + disp, data = training(split)) |>
+    broom::tidy()
+}
+
+# fit model to 500 bootstraps and plot distribution of coefficients
+estimates =
+  mtcars |>
+  rsample::bootstraps(times =500) |>
+  mutate(results = map(splits, fit_model)) |>
+  select(id, results)
+
+estimates
+
+```
+
+
+
+
+
+##
+
+```{r}
+#| echo: true
+#| eval: true
+#| fig-align: center
+estimates |>
+  unnest(results) |>
+  ggplot(aes(x=estimate))+
+  geom_histogram(bins = 50)+
+  facet_wrap(~term, ncol = 2, scales = "free_x")+
+  theme_light()+
+  xlab("coefficient")+
+  geom_vline(xintercept = 0, linetype = 'dashed')
+
+```
+
+
+## metrics
+
+for predictive modeling workflows, `rsample` is typically used in conjunction with `yardstick` and `tune` to estimate model performance for a model or tune a model across parameters
+
+. . .
+
+we specify the type of metrics we want to use in a `metric_set()`
+
+```{r}
+#| echo: true
+#| eval: true
+my_metrics = yardstick::metric_set(rmse, rsq, ccc)
+
+my_metrics
+
+```
+
+##
+
+then we can fit our workflow across resamples and estimate its performance across these metrics
+
+```{r}
+#| echo: true
+#| eval: true
+
+wflow |>
+  fit_resamples(
+    resamples = boots,
+    metrics = my_metrics
+  ) |>
+  collect_metrics() |>
+  mutate_if(is.numeric, round, 3)
+
+```
+
+## key `tidymodels` concepts
+
+- `recipes` &#10003;
+
+- `models` from `parsnip` &#10003;
+
+- `workflows` &#10003;
+
+- `splits/resamples` from `rsample`  &#10003;
+
+- `metrics` from `yardstick` and `tune`  &#10003;
+
+##
+
+I realize this is a lot to take in, but once we are familiar with these concepts it becomes *much, much easier* to standardize our predictive modeling so that we can easily train/test/deploy different kinds of models within our pipeline
+
+. . .
+
+```{mermaid}
+
+flowchart LR
+raw[Raw Data] --> clean[Clean Data]
+clean --> train[Training Set]
+clean --> valid[Validation Set]
+train --> preprocessor(Preprocessor)
+preprocessor --> resamples[Bootstraps]
+resamples --> model(glmnet)
+model --> features(Impute + Normalize)
+features --> tuning(Tuning)
+tuning --> valid
+preprocessor --> valid
+valid --> evaluation[Model Evaluation]
+train --> final(Model)
+valid --> final
+
+```
+
+```{mermaid}
+
+flowchart LR
+raw[Raw Data] --> clean[Clean Data]
+clean --> train[Training Set]
+clean --> valid[Validation Set]
+train --> preprocessor(Preprocessor)
+preprocessor --> resamples[Cross validation]
+resamples --> model(lightgbm)
+model --> features(Minimal)
+features --> tuning(Tuning)
+tuning --> valid
+preprocessor --> valid
+valid --> evaluation[Model Evaluation]
+train --> final(Model)
+valid --> final
+
+```
+
+## `targets` and predictive models
+
+Let's walk through the process of building a `targets` pipeline for a predictive model that we will look to *deploy*.
+
+## flights
+
+Suppose we were working on the rather famous `nycflights13` dataset to train a model to predict whether departed flights would arrive late or on time
+
+```{r}
+#| echo: true
+#| eval: true
+#|
+library(nycflights13)
+
+flights =
+  nycflights13::flights |>
+  mutate(arr_delay = case_when(arr_delay >=30 ~ 'late',  TRUE ~ 'on_time'),
+  arr_delay = factor(arr_delay, levels = c("on_time", "late")),
+        date = as.Date(time_hour)
+  )
+
+flights |>
+  select(date, arr_delay, dep_time, arr_time, carrier, origin, dest, air_time, distance) |>
+  head(5)
+```
+
+## flights
+
+We have one year's worth of flights to examine, with information about the carrier, the origin, the destination, the departure time, etc.
+
+. . .
+
+our outcome is a binary variable `arr_delay` indicating whether the flight was on time or late.
+
+```{r}
+#| fig-align: center
+flights |>
+  mutate(date = lubridate::floor_date(time_hour, 'week')) |>
+  group_by(date, origin, arr_delay) |>
+  count() |>
+  ggplot(aes(x=date, y=n, fill = arr_delay))+
+  geom_col()+
+  facet_wrap(origin ~., ncol = 1)+
+  theme_light()+
+  scale_fill_viridis_d()
+
+```
+
+## flights
+
+Our end goal is to produce a model that can be used to predict new data *in production*.
+
+. . .
+
+To get to this point, we will need to split our data, train models, estimate their performance, and select the best performing model
+
+. . .
+
+I have already started this process; I want you to now pick up where I left off.
+
+# `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
+
+- Fork and clone the repository `https://github.com/ds-workshop/flights`
+- Note: uncheck *Copy the main branch only* to clone all branches in the repository
+- Checkout the `split` branch.
+- Create a new branch `your-name/split`
+- Restore the project with `renv::restore()`
+- Examine the pipeline with `targets::tar_glimpse()`
+- Run the pipeline `targets::tar_make()`
+- How is this data split for training/validation/testing?
+- Explore the outcome *arr_delay* in *train_data*. How would you model this outcome?
+
+```{R}
+#| echo: false
+countdown_timer(10)
+```
+
+
+##
+
+The `split` branch contains the following pipeline:
+
+![](images/flights_split.png){fig-align="center"}
+
+. . .
+
+What do we need to do next to get to our end goal of a finalized predictive model?
+
+# `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
+
+- How much missingness is present in `train_data`? How would you handle this missingness in a model?
+- Create a `recipe` from `train_data` with *arr_delay* as the outcome and *air_time* and *distance* as predictors
+- Add a step to *impute the missigness* in your predictors
+- Add a step to *normalize (center and scale)* your predictors
+- Run your pipeline
+- Commit and push your changes to your branch
+- Create a pull request for *your-branch/split* into the *upstream* split
+
+```{R}
+#| echo: false
+countdown_timer(10)
+```
+
+##
+
+We can create a recipe in the following way:
+
+```{r}
+#| eval: true
+#| echo: true
+
+rec=
+  recipe(arr_delay ~ air_time + distance, data = flights) |>
+  step_impute_median(all_numeric_predictors()) |>
+  step_normalize(all_numeric_predictors())
+
+```
+
+. . .
+
+We can then see how this recipe prepares data if we *prep* it on our training set and then use *bake*.
+
+```{r}
+
+rec |>
+prep() |>
+bake(flights) |>
+sample_n(15)
+
+```
+
+##
+
+Now, we want to train a workflow.
+
+# `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
+
+- Checkout the `model/baseline` branch
+- Create a new branch *your-name/baseline*
+- Run the pipeline `targets::tar_make()`
+- What type of model was used?
+- How did the model perform?
+- How would you update/improve over this model?
+
+```{R}
+#| echo: false
+countdown_timer(10)
+```
+
+##
+
+The `model/baseline` branch added new steps to the pipeline; we added a `workflow` that we fit to the training set and assessed on the validation set.
+
+![](images/flights_baseline.png){fig-align="center"}
+
+##
+
+Notice that we directly wrote these metrics to a csv in our project (`targets-runs/valid_metrics.csv`), which we will then commit to our repository.
+
+. . .
+
+This will allow us to track model performance on our validation set using Git as we add new models/tinker with the original model.
+
+
+# `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
+
+- Add `dep_time` as a feature to the baseline model
+- Run the pipeline; how did the results change?
+- Commit your results to your branch
+- Create a pull request for *your-branch/split* into the *upstream* split
+- Then, checkout the *model/glmnet* branch
+- Create a new branch *your-name/glmnet*
+- Run the pipeline `targets::tar_make()`
+- What model was used?
+- How did the model perform?
+
+```{R}
+#| echo: false
+countdown_timer(10)
+```
+
+##
+
+The `model/glmnet` branch added a more robust recipe to make use of more features, particularly categorical features. We then added a new workflow to the pipeline, which we trained and assess as before.
+
+![](images/flights_glmnet.png){fig-align="center"}
+
+##
+
+At this point, we have a decent first candidate a for a model based on the validation set. What do we need to do to *finalize* this model?
+
+. . .
+
+We'll want to refit the workflow on the training + validation data, then assess its performance on the test set.
+
+. . .
+
+Then, we'll refit to training + validation + test and prepare the model for deployment with `vetiver`.
+
+##
+
+![](images/flights_stable.png)
+
+. . .
+
+This pipeline produces a final workflow that we then turn into a `vetiver_model` for the purpose of using the model in a production setting.
+
+`vetiver` provides a standardized way for bundling workflows with the information needed to version, store, and deploy them.
+
+. . .
+
+This branch is *stable* in the sense we could run the code from this branch to produce a model object that is ready to work *in production*.
+
+. . .
+
+We'll talk about pinning a `vetiver` model to a model board in just a little bit, just bear with me.
+
+. . .
+
+I'm slightly regretting the order in which I set this up but we must press onward.
+
+##
+
+How would we then train and evaluate a different model?
+
+# `r fontawesome::fa("laptop-code", "white")` Your Turn {background-color="#447099" transition="slide-in"}
+
+- Checkout the *stable/model* branch
+- Create a new branch *your-name/challenger*
+- Examine the pipeline with `targets::tar_glimpse()`
+- Run the pipeline
+
+. . .
+
+- *Add a competing workflow* to the pipeline: use the existing recipe with a new model specification, or create a new recipe with the existing model specification. The world is your oyster.
+- Train and evaluate your new workflow on the validation set. Does it outperform the existing model?
+- Commit your results
+- Create a pull request for *your-name/challenger* into the upstream *dev* branch
+
+```{R}
+#| echo: false
+countdown_timer(15)
+```
+
+##
+
+I added a workflow using boosted trees with `lightgbm` and found it produced better results across the board than `glmnet`.
+
+![](images/flights_lightgbm.png){fig-align="center"}
+
+. . .
+
+Notice that I have this pipeline configured to use *manual* model selection; to update the final model you simply select your tuned model of choice to *best_model*, which is then refit and finalized.
+
+##
+
+If we navigate to the `main` branch on the Github repository, we can see the following:
+
+![](images/flights_readme_1.png){fig-align="center"}
+
+. .
+
+##
+
+![](images/flights_readme_2.png){fig-align="center"}
+
+![](images/flights_readme_3.png){fig-align="center"}
+
+##
+
+Notice how it's been kind of a pain to keep track of our model metrics? We have to checkout the branch, run the pipeline, and then read in the *valid_metrics.csv* file.
+
+. . .
+
+We can make our lives easier for viewing things like this using GitHub actions, which will automatically run based on a push or pull request.
+
+```{verbatim}
+# name: updating the README
+#
+# on:
+#   workflow_dispatch:
+#   push:
+#     branches: [ "main", "dev"]
+#
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       contents: write
+#
+#     strategy:
+#       matrix:
+#         r-version: ['4.4.1']
+#
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+#
+#       - name: Set up Quarto
+#         uses: quarto-dev/quarto-actions/setup@v2
+#
+#       - name: Set up R ${{ matrix.r-version }}
+#         uses: r-lib/actions/setup-r@v2
+#         with:
+#           r-version: ${{ matrix.r-version }}
+#           use-public-rspm: true
+#
+#       - name: Install additional Linux dependencies
+#         if: runner.os == 'Linux'
+#         run: |
+#           sudo apt-get update -y
+#           sudo apt-get install -y libgit2-dev libglpk40
+#
+#       - name: Setup renv and install packages
+#         uses: r-lib/actions/setup-renv@v2
+#         with:
+#           cache-version: 1
+#         env:
+#           RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.rstudio.com/all/latest
+#           GITHUB_PAT: ${{ secrets.GH_PAT}}
+#
+#       - name: Render README
+#         shell: bash
+#         run: |
+#           git config --global user.name ${{ github.actor }}
+#           quarto render README.qmd
+#           git commit README.md -m 'Re-build README.qmd' || echo "No changes to commit"
+#           git push origin || echo "No changes to commit"
+#
+```
+
 ## 
 
-Let's talk about using `targets` to build predictive models.
+Currently, this just renders the README, which I have set to view the *valid_metrics.csv* and *test_metrics.csv* that are in the branch.
 
+. . .
 
+If we wanted to, for instance, see *every* committed version of *valid_metrics.csv*, we just have to configure it in the README.
 
-
-
-
+[Phils Collection](https://github.com/ds-workshop/phils_collection){style="font-size: 120px;"}
 

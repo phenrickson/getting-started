@@ -1,0 +1,643 @@
+---
+format:
+  revealjs:
+    self-contained: true
+    slide-number: c/t
+    width: 1600
+    height: 900
+    css: ["theme/theme.css"]
+    theme: simple
+    highlight-style: github
+    code-block-border-left: "#4f6952"
+    code-block-bg: true
+    code-link: true
+editor: source
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+library(renv)
+library(countdown)
+
+knitr::opts_chunk$set(
+  comment = '#>', fig.width = 6, fig.height = 6
+)
+
+countdown_timer <- function(
+    minutes = 1, 
+    play_sound = TRUE, 
+    font_size = "2em", 
+    ...
+) {
+  countdown(
+    minutes = minutes,
+    # Fanfare when it's over
+    play_sound = play_sound,
+    # Set timer theme to match solarized colors
+    color_border              = "#404041",
+    color_text                = "white",
+    color_background = "#447099",
+    color_running_background  = "#72994E",
+    color_running_text        = "white",
+    color_finished_background = "#EE6331",
+    color_finished_text       = "white",
+    font_size = font_size,
+    ...
+  )
+}
+```
+
+# production: putting it all together
+
+##
+
+so far in this series we have covered:
+
+- `Git/GitHub` for versioning and sharing our code
+- `renv` for reproducing our code's dependencies
+- `targets` for running our project as a pipeline
+
+. . .
+
+What do we need in order to put these pieces together for "production"?
+
+## references
+
+I highly recommend bookmarking the following as a reference, as much of the material in the following sections aligns with the lessons from this book:
+
+- [DevOps for Data Science](https://do4ds.com)
+
+## {background-image="images/do4ds.jpeg" background-position="center" background-color="white" background-size="contain"}
+
+##
+
+> Data science alone is pretty useless.
+
+. . .
+
+> [What matters] is whether your work is useful. That is, whether it affects decisions at your organization or in the broader world.
+
+. . .
+
+> That means you must **share your work** by putting it **in production**.
+
+[DevOps for Data Science - Introduction](https://do4ds.com/chapters/intro.html)
+
+## 
+
+How do you currently share your work?
+
+. . .
+
+*(reminder to self: this isn't a rhetorical question. put answers/typical patterns on the board)*
+
+. . .
+
+What does it mean to "put something into production"?
+
+. . .
+
+> Many data scientists think of in production as an exotic state where supercomputers run state-of-the-art machine learning models run over dozens of shards of data, terabytes each. There’s a misty mountaintop in the background, and there’s no Google Sheet, CSV file, or half-baked database query in sight.
+
+## {background-image="images/batman_pow.jpeg" background-position="center" background-color="white" background-size="contain"}
+
+##
+
+> **But that’s a myth**. If you’re a data scientist putting your work in front of someone else’s eyes, **you are in production**.
+
+##
+
+In my experiences as a consultant I have seen:
+
+. . .
+
+- SPSS jobs running on someone's laptop writing business critical data to (very accessible) Google Sheets as their enterprise "data warehouse".
+
+. . .
+
+- Excel spreadsheets printed out daily and taped to walls of offices for everyone to congregate over and examine.
+
+. . .
+
+- A Python model retraining (on the same data) everyday in a notebook for scoring data for customers. The script converted all numeric features into characters. The model was nonsense. It had been running without oversight for years.
+
+##
+
+- Models "deployed" by storing linear model coefficients in SQL for analysts to do manual scoring (in order to allow them to "adjust" the coefficients to their liking).
+
+. . .
+
+- Alteryx workflows running nightly on Windows scheduler on someone's laptop with a five minute delay between runs to read CSVs that would then be loaded to Snowflake. If any of those CSVs were ever left open, their entire data integration process collapsed. Don't ask me how I know this.
+
+. . .
+
+- Alteryx. So much Alteryx. 
+
+. . .
+
+I could go on.
+
+## 
+
+I mean, I've "put things into production" in ways that are, in retrospect, quite funny.
+
+## {background-image="images/cfb_2022_overview.png" background-position="center" background-color="white" background-size="contain"}
+
+## {background-image="images/cfb_2022_team.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+I ran these reports every week and shared them with other people (read: r/cfb) by directly committing `html` files to a GitHub repository, which then built and deployed them on `GitHub Pages`.
+
+. . .
+
+This meant I was version controlling ~130 pretty beefy `html` files weekly.
+
+. . .
+
+GitHub Pages was *really* not intended for that.
+
+. . .
+
+My `cfb` repository is now like 11GB due to storing all of those versions.
+
+. . .
+
+I still haven't really figured out what do with that, and have instead punted to a new repository.
+
+##
+
+The better way to "deploy" a bunch of `html` pages, by the way, is to just render them to a cloud storage bucket and grant public access to that bucket.
+
+. . .
+
+![](images/bgg_collections_bucket.png){fig-align="center"}
+
+## {background-image="images/bgg_collections_page.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+Is this the most sophisticated and mature way to put the results of this project *into production*?
+
+## {background-image="images/shrug.gif" background-position="center" background-color="white" background-size="cover"}
+
+## 
+
+Is this the most sophisticated and mature way to put the results of this project *into production*?
+
+Nonetheless, this is result that I'm putting in front of other people; ergo, it's *in production*.
+
+##
+
+> For some organizations, in production means **a report that gets rendered** and emailed around. For others, it means hosting **a live app or dashboard** that people visit. For the most sophisticated, it means **serving live predictions** to another service from a machine learning model via an application programming interface (API).
+
+. . .
+
+> Regardless of the maturity or the form, every organization wants to know that the **work is reliable**, the **environment is safe**, and that the **product will be available when people need it**.
+
+. . .
+
+So, how do we do this? This is where the philosophy/idea of DevOops comes into play.
+
+## 
+
+Consider what we have covered so far in these workshops.
+
+. . .
+
+We've discussed how to version our code and share it in an external repository so that it can be accessed, run, and edited by others.
+
+. . .
+
+We've discussed how to create reproducible environments with `renv` so that other people can restore the exact requirements needed to run our code.
+
+. . .
+
+We've discussed how to create pipelines with `targets` so that others can easily re-run our project and produce the same output that we did.
+
+. . .
+
+We've discussed how to use `targets` to train competing models and produce finalized models.
+
+## {background-image="images/ds_environment_1.png" background-position="center" background-color="white" background-size="contain"}
+
+## environments as code
+
+> DevOps principles aim to create software that builds security, stability, and scalability into the software from the very beginning. The idea is to avoid building software that **works locally**, but **doesn’t work well in collaboration or production**.
+
+. . .
+
+So much of DevOps boils down to preventing the *well-it-runs-on-my-machine* problem.
+
+## {background-image="images/xkcd_will_it_work.png" background-position="center" background-color="white" background-size="contain"}
+
+##
+
+> DevOps principles aim to create software that builds security, stability, and scalability into the software from the very beginning. The idea is to avoid building software that **works locally**, but **doesn’t work well in collaboration or production**.
+
+. . .
+
+> The code you’re writing relies **on the environment in which it runs**. While most data scientists have ways to share code, sharing environments isn’t always standard practice, but it should be.
+
+. . .
+
+> We can take lessons from DevOps, where the solution is to create **explicit linkages between the code and the environment so you can share both**.
+
+##
+
+How close are we to creating fully reproducible environments via code? What are we missing?
+
+## {background-image="images/ds_environment_1.png" background-position="center" background-color="white" background-size="contain"}
+
+##
+
+How close are we to creating fully reproducible environments via code? What are we missing?
+
+We've only really covered one layer:
+
+- **packages**: Python + R packages (dplyr, pandas)
+
+`renv` and `venv` allow us to create isolated virtual environments in which to execute our code. 
+
+## 
+
+> your data science environment is the stack of software and hardware below your code, from the R and Python packages you’re using right down to the physical hardware your code runs on.
+
+. . .
+
+Packages are just one piece; we want to be able to make the *entire* environment reproducible.
+
+. . .
+
+This means we need to be comfortable with *creating and using environments via code*; this is the crux of DevOps that we need to apply to our data science practice. 
+
+.. 
+
+> The DevOps term for this is that environments are **stateless** or in the phrase that environments should be “cattle, not pets”. That means that you can use **standardized tooling to create and destroy functionally identical copies of the environment** without secret state being left behind.
+
+## 
+
+We've covered creating and taking down one layer:
+
+- **packages**: Python + R packages (dplyr, pandas)
+
+`renv` and `venv` allow us to create isolated virtual environments in which to execute our code.
+
+## 
+
+But there are three main layers to think about:
+
+- **packages**: R + Python packages (dplyr, pandas)
+
+. . .
+
+- **system**: R; Python; Quarto; Git; Libraries (Fortran, C/C++), ...
+
+Think about everything needed to run the work we've covered so far.R/RStudio, Quarto, Git, all of the underlying libraries that are used in the background when you're installing a package from source and you're praying that the installation is okay.
+
+. . .
+
+API keys, database credentials, ODBC drivers...
+
+
+## 
+
+But there are three main layers to think about:
+
+- **packages**: R + Python packages (dplyr, pandas)
+
+- **system**: R; Python; Quarto; Git; Libraries (Fortran, C/C++)
+
+- **hardware**: physical/virtual hardware on which your code runs
+
+. . .
+
+Your code has to actually run on something. Even if it's in the cloud it's still running on a physical machine *somewhere*.
+
+##
+
+[So, putting things *in production* in a safe and reliable way starts with recognizing the different pieces we need to recreate our data science environment.]{.semi-transparent}
+
+## {background-image="images/ds_environment_full.png" background-position="center" background-color="white" background-size="contain"}
+
+##
+
+So, putting things *in production* in a safe and reliable way starts with recognizing the different pieces we need to recreate our data science environment.
+
+Then, it becomes a matter of reproducing each of these pieces *via code*. This part sounds super complicated, and it can be, but a lot of smart people have put a lot of time into making it easier.
+
+##
+
+Let's revisit the GitHub action we saw earlier.
+
+```{verbatim}
+# name: updating the README
+#
+# on:
+#   workflow_dispatch:
+#   push:
+#     branches: [ "main", "dev"]
+#
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       contents: write
+#
+#     strategy:
+#       matrix:
+#         r-version: ['4.4.1']
+#
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+#
+#       - name: Set up Quarto
+#         uses: quarto-dev/quarto-actions/setup@v2
+#
+#       - name: Set up R ${{ matrix.r-version }}
+#         uses: r-lib/actions/setup-r@v2
+#         with:
+#           r-version: ${{ matrix.r-version }}
+#           use-public-rspm: true
+#
+#       - name: Install additional Linux dependencies
+#         if: runner.os == 'Linux'
+#         run: |
+#           sudo apt-get update -y
+#           sudo apt-get install -y libgit2-dev libglpk40
+#
+#       - name: Setup renv and install packages
+#         uses: r-lib/actions/setup-renv@v2
+#         with:
+#           cache-version: 1
+#         env:
+#           RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.rstudio.com/all/latest
+#           GITHUB_PAT: ${{ secrets.GH_PAT}}
+#
+#       - name: Render README
+#         shell: bash
+#         run: |
+#           git config --global user.name ${{ github.actor }}
+#           quarto render README.qmd
+#           git commit README.md -m 'Re-build README.qmd' || echo "No changes to commit"
+#           git push origin || echo "No changes to commit"
+#
+```
+
+##
+
+This is essentially just a script that:
+
+1. Specifies to run on a Linux machine (somewhere)
+2. Checks out a `GitHub` repository
+3. Sets up `Quarto`
+4. Sets up `R`
+5. Installs additional Linux libs that were needed for installing R packages -> this is the part that breaks and you have to fiddle with 9/10 times.
+6. Uses `renv` to install packages based on `renv.lock` in the repository
+7. Renders the `Quarto` README and commits/pushes it to the repository
+
+## 
+
+Now, to be clear, this is a lot of work to just render a goddamn README. 
+
+. . .
+
+But we use the same setup to do more elaborate work, such as running the whole dang pipeline via a Github Action.
+
+##
+
+We've been building pipelines with `targets`. 
+
+. . .
+
+If you run `targets::tar_github_actions()`, you will notice a new file `.github/workflows/targets.yaml` appears in your project working directory
+
+. . .
+
+```{verbatim}
+
+# MIT License
+# Copyright (c) 2021 Eli Lilly and Company
+# Author: William Michael Landau (will.landau at gmail)
+# Written with help from public domain (CC0 1.0 Universal) workflow files by Jim Hester:
+# * https://github.com/r-lib/actions/blob/master/examples/check-full.yaml
+# * https://github.com/r-lib/actions/blob/master/examples/blogdown.yaml
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+name: targets
+
+jobs:
+  targets:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      RENV_PATHS_ROOT: ~/.local/share/renv
+    steps:
+      - uses: actions/checkout@v2
+      - uses: r-lib/actions/setup-r@v2
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Install Mac system dependencies
+        if: runner.os == 'macOS'
+        run: brew install zeromq
+
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install libcurl4-openssl-dev
+          sudo apt-get install libssl-dev
+          sudo apt-get install libzmq3-dev
+
+      - name: Cache packages
+        uses: actions/cache@v1
+        with:
+          path: ${{ env.RENV_PATHS_ROOT }}
+          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+          restore-keys: ${{ runner.os }}-renv-
+
+      - name: Restore packages
+        shell: Rscript {0}
+        run: |
+          if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv")
+          renv::restore()
+
+      - name: Check if previous runs exists
+        id: runs-exist
+        run: git ls-remote --exit-code --heads origin targets-runs
+        continue-on-error: true
+
+      - name: Checkout previous run
+        if: steps.runs-exist.outcome == 'success'
+        uses: actions/checkout@v2
+        with:
+          ref: targets-runs
+          fetch-depth: 1
+          path: .targets-runs
+
+      - name: Restore output files from the previous run
+        if: steps.runs-exist.outcome == 'success'
+        run: |
+          for (dest in scan(".targets-runs/.targets-files", what = character())) {
+            source <- file.path(".targets-runs", dest)
+            if (!file.exists(dirname(dest))) dir.create(dirname(dest), recursive = TRUE)
+            if (file.exists(source)) file.rename(source, dest)
+          }
+        shell: Rscript {0}
+
+      - name: Run targets pipeline
+        run: targets::tar_make()
+        shell: Rscript {0}
+
+      - name: Identify files that the targets pipeline produced
+        run: git ls-files -mo --exclude=renv > .targets-files
+
+      - name: Create the runs branch if it does not already exist
+        if: steps.runs-exist.outcome != 'success'
+        run: git checkout --orphan targets-runs
+
+      - name: Put the worktree in the runs branch if the latter already exists
+        if: steps.runs-exist.outcome == 'success'
+        run: |
+          rm -r .git
+          mv .targets-runs/.git .
+          rm -r .targets-runs
+
+      - name: Upload latest run
+        run: |
+          git config --local user.name "GitHub Actions"
+          git config --local user.email "actions@github.com"
+          rm -r .gitignore .github/workflows
+          git add --all -- ':!renv'
+          for file in $(git ls-files -mo --exclude=renv)
+          do
+            git add --force $file
+          done
+          git commit -am "Run pipeline"
+          git push origin targets-runs
+
+      - name: Prepare failure artifact
+        if: failure()
+        run: rm -rf .git .github .targets-files .targets-runs
+
+      - name: Post failure artifact
+        if: failure()
+        uses: actions/upload-artifact@main
+        with:
+          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
+          path: .
+
+
+```
+
+##
+
+This generates a GitHub Action template that will reproduce your project environment, run the pipeline, and output the results.
+
+. . .
+
+Note: you will still need to configure things on which your environemnt depends, such as API keys, database credentials, etc. 
+
+. . .
+
+This also relies on using GitHub runners for your compute and storage, which are both low by design - they are not intended for heavy workloads. 
+
+. . .
+
+But these illustrate the steps for *reproducing your data science environment via code*. 
+
+##
+
+How do 
+
+##
+
+[So, putting things *in production* in a safe and reliable way starts with recognizing the different pieces we need to recreate our data science environment.]{.semi-transparent}
+
+[Then, it becomes a matter of reproducing each of these pieces *via code*. This part sounds super complicated, and it can be, but a lot of smart people have put a lot of time into making it easier.]{.semi-transparent}
+
+This enables us to create *separate* environments in which we can do our development and testing before *promoting* code to production.
+
+## {background-image="images/ds_environments.png" background-position="center" background-color="white" background-size="contain"}
+
+## 
+
+Okay, so let's 
+
+##
+
+> The DevOps way to deploy code is called CI/CD, which is short for Continuous Integration and Continuous Deployment and Continuous Delivery (yes, the CD stands for two different things). 
+
+> A few of the principles of CI/CD workflows include:
+
+> Central availability of source code, almost always in version control, that allows you to build the project from scratch.
+> Frequent and incremental additions to the production version of the code.
+> Automation for carrying out the actual deployment.
+> Automated testing on a pre-deployment version of the code.
+
+## project 
+
+What would we need to 
+
+we have to date covered:
+
+- Git/GitHub for versioning and sharing our code
+- `renv` for reproducing our code dependencies
+- `targets` for creating repeatable pipelines
+
+
+putting things into production is a matter of managing environments
+
+# environment
+
+- code
+- packages
+- system
+- hardware
+
+## project architecture
+
+What is the typical output of a data science project?
+
+. . .
+
+- a job: a script that trains a model, updates a dataset, writes to a database
+
+- an app: created in Shiny, Streamlit, Dash, 
+
+- a report: a presentation, book, article, that is rendered from code
+
+- an API
+
+
+## 
+
+
+
+

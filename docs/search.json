@@ -4,483 +4,665 @@
     "href": "workshop-materials.html",
     "title": "Workshop Materials",
     "section": "",
-    "text": "folder\nfile\n\n\n\n\nmaterials\n00-intro.qmd\n\n\nmaterials\n01-git.qmd\n\n\nmaterials\n02-renv.qmd\n\n\nmaterials\n03-targets.qmd"
+    "text": "folder\nfile\n\n\n\n\nmaterials\n00-intro.qmd\n\n\nmaterials\n01-git.qmd\n\n\nmaterials\n02-renv.qmd\n\n\nmaterials\n03-targets.qmd\n\n\nmaterials\n04-production.qmd"
   },
   {
     "objectID": "workshop-materials.html#materials",
     "href": "workshop-materials.html#materials",
     "title": "Workshop Materials",
     "section": "",
-    "text": "folder\nfile\n\n\n\n\nmaterials\n00-intro.qmd\n\n\nmaterials\n01-git.qmd\n\n\nmaterials\n02-renv.qmd\n\n\nmaterials\n03-targets.qmd"
+    "text": "folder\nfile\n\n\n\n\nmaterials\n00-intro.qmd\n\n\nmaterials\n01-git.qmd\n\n\nmaterials\n02-renv.qmd\n\n\nmaterials\n03-targets.qmd\n\n\nmaterials\n04-production.qmd"
   },
   {
-    "objectID": "materials/02-renv.html#section",
-    "href": "materials/02-renv.html#section",
+    "objectID": "materials/03-targets.html#organizing-a-repo",
+    "href": "materials/03-targets.html#organizing-a-repo",
+    "title": "",
+    "section": "Organizing a Repo",
+    "text": "Organizing a Repo\nLet’s go back to my ‘template’ for organizing an R repo.\n\n├── _targets    &lt;- stores the metadata and objects of your pipeline\n├── renv        &lt;- information relating to your R packages and dependencies\n├── data        &lt;- data sources used as an input into the pipeline\n├── src         &lt;- functions used in project/targets pipeline\n|   ├── data    &lt;- functions relating to loading and cleaning data\n|   ├── models    &lt;- functions involved with training models\n|   ├── reports   &lt;- functions used in generating tables and visualizations for reports\n├── _targets.R    &lt;- script that runs the targets pipeline\n├── renv.lock     &lt;- lockfile detailing project requirements and dependencies\n\n\nNow that we’ve covered Git, GitHub, and renv, we can start talking about the third pillar here, which is the targets package."
+  },
+  {
+    "objectID": "materials/03-targets.html#the-problem",
+    "href": "materials/03-targets.html#the-problem",
+    "title": "",
+    "section": "The Problem",
+    "text": "The Problem\nA predictive modeling workflow typically consists of a number of interconnected steps.\n\n\n\n\n\nflowchart LR\nraw[Raw Data] --&gt; clean[Clean Data]\nclean --&gt; train[Training Set]\nclean --&gt; valid[Validation Set]\ntrain --&gt; preprocessor(Preprocessor)\npreprocessor --&gt; resamples[Bootstraps]\nresamples --&gt; model(glmnet)\nmodel --&gt; features(Impute + Normalize)\nfeatures --&gt; tuning(Tuning)\ntuning --&gt; valid\npreprocessor --&gt; valid\nvalid --&gt; evaluation[Model Evaluation]\ntrain --&gt; final(Model)\nvalid --&gt; final\n\n\n\n\n\n\n\n\nWe typically build these pieces incrementally, starting from loading the data, preparing it, then ultimately training and assessing models.\n\n\nThe end result can look nice and tidy, and maybe you get really clever and assemble a series of scripts or notebooks that detail the steps in your project."
+  },
+  {
+    "objectID": "materials/03-targets.html#the-problem-1",
+    "href": "materials/03-targets.html#the-problem-1",
+    "title": "",
+    "section": "The Problem",
+    "text": "The Problem\nYour project might end up looking something like this:\n\n01-load.R\n02-tidy.R\n03-model.R\n04-evaluate.R\n05-deploy.R\n06-report.R\n\n\nAnd you might have some sort of meta script that runs them all.\n\n\nAnd this is working fine… until you discover an issue with a function in 02-tidy.R, or want to make a change to how you’re evaluating the model in 03-evalaute.R."
+  },
+  {
+    "objectID": "materials/03-targets.html#the-problem-2",
+    "href": "materials/03-targets.html#the-problem-2",
+    "title": "",
+    "section": "The Problem",
+    "text": "The Problem\nHow do you insert a change into this process? Like, if you make a change to a function, how do you know what needs to be re run?\n\nHow many times do you just end up rerunning everything to be safe?"
+  },
+  {
+    "objectID": "materials/03-targets.html#the-problem-3",
+    "href": "materials/03-targets.html#the-problem-3",
+    "title": "",
+    "section": "The Problem",
+    "text": "The Problem\nThis pattern of developing, changing, re-running can consume a lot of time, especially with time-consuming tasks like training models.\n\nThis is the basic motivation for the targets package:"
+  },
+  {
+    "objectID": "materials/03-targets.html#the-problem-4",
+    "href": "materials/03-targets.html#the-problem-4",
+    "title": "",
+    "section": "The Problem",
+    "text": "The Problem\nIt might not be too bad when you’re actively working on a project, but suppose you’re coming back to something after a few months away.\n\nOr suppose you look at someone else’s repo for the first time, and you have to try to figure out how to put the pieces together to produce their result.\n\n\nWe’d like an easier way to keep track of dependencies so that we are only re-running things when necessary, as well as provide others with a clear path to reproduce our work."
+  },
+  {
+    "objectID": "materials/03-targets.html#what-is-targets",
+    "href": "materials/03-targets.html#what-is-targets",
+    "title": "",
+    "section": "what is targets",
+    "text": "what is targets\n\nData analysis can be slow. A round of scientific computation can take several minutes, hours, or even days to complete. After it finishes, if you update your code or data, your hard-earned results may no longer be valid. Unchecked, this invalidation creates a chronic Sisyphean loop\n\n\n\nLaunch the code.\nWait while it runs\nDiscover an issue.\nRestart from scratch.\n\n\n\nhttps://books.ropensci.org/targets/"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-6",
+    "href": "materials/03-targets.html#section-6",
     "title": "",
     "section": "",
-    "text": "To this point, we haven’t really talked about how we should organize a repository. A repository is just a set of files to track over time, but how do we organize those files?\n\nI am arguably not the best guide for this, as I am generally a disorganized person and it shows in my older repos."
+    "text": "The solution to this problem is to develop pipelines, which track dependencies between steps, or “targets”, of a workflow.\n\nWhen running the pipeline, it first checks to see if the upstream targets have changed since the previous run.\n\n\nIf the upstream targets are up to date, the pipeline will skip them and proceed to running the next step.\n\n\nIf everything is up to date, the pipeline will skip everything and inform you that nothing changed."
   },
   {
-    "objectID": "materials/02-renv.html#section-3",
-    "href": "materials/02-renv.html#section-3",
+    "objectID": "materials/03-targets.html#section-7",
+    "href": "materials/03-targets.html#section-7",
     "title": "",
     "section": "",
-    "text": "On some level, this is to be expected with data analysis/data science - we rarely work in a linear progression with the same set of files from project to project.\n\nBut I’ve started to use a specific style for organization that seems to suit data science projects well."
+    "text": "Most pipeline tools, such as Make, are either language agnostic or depend on using Python.\n\ntargets lets you build Make-style pipelines using R\n\n\n\n\n\n\n\n\n\n\n\n\n\n(a) api requests\n\n\n\n\n\n\n\n\n\n\n\n(b) training models\n\n\n\n\n\n\n\nFigure 1: pipeline examples"
   },
   {
-    "objectID": "materials/02-renv.html#cookiecutter-data-science-1",
-    "href": "materials/02-renv.html#cookiecutter-data-science-1",
-    "title": "",
-    "section": "CookieCutter Data Science",
-    "text": "CookieCutter Data Science\n\nIt’s no secret that good analyses are often the result of very scattershot and serendipitous explorations. Tentative experiments and rapidly testing approaches that might not work out are all part of the process for getting to the good stuff, and there is no magic bullet to turn data exploration into a simple, linear progression.\n\n\n\nA well-defined, standard project structure means that a newcomer can begin to understand an analysis without digging in to extensive documentation. It also means that they don’t necessarily have to read 100% of the code before knowing where to look for very specific things."
-  },
-  {
-    "objectID": "materials/02-renv.html#section-5",
-    "href": "materials/02-renv.html#section-5",
+    "objectID": "materials/03-targets.html#section-10",
+    "href": "materials/03-targets.html#section-10",
     "title": "",
     "section": "",
-    "text": "It’s less important to have the perfect organization for a given project than it is to have some sort of standard that everyone understands and uses.\n\nThe goal is to organize projects in a way that will make it easier for others and your future self to remember.\n\n\nThe CookieCutter Data Science approach is one such way. This might feel overwhelming to start.\n\n\nDon’t panic."
+    "text": "├── _targets    &lt;- stores the metadata and objects of your pipeline\n├── renv        &lt;- information relating to your R packages and dependencies\n├── data        &lt;- data sources used as an input into the pipeline\n├── src         &lt;- functions used in project/targets pipeline\n|   ├── data   &lt;- functions relating to loading and cleaning data\n├── _targets.R    &lt;- script that runs the targets pipeline\n├── renv.lock     &lt;- lockfile detailing project requirements and dependencies\ntargets adds two main pieces to a project:\n\n\ntargets.R is the script that will implement our pipeline. This is what we will build and develop.\n\n\n\n\n_targets is a folder containing metadata for the steps defined in targets.R, as well as cached objects from the latest run of the pipeline\n\nNote: by default, _targets objects are stored locally. But you can configure targets to store objects in a cloud bucket (GCP/AWS)\n\n\nWhen you use targets locally, it will store objects from the latest run of the pipeline. If you use a cloud bucket for storage, you can enable versioning so that all runs are stored."
   },
   {
-    "objectID": "materials/02-renv.html#section-7",
-    "href": "materials/02-renv.html#section-7",
+    "objectID": "materials/03-targets.html#section-11",
+    "href": "materials/03-targets.html#section-11",
     "title": "",
     "section": "",
-    "text": "Sadly, this template is intended for Python, but we can adapt it for R easily enough. Let’s zoom in a bit on specific pieces."
+    "text": "What is targets.R?\nRunning targets::use_targets() will create a template for the targets.R script, which all follow a similar structure.\n\n\n# Created by use_targets().\n# Follow the comments below to fill in this target script.\n# Then follow the manual to check and run the pipeline:\n#   https://books.ropensci.org/targets/walkthrough.html#inspect-the-pipeline\n\n# Load packages required to define the pipeline:\nlibrary(targets)\n# library(tarchetypes) # Load other packages as needed.\n\n# Set target options:\ntar_option_set(\n  packages = c(\"tibble\") # Packages that your targets need for their tasks.\n  # format = \"qs\", # Optionally set the default storage format. qs is fast.\n)\n\n# Run the R scripts in the R/ folder with your custom functions:\ntar_source()\n# tar_source(\"other_functions.R\") # Source other scripts as needed.\n\n# Replace the target list below with your own:\nlist(\n  tar_target(\n    name = data,\n    command = tibble(x = rnorm(100), y = rnorm(100))\n    # format = \"qs\" # Efficient storage for general data objects.\n  ),\n  tar_target(\n    name = model,\n    command = coefficients(lm(y ~ x, data = data))\n  )\n)"
   },
   {
-    "objectID": "materials/02-renv.html#section-8",
-    "href": "materials/02-renv.html#section-8",
+    "objectID": "materials/03-targets.html#an-example---star-wars",
+    "href": "materials/03-targets.html#an-example---star-wars",
+    "title": "",
+    "section": "An Example - Star Wars",
+    "text": "An Example - Star Wars\nGoing back to our Star Wars sentiment analysis, we can build a simple targets pipeline to recreate what we did earlier. The basic steps of our pipeline will look something like this:\n\n\nLoad Star Wars text data\nClean and prepare dialogue\nGet sentences from dialogue\nCalculate sentiment"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-12",
+    "href": "materials/03-targets.html#section-12",
     "title": "",
     "section": "",
-    "text": "├── Makefile        &lt;- Makefile with commands like `make data` or `make train`\n├── README.md       &lt;- The top-level README for developers\n├── data\n│   ├── external    &lt;- Data from third party sources.\n│   ├── interim     &lt;- Intermediate data that has been transformed.\n│   ├── processed   &lt;- The final, canonical data sets for modeling.\n│   └── raw         &lt;- The original, immutable data dump.\n\n\nWe will shortly discuss the R equivalent of a Makefile, with the aim that our project is organized to do one specific thing\nAlways include a README as an organizing guide\nData generally isn’t stored in repos, but if it is you can follow this organization that tracks the lineage of the data\nOne of the guiding principles for CookieCutter Data Science is to treat data as immutable. The point of a project is interact and work with data, but we never change it from its raw sources."
+    "text": "This is what the resulting pipeline will look like:\n\nCodeOutput\n\n\n\nlibrary(targets)\n\n# set options\ntar_option_set(packages = c(\"readr\", \"dplyr\", \"sentimentr\", \"here\"))\n\n# functions to be used\n\n# load starwars data\nload_data = function(file = here::here('materials', 'data', 'starwars_text.csv')) {\n  \n  read_csv(file)\n  \n}\n\n# prepare data\nclean_data = function(data) {\n  \n  data |&gt;\n    mutate(episode = case_when(document == 'a new hope' ~ 'iv',\n                               document == 'the empire strikes back' ~ 'v',\n                               document == 'return of the jedi' ~ 'vi')) |&gt;\n    mutate(character = case_when(character == 'BERU' ~ 'AUNT BERU',\n                                 character == 'LURE' ~ 'LUKE',\n                                 TRUE ~ character)) |&gt;\n    select(episode, everything())\n}\n\n# calculate sentiment\ncalculate_sentiment = function(data,\n                               by = c(\"document\", \"character\", \"line_number\")) {\n  \n  data |&gt;\n    sentiment_by(by = by) |&gt;\n    sentimentr::uncombine()\n}\n\n# define targets\nlist(\n  tar_target(\n    name = starwars,\n    command = \n      load_data() |&gt;\n      clean_data()\n  ),\n  tar_target(\n    name = sentences,\n    command = \n      starwars |&gt;\n      get_sentences()\n  ),\n  tar_target(\n    name = sentiment,\n    command = \n      sentences |&gt;\n      calculate_sentiment()\n  )\n)\n\n\n\n\n\n#&gt; [[1]]\n#&gt; &lt;tar_stem&gt; \n#&gt;   name: starwars \n#&gt;   description:  \n#&gt;   command:\n#&gt;     clean_data(load_data()) \n#&gt;   format: rds \n#&gt;   repository: local \n#&gt;   iteration method: vector \n#&gt;   error mode: stop \n#&gt;   memory mode: persistent \n#&gt;   storage mode: main \n#&gt;   retrieval mode: main \n#&gt;   deployment mode: worker \n#&gt;   priority: 0 \n#&gt;   resources:\n#&gt;     list() \n#&gt;   cue:\n#&gt;     mode: thorough\n#&gt;     command: TRUE\n#&gt;     depend: TRUE\n#&gt;     format: TRUE\n#&gt;     repository: TRUE\n#&gt;     iteration: TRUE\n#&gt;     file: TRUE\n#&gt;     seed: TRUE \n#&gt;   packages:\n#&gt;     readr\n#&gt;     dplyr\n#&gt;     sentimentr\n#&gt;     here \n#&gt;   library:\n#&gt;     NULL\n#&gt; [[2]]\n#&gt; &lt;tar_stem&gt; \n#&gt;   name: sentences \n#&gt;   description:  \n#&gt;   command:\n#&gt;     get_sentences(starwars) \n#&gt;   format: rds \n#&gt;   repository: local \n#&gt;   iteration method: vector \n#&gt;   error mode: stop \n#&gt;   memory mode: persistent \n#&gt;   storage mode: main \n#&gt;   retrieval mode: main \n#&gt;   deployment mode: worker \n#&gt;   priority: 0 \n#&gt;   resources:\n#&gt;     list() \n#&gt;   cue:\n#&gt;     mode: thorough\n#&gt;     command: TRUE\n#&gt;     depend: TRUE\n#&gt;     format: TRUE\n#&gt;     repository: TRUE\n#&gt;     iteration: TRUE\n#&gt;     file: TRUE\n#&gt;     seed: TRUE \n#&gt;   packages:\n#&gt;     readr\n#&gt;     dplyr\n#&gt;     sentimentr\n#&gt;     here \n#&gt;   library:\n#&gt;     NULL\n#&gt; [[3]]\n#&gt; &lt;tar_stem&gt; \n#&gt;   name: sentiment \n#&gt;   description:  \n#&gt;   command:\n#&gt;     calculate_sentiment(sentences) \n#&gt;   format: rds \n#&gt;   repository: local \n#&gt;   iteration method: vector \n#&gt;   error mode: stop \n#&gt;   memory mode: persistent \n#&gt;   storage mode: main \n#&gt;   retrieval mode: main \n#&gt;   deployment mode: worker \n#&gt;   priority: 0 \n#&gt;   resources:\n#&gt;     list() \n#&gt;   cue:\n#&gt;     mode: thorough\n#&gt;     command: TRUE\n#&gt;     depend: TRUE\n#&gt;     format: TRUE\n#&gt;     repository: TRUE\n#&gt;     iteration: TRUE\n#&gt;     file: TRUE\n#&gt;     seed: TRUE \n#&gt;   packages:\n#&gt;     readr\n#&gt;     dplyr\n#&gt;     sentimentr\n#&gt;     here \n#&gt;   library:\n#&gt;     NULL"
   },
   {
-    "objectID": "materials/02-renv.html#section-9",
-    "href": "materials/02-renv.html#section-9",
+    "objectID": "materials/03-targets.html#section-13",
+    "href": "materials/03-targets.html#section-13",
     "title": "",
     "section": "",
-    "text": "├── models    &lt;- Trained and serialized models, model predictions, or model summaries\n│\n├── notebooks   &lt;- Jupyter notebooks. Naming convention is a number (for ordering),\n|                 the creator's initials, and a short `-` delimited description, e.g.\n|                 `1.0-jqp-initial-data-exploration`.\n│\n├── references    &lt;- Data dictionaries, manuals, and all other explanatory materials.\n│\n├── reports         &lt;- Generated analysis as HTML, PDF, LaTeX, etc.\n│   └── figures     &lt;- Generated graphics and figures to be used in reporting\n│\n\n\nSimilarly, models typically aren’t stored in a repo, but we might want to save summaries or model cards\nNotebooks are places for exploratory analysis and should be treated mostly as a sandbox\nStore all background documentation, project discussion, articles that has been used and discussed in references"
+    "text": "We can view the steps that will be carried out by pipeline using tar_manifest()\n\n\n#&gt;        name                        command\n#&gt; 1  starwars        clean_data(load_data())\n#&gt; 2 sentences        get_sentences(starwars)\n#&gt; 3 sentiment calculate_sentiment(sentences)\n\n\n\nOr, we can visualize the pipeline using tar_glimpse()."
   },
   {
-    "objectID": "materials/02-renv.html#section-10",
-    "href": "materials/02-renv.html#section-10",
+    "objectID": "materials/03-targets.html#section-14",
+    "href": "materials/03-targets.html#section-14",
     "title": "",
     "section": "",
-    "text": "├── requirements.txt    &lt;- The requirements file for reproducing  the analysis environment.\n│\n├── src                &lt;- Source code for use in this project.\n│   ├── data           &lt;- Scripts to download or generate data\n│   │   └── make_dataset.py\n│   │\n│   ├── features       &lt;- Scripts to turn raw data into features for modeling\n│   │   └── build_features.py\n│   │\n│   ├── models         &lt;- Scripts to train models and then use trained models to make\n│   │   │                 predictions\n│   │   ├── predict_model.py\n│   │   └── train_model.py\n│   │\n│   └── visualization  &lt;- Scripts to create exploratory and results oriented visualizations\n│       └── visualize.py\n\n\nThe repo must detail the requirements for someone to reproduce the project.\nIn Python this is requirements.txt; we will discuss the R equivalent via renv next.\nAll code used in the project is stored and organized in src. This could also be called R if you’re only planning to use R."
+    "text": "tar_visnetwork() provides a more detailed breakdown of the pipeline, including the status of individual targets, as well as the functions and where they are used."
   },
   {
-    "objectID": "materials/02-renv.html#section-11",
-    "href": "materials/02-renv.html#section-11",
+    "objectID": "materials/03-targets.html#section-15",
+    "href": "materials/03-targets.html#section-15",
     "title": "",
     "section": "",
-    "text": "The CookieCutter approach has a few underlying principles that are worth discussing.\n\n\nData is Immutable\nAnalysis is a DAG\nNotebooks Are For Exploration, Not Production\nUse Functional Programming\nA Repo Should Be One Project"
+    "text": "We then run the pipeline using tar_make(), which will detail the steps that are being carried out and whether they were re-run or skipped.\n\ntargets::tar_make()\n\n\n\n#&gt; v skipped target starwars\n#&gt; v skipped target sentences\n#&gt; v skipped target sentiment\n#&gt; v skipped pipeline [0.043 seconds]"
   },
   {
-    "objectID": "materials/02-renv.html#data-is-immutable",
-    "href": "materials/02-renv.html#data-is-immutable",
-    "title": "",
-    "section": "Data is Immutable",
-    "text": "Data is Immutable\n\nDon’t ever edit your raw data, especially not manually, and especially not in Excel. Don’t overwrite your raw data. Don’t save multiple versions of the raw data. Treat the data (and its format) as immutable.\n\n\n\nThe code you write should move the raw data through a pipeline to your final analysis. You shouldn’t have to run all of the steps every time you want to make a new figure (see Analysis is a DAG), but anyone should be able to reproduce the final products with only the code in src and the data in data/raw.\n\n\n\n\nAlso, if data is immutable, it doesn’t need source control in the same way that code does. Therefore, by default, the data folder is included in the .gitignore file"
-  },
-  {
-    "objectID": "materials/02-renv.html#analysis-is-a-directed-acyclic-graph-dag",
-    "href": "materials/02-renv.html#analysis-is-a-directed-acyclic-graph-dag",
-    "title": "",
-    "section": "Analysis is a Directed Acyclic Graph (DAG)",
-    "text": "Analysis is a Directed Acyclic Graph (DAG)\n\nOften in an analysis you have long-running steps that preprocess data or train models. If these steps have been run already (and you have stored the output somewhere like the data/interim directory), you don’t want to wait to rerun them every time. We prefer make for managing steps that depend on each other, especially the long-running ones.\n\n\n\nThis will be the point of emphasis in using targets, bringing Make-like functionality to R.\nWe should aim to minimize repetition when possible, storing our code in a logical way that can reproduce the output for both ourselves and a newcomer."
-  },
-  {
-    "objectID": "materials/02-renv.html#notebooks-are-for-exploration-not-production",
-    "href": "materials/02-renv.html#notebooks-are-for-exploration-not-production",
-    "title": "",
-    "section": "Notebooks Are For Exploration, Not Production",
-    "text": "Notebooks Are For Exploration, Not Production\n\nLiterate programming tools like Jupyter notebooks, RMarkdown, Quarto are great for exploratory work and communicating results.\n\n\n\nBut, it is generally bad practice to rely on notebooks for putting our work into production; they are harder to version control and can facilitate bad coding practices."
-  },
-  {
-    "objectID": "materials/02-renv.html#use-functional-programming",
-    "href": "materials/02-renv.html#use-functional-programming",
-    "title": "",
-    "section": "Use Functional Programming",
-    "text": "Use Functional Programming\n\nIt’s hard to describe exactly what a functional style is, but generally I think it means decomposing a big problem into smaller pieces, then solving each piece with a function or combination of functions.\n\n\n\nWhen using a functional style, you strive to decompose components of the problem into isolated functions that operate independently. Each function taken by itself is simple and straightforward to understand; complexity is handled by composing functions in various ways.\n\n\n\n\nCookieCutter Data Science doesn’t go into much detail on what your src code should look like, but I have found it naturally suits a functional programming style.\nRather than writing scripts that execute tasks, it’s generally better to write a series of functions that are then called and used in a pipeline."
-  },
-  {
-    "objectID": "materials/02-renv.html#a-repo-should-be-one-project",
-    "href": "materials/02-renv.html#a-repo-should-be-one-project",
-    "title": "",
-    "section": "A Repo Should Be One Project",
-    "text": "A Repo Should Be One Project\nAnother thing that Cookie Cutter Data Science helps address: what should even be a repo? When we’re working on a project, how do we define and organize our code?\n\nDo we create one repository for all of our data science projects? Do we create one repository per project?\n\n\nThis more or less becomes an argument between monorepos vs multi-repos."
-  },
-  {
-    "objectID": "materials/02-renv.html#section-12",
-    "href": "materials/02-renv.html#section-12",
+    "objectID": "materials/03-targets.html#section-16",
+    "href": "materials/03-targets.html#section-16",
     "title": "",
     "section": "",
-    "text": "Monorepo vs Multi-repo\nA monorepo is one repository that contains code for a lot of different projects and tasks.\nImagine you have one big project you’re working on, containing a lot of separate pieces and code. The monorepo approach says, throw it all in into the same repo."
+    "text": "We can then load the objects using tar_read() or tar_load().\n\ntar_load(sentiment)\n\nsentiment |&gt;\n  head(10) |&gt;\n  gt::gt()\n\n\n\n\n\n  \n  \n\n\n\nepisode\ndocument\nline_number\ncharacter\ndialogue\nelement_id\nsentence_id\nword_count\nsentiment\n\n\n\n\niv\na new hope\n1\nTHREEPIO\nDid you hear that?\n1\n1\n4\n0.00000000\n\n\niv\na new hope\n1\nTHREEPIO\nThey've shut down the main reactor.\n1\n2\n6\n-0.24494897\n\n\niv\na new hope\n1\nTHREEPIO\nWe'll be destroyed for sure.\n1\n3\n5\n-0.60373835\n\n\niv\na new hope\n1\nTHREEPIO\nThis is madness!\n1\n4\n3\n-0.57735027\n\n\niv\na new hope\n2\nTHREEPIO\nWe're doomed!\n2\n1\n2\n-0.70710678\n\n\niv\na new hope\n3\nTHREEPIO\nThere'll be no escape for the Princess this time.\n3\n1\n9\n-0.11666667\n\n\niv\na new hope\n4\nTHREEPIO\nWhat's that?\n4\n1\n2\n0.00000000\n\n\niv\na new hope\n5\nTHREEPIO\nI should have known better than to trust the logic of a half-sized thermocapsulary dehousing assister...\n5\n1\n17\n0.06063391\n\n\niv\na new hope\n6\nLUKE\nHurry up!\n6\n1\n2\n0.00000000\n\n\niv\na new hope\n6\nLUKE\nCome with me!\n6\n2\n3\n0.00000000"
   },
   {
-    "objectID": "materials/02-renv.html#section-13",
-    "href": "materials/02-renv.html#section-13",
+    "objectID": "materials/03-targets.html#section-17",
+    "href": "materials/03-targets.html#section-17",
     "title": "",
     "section": "",
-    "text": "This was how I started with some of my boardgame data projects.\n\nI had one repo that contained code for API calls, writing to a data warehouse, training models for the bgg community, training models for collections, building Shiny dashboards…\n\n\nIt basically became a gigantic mess."
+    "text": "This might seem like a lot of overhead for little gain; if re-running is relatively painless, then is the it worth the time to set up a pipeline?\n\nI, and the author of the package, will argue that yes, yes it is."
   },
   {
-    "objectID": "materials/02-renv.html#section-14",
-    "href": "materials/02-renv.html#section-14",
+    "objectID": "materials/03-targets.html#embracing-functions",
+    "href": "materials/03-targets.html#embracing-functions",
+    "title": "",
+    "section": "Embracing Functions",
+    "text": "Embracing Functions\n\ntargets expects users to adopt a function-oriented style of programming. User-defined R functions are essential to express the complexities of data generation, analysis, and reporting.\n\nhttps://books.ropensci.org/targets/functions.html"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-18",
+    "href": "materials/03-targets.html#section-18",
     "title": "",
     "section": "",
-    "text": "Monorepo vs Multi-repo\nAs opposed to a multi-repo, where aspects of a larger project are isolated and separated into individual repositories."
+    "text": "Traditional data analysis projects consist of imperative scripts, often with with numeric prefixes.\n\n01-data.R\n02-model.R\n03-plot.R\n\nTo run the project, the user runs each of the scripts in order.\n\n\nsource(\"01-data.R\")\nsource(\"02-model.R\")\nsource(\"03-plot.R\")"
   },
   {
-    "objectID": "materials/02-renv.html#section-15",
-    "href": "materials/02-renv.html#section-15",
+    "objectID": "materials/03-targets.html#section-19",
+    "href": "materials/03-targets.html#section-19",
     "title": "",
     "section": "",
-    "text": "I’ve ended up splitting the main pieces of these projects into separate repositories that encapsulate a specific task.\n\nAPI calls and creating a data warehouse? That’s a repo.\n\n\nTraining models for the BGG community? That’s a repo.\n\n\nTraining models for user collections? That’s a repo.\n\n\nBuilding Shiny dashboards to examine the data? That’s a repo.\n\n\nCreating a series of helper functions that can be used across all of these projects? That’s an R package.\n\n\nIn a repo."
+    "text": "As we’ve previously discussed, this type of approach inherently creates problems with dependencies and trying to figure out which pieces need to be rerun.\n\nBut even more than that, this approach doesn’t do a great job explaining what exactly is happening with a project, and it can be a pain to test.\n\n\n\nEvery time you look at it, you need to read it carefully and relearn what it does. And test it, you need to copy the entire block into the R console."
   },
   {
-    "objectID": "materials/02-renv.html#a-repo-should-be-one-project-1",
-    "href": "materials/02-renv.html#a-repo-should-be-one-project-1",
-    "title": "",
-    "section": "A Repo Should Be One Project",
-    "text": "A Repo Should Be One Project\nThe Cookie Cutter Data Science approach is much more conducive towards the multi-repo approach:\n\nA repository exists for a specific task.\nThe code in the repository executes that task.\nThe requirements for running that code are defined in the repository.\n\n\nIt becomes a lot harder to define requirements and reproduce the environment to run code when you have a gigantic, monolithic repository."
-  },
-  {
-    "objectID": "materials/02-renv.html#section-17",
-    "href": "materials/02-renv.html#section-17",
+    "objectID": "materials/03-targets.html#section-20",
+    "href": "materials/03-targets.html#section-20",
     "title": "",
     "section": "",
-    "text": "But what if we want to re-use code across multiple repositories!\n\nMore on this later, but basically this is where submodules might come into play. . . .\nOr, just create another repo in the form of a package that can be used across multiple projects."
+    "text": "For example, rather than write a script that loads, cleans, and outputs the Star Wars data, I simply wrote two functions, which we can easily call and run as needed to get the data.\n\n\n…instead of invoking a whole block of text, all you need to do is type a small reusable command. The function name speaks for itself, so you can recall what it does without having to mentally process all the details again."
   },
   {
-    "objectID": "materials/02-renv.html#cookiecutter-data-science-for-r",
-    "href": "materials/02-renv.html#cookiecutter-data-science-for-r",
-    "title": "",
-    "section": "CookieCutter Data Science (for R)",
-    "text": "CookieCutter Data Science (for R)\nGiven these principles, most of my repos end up being organized in the following way:\n\n├── _targets    &lt;- stores the metadata and objects of your pipeline\n├── renv        &lt;- information relating to your R packages and dependencies\n├── data        &lt;- data sources used as an input into the pipeline\n├── src         &lt;- functions used in project/targets pipeline\n|   ├── data    &lt;- functions relating to loading and cleaning data\n|   ├── models    &lt;- functions involved with training models\n|   ├── reports   &lt;- functions used in generating tables and visualizations for reports\n├── _targets.R    &lt;- script that runs the targets pipeline\n├── renv.lock     &lt;- lockfile detailing project requirements and dependencies\n\n\nAgain, I’m not saying that this is THE OBJECTIVELY CORRECT WAY TO ORGANIZE AN R PROJECT. But it’s been a useful starting point for me in my work.\n\n\nOne of the key pillars to this organization is renv."
-  },
-  {
-    "objectID": "materials/02-renv.html#renv-1",
-    "href": "materials/02-renv.html#renv-1",
-    "title": "",
-    "section": "renv",
-    "text": "renv\nLet’s go back to the issues we had in running certain files in the starwars or board_games repo.\n\nHow often do you want to run someone else’s code, only to find that you need to install additional packages?\n\n\nHow often do you try to run someone else’s code only to discover that they’re using a deprecated function?\n\n\nHow many times have you gotten a headache because dplyr can’t make up its mind between mutate_if, mutate_at, mutate_all, and mutate(across())?"
-  },
-  {
-    "objectID": "materials/02-renv.html#section-21",
-    "href": "materials/02-renv.html#section-21",
+    "objectID": "materials/03-targets.html#section-21",
+    "href": "materials/03-targets.html#section-21",
     "title": "",
     "section": "",
-    "text": "The renv package aims to solve most of these problems by helping you to create reproducible environments for R projects.\n\nThe following figure shows how renv works, in a nutshell.\n\n\nI promise that this figure will make sense in a little bit."
+    "text": "Embracing functions makes it easier for us to track dependencies, explain our work, and build in small pieces that can be tested and put together to complete the larger project.\n\nIt also can really help when we have time consuming steps."
   },
   {
-    "objectID": "materials/02-renv.html#section-23",
-    "href": "materials/02-renv.html#section-23",
+    "objectID": "materials/03-targets.html#targets-demo---college-football-and-elo-ratings",
+    "href": "materials/03-targets.html#targets-demo---college-football-and-elo-ratings",
+    "title": "",
+    "section": "targets demo - College Football and Elo Ratings",
+    "text": "targets demo - College Football and Elo Ratings\n\nView repo organization for https:://github.com/ds-workshop/cfb_elo\nExamine targets.R\nShow _targets metadata\nShow _targets objects"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-22",
+    "href": "materials/03-targets.html#section-22",
     "title": "",
     "section": "",
-    "text": "renv allows you to scan and find packages used in your project. This produces a list of packages with their current versions and dependencies.\nUsing renv with a project adds three pieces to your repo:\n\n\nrenv/library: a library that contains all packages currently used by your project.\n\n\n\n\nrenv.lock: a lockfile that records metadata about every package used in the project; this allows the project’s packages to be reinstalled on a new machine\n\n\n\n\n.Rprofile: adds a file that runs everytime you open up the project; this file runs renv::activate() and configures your project to use the renv/library"
+    "text": "The targets pipeline in cfb_elo looked like this:\n\nWe configured the pipeline to make API calls to get the full history of college football games, then ran a time-consuming function to calculate Elo ratings for all teams across all available games.\n\nWe were then able to develop a simple model to examine the value of home field advantage and predict the spread of games."
   },
   {
-    "objectID": "materials/02-renv.html#section-24",
-    "href": "materials/02-renv.html#section-24",
+    "objectID": "materials/03-targets.html#section-23",
+    "href": "materials/03-targets.html#section-23",
     "title": "",
     "section": "",
-    "text": "We then add (pieces) of renv/library, renv.lock, and .Rprofile to our repository and commit them.\n\nIf we make a change to our code, we use renv to track whether that code has introduced, removed, or changed our dependencies.\n\n\nWhen we commit the change to our code, we will also commit a change to our renv.lock file.\n\n\nIn this way, using Git + renv allows us to store a history of how our project dependencies have changed with every commit."
+    "text": "Let’s not get too distracted by this, but check out how the spread predictions from a simple Elo model compare to Vegas for week 1 of the 2024 season."
   },
   {
-    "objectID": "materials/02-renv.html#section-26",
-    "href": "materials/02-renv.html#section-26",
+    "objectID": "materials/03-targets.html#using-targets",
+    "href": "materials/03-targets.html#using-targets",
+    "title": "",
+    "section": "using targets",
+    "text": "using targets\nThere are a couple additional things we need to cover about targets before we move onto building more complex pipelines for the purpose of putting models and projects into production.\nRecall that running a targets pipeline creates a _targets folder within our project folder.\n\n_targets/meta/\n_targets/objects/"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-26",
+    "href": "materials/03-targets.html#section-26",
     "title": "",
     "section": "",
-    "text": "Let’s dive into this picture."
+    "text": "The meta folder contains metadata relating to the objects you created in your pipeline. This is what determines if your pipeline is up to date and tracks its lineage across different runs."
   },
   {
-    "objectID": "materials/02-renv.html#renv-key-functions-1",
-    "href": "materials/02-renv.html#renv-key-functions-1",
-    "title": "",
-    "section": "renv key functions",
-    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project."
-  },
-  {
-    "objectID": "materials/02-renv.html#section-27",
-    "href": "materials/02-renv.html#section-27",
+    "objectID": "materials/03-targets.html#section-27",
+    "href": "materials/03-targets.html#section-27",
     "title": "",
     "section": "",
-    "text": "renv::init()\nThis is what our starwars project might look like before add renv to our project."
+    "text": "Note:\nThis meta folder and its contents are committed to GitHub, as it is required to run your pipeline, but also by committing it you are storing the history of how your pipeline has changed during development."
   },
   {
-    "objectID": "materials/02-renv.html#section-28",
-    "href": "materials/02-renv.html#section-28",
+    "objectID": "materials/03-targets.html#section-28",
+    "href": "materials/03-targets.html#section-28",
     "title": "",
     "section": "",
-    "text": "renv::init()\nWe open up the project and run renv::init(), which tells us which packages and their versions are in use."
+    "text": "The objects folder contains the actual objects created by runs of your pipeline. These are the most up to date versions of the objects in your pipeline from your most recent run with tar_make() and can be loaded using tar_read() and tar_load()."
   },
   {
-    "objectID": "materials/02-renv.html#section-30",
-    "href": "materials/02-renv.html#section-30",
+    "objectID": "materials/03-targets.html#section-29",
+    "href": "materials/03-targets.html#section-29",
     "title": "",
     "section": "",
-    "text": "renv::init()\nThis adds these packages to our renv/library, and stores information about the packages and version of R that are in use in renv.lock"
+    "text": "Importantly, objects are not committed to GitHub. These objects are the various artifacts of your pipeline runs (data, models, etc) and can be quite large. Git is not intended to handle diffs for objects of this nature, so committing these would be a bad idea.\n\n\nThere is thee gittargets package that uses Git LFS for data version control, but this is generally on the backburner in favor of cloud versioning."
   },
   {
-    "objectID": "materials/02-renv.html#section-32",
-    "href": "materials/02-renv.html#section-32",
+    "objectID": "materials/03-targets.html#section-30",
+    "href": "materials/03-targets.html#section-30",
     "title": "",
     "section": "",
-    "text": "renv::init()\nThis is what our project looks like afterwards, as we have now added a renv folder, a renv.lock file, and an .Rprofile (which is typically hidden)."
+    "text": "You’ll notice that, by default, you can’t even commit _targets/objects to your repository; this is because by default these are ignored with a special .gitignore."
   },
   {
-    "objectID": "materials/02-renv.html#section-33",
-    "href": "materials/02-renv.html#section-33",
+    "objectID": "materials/03-targets.html#section-31",
+    "href": "materials/03-targets.html#section-31",
     "title": "",
     "section": "",
-    "text": "renv::init()\nrenv.lock is what renv will use in order to restore dependencies and track changes in packages that are being used.\nThis file is generated by renv; don’t mess with it."
+    "text": "By default, the objects you create in your pipeline will be stored locally - that is, on the machine running the pipeline. This means, by default, that pipeline runs are isolated from each other. 1\n\nIf you want to fiddle with adding a new step to my pipeline, you will have to re-run the entire pipeline; the objects stored on my machine will not be available to you.\n\nThat is, unless your pipeline creates files/writes data/deploys models to locations outside of our pipeline. Then we’ll need to take some additional steps to separate runs."
   },
   {
-    "objectID": "materials/02-renv.html#section-35",
-    "href": "materials/02-renv.html#section-35",
+    "objectID": "materials/03-targets.html#section-32",
+    "href": "materials/03-targets.html#section-32",
     "title": "",
     "section": "",
-    "text": "renv::init()\nThe renv folder contains a library with all packages that are currently being used by the project."
+    "text": "This also means that, locally, the stored objects are always from the last time a target was run via tar_make()"
   },
   {
-    "objectID": "materials/02-renv.html#section-37",
-    "href": "materials/02-renv.html#section-37",
+    "objectID": "materials/03-targets.html#section-33",
+    "href": "materials/03-targets.html#section-33",
     "title": "",
     "section": "",
-    "text": "renv::init()\nThe renv folder contains a library with all packages that are currently being used by the project.\n\nThis is the key magic that makes renv work: instead of having one library containing the packages used in every project, renv gives you a separate library for each project.\n\n. . .\n\nThis gives you the benefits of isolation: different projects can use different versions of packages, and installing, updating, or removing packages in one project doesn’t affect any other project."
+    "text": "This means that targets does not, by default, have data version control; you are not storing multiple versions of your objects as your pipeline changes. You are always overwriting old output with new output."
   },
   {
-    "objectID": "materials/02-renv.html#section-38",
-    "href": "materials/02-renv.html#section-38",
+    "objectID": "materials/03-targets.html#section-34",
+    "href": "materials/03-targets.html#section-34",
     "title": "",
     "section": "",
-    "text": "renv::init()\nThere’s another nice bonus here with how renv uses a global cache for packages.\n. . .\n\nOne of renv’s primary features is the global package cache, which is shared across all projects.\n\n. . .\nThis means that even though projects are isolated, if you have installed tidyverse in one project, if you install the same version of tidyverse in another project it will install directly from the cache, saving time and space.\n. . .\nThis becomes really critical when using Github Actions and Docker builds."
+    "text": "However, we can configure targets to export the objects to a shared cloud location so that:\n\n\nobjects are no longer isolated to the machine of the run\n\n\n\n\nmultiple versions of objects are stored using cloud versioning to preserve the lineage of our pipeline"
   },
   {
-    "objectID": "materials/02-renv.html#renv-key-functions-2",
-    "href": "materials/02-renv.html#renv-key-functions-2",
-    "title": "",
-    "section": "renv key functions",
-    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages"
-  },
-  {
-    "objectID": "materials/02-renv.html#renv-key-functions-3",
-    "href": "materials/02-renv.html#renv-key-functions-3",
-    "title": "",
-    "section": "renv key functions",
-    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages\nrenv::status() compares the current dependencies of your project vs the dependencies detailed in the lockfile."
-  },
-  {
-    "objectID": "materials/02-renv.html#section-41",
-    "href": "materials/02-renv.html#section-41",
+    "objectID": "materials/03-targets.html#section-35",
+    "href": "materials/03-targets.html#section-35",
     "title": "",
     "section": "",
-    "text": "renv::status()\nSuppose we just wrote a new function, or added a new piece of code that required installing some new packages."
+    "text": "At the top of our _targets.R script, we have options we use to define the pipeline.\nThis includes setting the packages that should be loaded during the entire pipeline, the format of the targets to be saved, and the location, or repository to store the objects.\nBy default, this is set to “local”.\n\n# Set target options:\ntar_option_set(\n    packages = c(\"tidyverse\"),\n    format = \"qs\",\n    repository = \"local\"\n)"
   },
   {
-    "objectID": "materials/02-renv.html#section-44",
-    "href": "materials/02-renv.html#section-44",
+    "objectID": "materials/03-targets.html#section-36",
+    "href": "materials/03-targets.html#section-36",
     "title": "",
     "section": "",
-    "text": "renv::status()\nRunning renv::status() will alert us to the fact that we are in an inconsistent state; we have have new packages in use in the project that are not recorded in the lockfile."
+    "text": "But we can set the repository to a cloud storage location (AWS, GCP), which will then export our objects and their metadata to a cloud bucket.\n\n# Set target options:\ntar_option_set(\n  packages = c(\"tidyverse\", \"cfbfastR\"),\n  format = \"qs\",\n  # for cloud storage\n  resources = \n    tar_resources(\n      gcp = tar_resources_gcp(\n      bucket = \"cfb_models\",\n      prefix = 'data'\n    )\n  ),\n  repository = \"gcp\"\n)"
   },
   {
-    "objectID": "materials/02-renv.html#section-45",
-    "href": "materials/02-renv.html#section-45",
+    "objectID": "materials/03-targets.html#section-38",
+    "href": "materials/03-targets.html#section-38",
     "title": "",
     "section": "",
-    "text": "renv::status()\nThis will only alert us to the fact that we are in an inconsistent state; it won’t actually change or modify our lockfile.\n. . .\nIf we want to update our lockfile to our new state, we need to take a snapshot of our new dependencies."
+    "text": "This is what I tend to do for my own projects, as it shifts all of my storage to the cloud and I can pick up and work on pipelines between different workstations without needing to re-run the pipeline everytime.\n\nIt also stores the lineage of my work historically, so that I can easily revert to past versions if needed."
   },
   {
-    "objectID": "materials/02-renv.html#renv-key-functions-4",
-    "href": "materials/02-renv.html#renv-key-functions-4",
-    "title": "",
-    "section": "renv key functions",
-    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages\nrenv::status() compares the current dependencies of your project vs the dependencies detailed in the lockfile.\nrenv::snapshot() creates or updates a lockfile with the current state of packages used in the project"
-  },
-  {
-    "objectID": "materials/02-renv.html#section-46",
-    "href": "materials/02-renv.html#section-46",
+    "objectID": "materials/03-targets.html#section-39",
+    "href": "materials/03-targets.html#section-39",
     "title": "",
     "section": "",
-    "text": "renv::snapshot()\nrenv::snapshot() will update the lockfile with the new dependencies, adding new packages that are in use and removing any that are no longer in use."
+    "text": "However, using the cloud introduces an added wrinkle of requiring authentication around our pipeline, which we will cover later.\n\nSadly, at the minute, targets is only set up to use AWS and GCP out of the box; Azure is in development but would currently require some custom configuration."
   },
   {
-    "objectID": "materials/02-renv.html#section-48",
-    "href": "materials/02-renv.html#section-48",
+    "objectID": "materials/03-targets.html#section-40",
+    "href": "materials/03-targets.html#section-40",
     "title": "",
     "section": "",
-    "text": "renv::snapshot()\nWe can then commit the change we made to our code, along with the change to the lockfile, which will allow us revert to prior commits and restore the dependencies that were in place."
+    "text": "Let’s revisit some of the original motivations for this workshop."
   },
   {
-    "objectID": "materials/02-renv.html#renv-key-functions-5",
-    "href": "materials/02-renv.html#renv-key-functions-5",
-    "title": "",
-    "section": "renv key functions",
-    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages\nrenv::status() compares the current dependencies of your project vs the dependencies detailed in the lockfile.\nrenv::snapshot() creates or updates a lockfile with the current state of packages used in the project\n\n\n\nrenv::restore() restores a project’s dependencies from a lockfile. This is typically the first command when working with a repo that has an existing lockfile."
-  },
-  {
-    "objectID": "materials/02-renv.html#section-51",
-    "href": "materials/02-renv.html#section-51",
+    "objectID": "materials/03-targets.html#section-41",
+    "href": "materials/03-targets.html#section-41",
     "title": "",
     "section": "",
-    "text": "How are we feeling about this picture?"
+    "text": "How do I share my code with you, so that you can run my code, make changes, and let me know what you’ve changed?\n\nHow can a group of people work on the same project without getting in each other’s way?\n\n\nHow do we ensure that we are running the same code and avoid conflicts from packages being out of date?\n\n\nHow can we run experiments and test out changes without breaking the current project?\n\n\nHow do we take a project into production?"
   },
   {
-    "objectID": "materials/02-renv.html#section-52",
-    "href": "materials/02-renv.html#section-52",
+    "objectID": "materials/03-targets.html#targets-and-predictive-models",
+    "href": "materials/03-targets.html#targets-and-predictive-models",
+    "title": "",
+    "section": "targets and predictive models",
+    "text": "targets and predictive models\nLet’s talk about building predictive modeling pipelines in targets, the thing most of us are ultimately employed to do.\n\nAs with any other type of project, we want to write code that is transparent, reproducible, and allows for collaborative development and testing.\n\n\nIn principal, Git/GitHub and renv are the most important pieces for allowing us to do this; we are not required to use targets for training/deploying models. I would\n\n\nBut I have found its functional, Make-style approach to be well suited for managing the predictive modeling life cycle."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-42",
+    "href": "materials/03-targets.html#section-42",
     "title": "",
     "section": "",
-    "text": "renv is an excellent tool that should become mandatory for your projects.\n\nBut it isn’t going to solve every possible problem for reproducibility."
+    "text": "Predictive modeling runs are, after all, a DAG.\n\n\n\n\n\nflowchart LR\nraw[Raw Data] --&gt; clean[Clean Data]\nclean --&gt; train[Training Set]\nclean --&gt; valid[Validation Set]\ntrain --&gt; preprocessor(Preprocessor)\npreprocessor --&gt; resamples[Bootstraps]\nresamples --&gt; model(glmnet)\nmodel --&gt; features(Impute + Normalize)\nfeatures --&gt; tuning(Tuning)\ntuning --&gt; valid\npreprocessor --&gt; valid\nvalid --&gt; evaluation[Model Evaluation]\ntrain --&gt; final(Model)\nvalid --&gt; final"
   },
   {
-    "objectID": "materials/02-renv.html#section-53",
-    "href": "materials/02-renv.html#section-53",
+    "objectID": "materials/03-targets.html#section-43",
+    "href": "materials/03-targets.html#section-43",
     "title": "",
     "section": "",
-    "text": "Why isn’t my package being added to the lockfile?\nA package is only recorded in the lockfile if:\n. . .\n\nThe package is installed in your project library\nThe package is used in the project, as determined by renv::dependencies()\n\n. . .\nThere are some instances where renv will not detect dependencies completely; doublecheck to see how the package is being used. You might need to explicitly library the package, or change your snapshot settings from “implict” to “all”."
+    "text": "In the sections to come, we will be splitting/training/finalizing/deploying predictive models in a targets pipeline.\n\nMost of the examples we’re going to work on will assume some level of familiarity with tidymodels. What is everyone’s famililarity with tidymodels?\n\n\nAgain, in principal, you do not have to use tidymodels in pipelines, but they provide a standardized way to train models that naturally works well with functional programming.\n\n\nTherefore:"
   },
   {
-    "objectID": "materials/02-renv.html#section-54",
-    "href": "materials/02-renv.html#section-54",
+    "objectID": "materials/03-targets.html#a-crash-course-in-tidymodels",
+    "href": "materials/03-targets.html#a-crash-course-in-tidymodels",
+    "title": "",
+    "section": "a crash course in tidymodels",
+    "text": "a crash course in tidymodels\n\ntidymodels refers to a suite of R packages that bring the design philosophy and grammar of the tidyverse to training models\n\n\nif you’re like me and and originally cut your teeth with the caret package, tidymodels is its successor from the same person (Max Kuhn, praise his name)"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-45",
+    "href": "materials/03-targets.html#section-45",
     "title": "",
     "section": "",
-    "text": "Where are packages being stored exactly?\nrenv installs packages in global cache, which can be shared across projects and across users.\nYou can find that location by running renv::paths$cache()\n. . .\nOne thing to consider for an organization is to set everyone to be pointed to the same global cache, which will speed up installations for everyone."
+    "text": "fun fact: tidymodels is basically just a GitHub organization:"
   },
   {
-    "objectID": "materials/00-intro.html#goals",
-    "href": "materials/00-intro.html#goals",
-    "title": "What They Didn’t Teach You  About Data Science",
-    "section": "Goals",
-    "text": "Goals\nThe aim of this workshop is to gain familiarity and experience with tools that will enable collaborative open-source data science development.\n\nLearning a little bit about version control package/environment management, and pipelines will go a long way towards solving the headaches of modern data science projects.\n\n\nThis workshop leans heavily on R/RStudio and the Posit ecosystem, but the principles we will cover apply equally to Python and R."
-  },
-  {
-    "objectID": "materials/00-intro.html#topics",
-    "href": "materials/00-intro.html#topics",
-    "title": "What They Didn’t Teach You  About Data Science",
-    "section": "Topics",
-    "text": "Topics\nOur goal is to create consistent, repeatable patterns for data science project development, iteration, and delivery. To this end, we are going to cover three main topics:\n\nGit (and Github)\nrenv\ntargets"
-  },
-  {
-    "objectID": "materials/00-intro.html#references",
-    "href": "materials/00-intro.html#references",
-    "title": "What They Didn’t Teach You  About Data Science",
-    "section": "References",
-    "text": "References\nI am far from the first person to cover these topics. I highly recommend bookmarking each of the following resources, as we will be covering pieces of these throughout the workshop:\n\n\nCookiecutter Data Science - a flexible, standardized project structure for organizing data science repositories\nPro Git\nWhat They Forgot to Teach You About R\nHappy Git and GitHub for the useR\nFunctional Programming with R"
-  },
-  {
-    "objectID": "materials/00-intro.html#im-assuming",
-    "href": "materials/00-intro.html#im-assuming",
-    "title": "What They Didn’t Teach You  About Data Science",
-    "section": "I’m assuming",
-    "text": "I’m assuming\n You are familiar with R.\nYou have RStudio installed.\n You have a Github Account\n You have installed Quarto.\n\n\nWe’ll cover\n\nA crash course in version control and Git and its application to data science projects.\nProject and environment dependencies with renv\nBuilding pipelines with targets"
-  },
-  {
-    "objectID": "materials/00-intro.html#section-2",
-    "href": "materials/00-intro.html#section-2",
-    "title": "What They Didn’t Teach You  About Data Science",
+    "objectID": "materials/03-targets.html#section-48",
+    "href": "materials/03-targets.html#section-48",
+    "title": "",
     "section": "",
-    "text": "CAVEATS\n\n\n\nI am NOT a software engineer.\n\n\n\n\nLike, at all. Everything we will cover in these workshops comes from my experiences, both good and bad, as a consultant in data science. I have seen some shit.\n\n\n\n\nWe will only be covering a small portion of these topics - our goal is not to become experts in Git, but to learn the little bit of Git that will help us be better data scientists."
+    "text": "Recall a sample predictive modeling pipeline.\n\n\n\n\n\nflowchart LR\nraw[Raw Data] --&gt; clean[Clean Data]\nclean --&gt; train[Training Set]\nclean --&gt; valid[Validation Set]\ntrain --&gt; preprocessor(Preprocessor)\npreprocessor --&gt; resamples[Bootstraps]\nresamples --&gt; model(glmnet)\nmodel --&gt; features(Impute + Normalize)\nfeatures --&gt; tuning(Tuning)\ntuning --&gt; valid\npreprocessor --&gt; valid\nvalid --&gt; evaluation[Model Evaluation]\ntrain --&gt; final(Model)\nvalid --&gt; final\n\n\n\n\n\n\n\n\nBreaking this pipeline down into key parts, we have:\n\nsplitting/resampling (train/valid, bootstraps, cross validation)\npreprocessing (imputation/normalization)\nmodel specification (glmnet, random forest)\ntuning over parameters (mtry, penalty)\nmodel assessment (rmse, log loss)"
   },
   {
-    "objectID": "materials/00-intro.html#section-3",
-    "href": "materials/00-intro.html#section-3",
-    "title": "What They Didn’t Teach You  About Data Science",
+    "objectID": "materials/03-targets.html#section-49",
+    "href": "materials/03-targets.html#section-49",
+    "title": "",
     "section": "",
-    "text": "The DevOps folks will surely judge us all for not being experts in their craft. This is fine. We will accept this and move on. It’s fine.\n\n\n\nIt’s fine.\n\n\n\n\nIt’s fine."
+    "text": "Each of these correspond to a key concept/package in tidymodels\n\n\nsplitting/resampling (train/valid, bootstraps, cross validation) -&gt; rsets from rsample\npreprocessing (imputation/normalization) -&gt; recipes\nmodel specification (glmnet, random forest) -&gt; models from parsnip\ntuning over parameters (mtry, penalty) -&gt; tune and dials\nmodel assessment (rmse, log loss) -&gt; yardstick"
   },
   {
-    "objectID": "materials/00-intro.html#a-reminder",
-    "href": "materials/00-intro.html#a-reminder",
-    "title": "What They Didn’t Teach You  About Data Science",
-    "section": "A reminder",
-    "text": "A reminder\n\nThere is no simple, you-won’t-believe-how-easy-it-is, experts-hate-him! trick that will make us experts in Git, CI/CD, DevOps, pipelines, etc.\n\n\nAs with most things in life, the only way to get better is through practice and repeated trial and error.\n\n\nBut, if maximum likelihood and gradient boosting have taught us anything about learning:\n\n\nstart somewhere\nmake mistakes\nlearn from those mistakes\ndo better the next time"
+    "objectID": "materials/03-targets.html#key-tidymodels-concepts",
+    "href": "materials/03-targets.html#key-tidymodels-concepts",
+    "title": "",
+    "section": "key tidymodels concepts",
+    "text": "key tidymodels concepts\n\nrecipes\nmodels from parsnip\nworkflows\nsplits/resamples from rsample\nmetrics from yardstick and tune"
   },
   {
-    "objectID": "materials/00-intro.html#lets-start-at-the-end-a-ridiculous-data-science-project",
-    "href": "materials/00-intro.html#lets-start-at-the-end-a-ridiculous-data-science-project",
-    "title": "What They Didn’t Teach You  About Data Science",
-    "section": "Let’s start at the end: a (ridiculous) data science project",
-    "text": "Let’s start at the end: a (ridiculous) data science project\n\nI have a ridiculous, ever-evolving personal project: predicting boardgames that I might want to add to my boardgame collection."
+    "objectID": "materials/03-targets.html#models",
+    "href": "materials/03-targets.html#models",
+    "title": "",
+    "section": "models",
+    "text": "models\n\n\na model is a specification (from parsnip) that defines the type of model to be trained (linear model, random forest), its mode (classification, regression), and its underlying engine (lm, stan_lm, ranger, xgboost, lightgbm)\n\n\n\n\nparsnip provides a standardized interface for specifiying models, which allows us to easily run different types of models without having to rewrite our code to accommodate differences\n\n\n\nif you’ve ever been annoyed with having to create y and x matrices for glmnet or ranger, parsnip is something of a lifesaver"
   },
   {
-    "objectID": "materials/00-intro.html#this-is-the-pipeline-that-scrapes-data-from-boardgamegeek-and-populates-a-cloud-data-warehouse-gcpbigquery",
-    "href": "materials/00-intro.html#this-is-the-pipeline-that-scrapes-data-from-boardgamegeek-and-populates-a-cloud-data-warehouse-gcpbigquery",
-    "title": "What They Didn’t Teach You  About Data Science",
-    "section": "This is the pipeline that scrapes data from BoardGameGeek and populates a cloud data warehouse (GCP/BigQuery)",
-    "text": "This is the pipeline that scrapes data from BoardGameGeek and populates a cloud data warehouse (GCP/BigQuery)"
-  },
-  {
-    "objectID": "materials/00-intro.html#this-is-the-pipeline-that-trains-models-to-predict-how-the-boardgamegeek-community-is-going-to-rate-games",
-    "href": "materials/00-intro.html#this-is-the-pipeline-that-trains-models-to-predict-how-the-boardgamegeek-community-is-going-to-rate-games",
-    "title": "What They Didn’t Teach You  About Data Science",
-    "section": "This is the pipeline that trains models to predict how the BoardGameGeek community is going to rate games",
-    "text": "This is the pipeline that trains models to predict how the BoardGameGeek community is going to rate games"
-  },
-  {
-    "objectID": "materials/00-intro.html#this-is-the-repo-for-training-a-user-specific-model-and-creating-a-user-report-to-predict-games-in-their-collection",
-    "href": "materials/00-intro.html#this-is-the-repo-for-training-a-user-specific-model-and-creating-a-user-report-to-predict-games-in-their-collection",
-    "title": "What They Didn’t Teach You  About Data Science",
-    "section": "This is the repo for training a user specific model and creating a user report to predict games in their collection",
-    "text": "This is the repo for training a user specific model and creating a user report to predict games in their collection"
-  },
-  {
-    "objectID": "materials/00-intro.html#motivation",
-    "href": "materials/00-intro.html#motivation",
-    "title": "What They Didn’t Teach You  About Data Science",
-    "section": "Motivation",
-    "text": "Motivation\nDo these projects represent the height of data science maturity and sophistication?"
-  },
-  {
-    "objectID": "materials/00-intro.html#motivation-1",
-    "href": "materials/00-intro.html#motivation-1",
-    "title": "What They Didn’t Teach You  About Data Science",
-    "section": "Motivation",
-    "text": "Motivation\nDo these projects represent the height of data science maturity and sophistication?\nNot at all. But it will help illustrate the typical setting of data science projects.\n\nSuppose I wanted you to take a look at something in my work and and see if you could write a more efficient function.\n\n\nOr maybe you could train a better model.\n\n\nOr maybe you could create a better report.\n\n\nOr maybe you could do the whole thing differently and save me a ton of time and/or make better predictions."
-  },
-  {
-    "objectID": "materials/00-intro.html#challenge",
-    "href": "materials/00-intro.html#challenge",
-    "title": "What They Didn’t Teach You  About Data Science",
-    "section": "Challenge",
-    "text": "Challenge\nHow do I share my code with you, so that you can run my code, make changes, and let me know what you’ve changed?\n\nHow can a group of people work on the same project without getting in each other’s way?\n\n\nHow can we run experiments and test out changes without breaking the current project?\n\n\nHow do we ensure that we are running the same code and avoid conflicts from packages being out of date?"
-  },
-  {
-    "objectID": "materials/00-intro.html#challenge-1",
-    "href": "materials/00-intro.html#challenge-1",
-    "title": "What They Didn’t Teach You  About Data Science",
-    "section": "Challenge",
-    "text": "Challenge\nCan we predict which board games Phil wants to buy?\n\n\nFind out next week on Dragon Ball Z\n\n\n\nTo get to this point, we’ll need to cover:\n\nGit (and Github)\nrenv\ntargets"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "What They Didn’t Teach You About Data Science",
+    "objectID": "materials/03-targets.html#section-50",
+    "href": "materials/03-targets.html#section-50",
+    "title": "",
     "section": "",
-    "text": "This workshop focuses on using R/RStudio with Git, renv, and targets. This will be pretty hands on, so it will be helpful to configure as much as possible in advance. I can help debug if we have any issues on the day.\n\n\nThese are the following pieces to set up in advance:\n\nRegister a GitHub account\nInstall/update R and RStudio\nInstall Git\nInstall Quarto\n\n\n\n\nThe materials used in this workshop can be found in the ds-workshop repository.\n\n\n\n\nIntro\nGit + GitHub\nrenv\ntargets"
+    "text": "a linear model with lm\n\nlinear_reg() |&gt;\n  set_engine(\"lm\") |&gt;\n  translate()\n\n#&gt; Linear Regression Model Specification (regression)\n#&gt; \n#&gt; Computational engine: lm \n#&gt; \n#&gt; Model fit template:\n#&gt; stats::lm(formula = missing_arg(), data = missing_arg(), weights = missing_arg())\n\n\n\na linear model with glmnet\n\nlinear_reg(penalty = 0) |&gt;\n  set_engine(\"glmnet\") |&gt;\n  translate()\n\n#&gt; Linear Regression Model Specification (regression)\n#&gt; \n#&gt; Main Arguments:\n#&gt;   penalty = 0\n#&gt; \n#&gt; Computational engine: glmnet \n#&gt; \n#&gt; Model fit template:\n#&gt; glmnet::glmnet(x = missing_arg(), y = missing_arg(), weights = missing_arg(), \n#&gt;     family = \"gaussian\")"
   },
   {
-    "objectID": "index.html#setup",
-    "href": "index.html#setup",
-    "title": "What They Didn’t Teach You About Data Science",
+    "objectID": "materials/03-targets.html#section-51",
+    "href": "materials/03-targets.html#section-51",
+    "title": "",
     "section": "",
-    "text": "These are the following pieces to set up in advance:\n\nRegister a GitHub account\nInstall/update R and RStudio\nInstall Git\nInstall Quarto"
+    "text": "a random forest with ranger (specifying tuning over the number of trees and number of randomly selected variables)\n\n\n#&gt; Random Forest Model Specification (classification)\n#&gt; \n#&gt; Main Arguments:\n#&gt;   mtry = tune::tune()\n#&gt;   trees = tune::tune()\n#&gt; \n#&gt; Computational engine: ranger\n\n\n\nboosted trees with xgboost\n\n\n#&gt; Boosted Tree Model Specification (classification)\n#&gt; \n#&gt; Main Arguments:\n#&gt;   mtry = tune::tune()\n#&gt;   trees = 500\n#&gt;   tree_depth = tune::tune()\n#&gt;   sample_size = tune::tune()\n#&gt;   stop_iter = 50\n#&gt; \n#&gt; Computational engine: xgboost"
   },
   {
-    "objectID": "index.html#materials",
-    "href": "index.html#materials",
-    "title": "What They Didn’t Teach You About Data Science",
+    "objectID": "materials/03-targets.html#section-52",
+    "href": "materials/03-targets.html#section-52",
+    "title": "",
     "section": "",
-    "text": "The materials used in this workshop can be found in the ds-workshop repository."
+    "text": "This allows us to easily fit models in a standardized way despite their engines requiring different formulas/syntax\n\nto fit a model we simply pass along a formula and a dataset to fit()\n\n\nfitting a linear model with lm\n\nlinear_reg(mode = \"regression\") |&gt;\n  set_engine(\"lm\") |&gt;\n  fit(mpg ~ hp + wt, data = mtcars)\n\n#&gt; parsnip model object\n#&gt; \n#&gt; \n#&gt; Call:\n#&gt; stats::lm(formula = mpg ~ hp + wt, data = data)\n#&gt; \n#&gt; Coefficients:\n#&gt; (Intercept)           hp           wt  \n#&gt;    37.22727     -0.03177     -3.87783\n\n\n\n\nfitting a ridge regression with glmnet\n\nlinear_reg(mode = \"regression\", penalty = 0) |&gt;\n  set_engine(\"glmnet\") |&gt;\n  fit(mpg ~ hp + wt, data = mtcars)\n\n#&gt; parsnip model object\n#&gt; \n#&gt; \n#&gt; Call:  glmnet::glmnet(x = maybe_matrix(x), y = y, family = \"gaussian\") \n#&gt; \n#&gt;    Df  %Dev Lambda\n#&gt; 1   0  0.00 5.1470\n#&gt; 2   1 12.78 4.6900\n#&gt; 3   1 23.39 4.2730\n#&gt; 4   1 32.20 3.8940\n#&gt; 5   2 39.55 3.5480\n#&gt; 6   2 46.87 3.2320\n#&gt; 7   2 52.95 2.9450\n#&gt; 8   2 58.00 2.6840\n#&gt; 9   2 62.19 2.4450\n#&gt; 10  2 65.67 2.2280\n#&gt; 11  2 68.55 2.0300\n#&gt; 12  2 70.95 1.8500\n#&gt; 13  2 72.94 1.6850\n#&gt; 14  2 74.60 1.5360\n#&gt; 15  2 75.97 1.3990\n#&gt; 16  2 77.11 1.2750\n#&gt; 17  2 78.05 1.1620\n#&gt; 18  2 78.84 1.0580\n#&gt; 19  2 79.49 0.9645\n#&gt; 20  2 80.03 0.8788\n#&gt; 21  2 80.48 0.8007\n#&gt; 22  2 80.85 0.7296\n#&gt; 23  2 81.16 0.6648\n#&gt; 24  2 81.42 0.6057\n#&gt; 25  2 81.63 0.5519\n#&gt; 26  2 81.81 0.5029\n#&gt; 27  2 81.96 0.4582\n#&gt; 28  2 82.08 0.4175\n#&gt; 29  2 82.18 0.3804\n#&gt; 30  2 82.27 0.3466\n#&gt; 31  2 82.34 0.3158\n#&gt; 32  2 82.39 0.2878\n#&gt; 33  2 82.44 0.2622\n#&gt; 34  2 82.48 0.2389\n#&gt; 35  2 82.52 0.2177\n#&gt; 36  2 82.54 0.1983\n#&gt; 37  2 82.57 0.1807\n#&gt; 38  2 82.59 0.1647\n#&gt; 39  2 82.60 0.1500\n#&gt; 40  2 82.61 0.1367\n#&gt; 41  2 82.63 0.1246\n#&gt; 42  2 82.63 0.1135\n#&gt; 43  2 82.64 0.1034\n#&gt; 44  2 82.65 0.0942\n#&gt; 45  2 82.65 0.0859\n#&gt; 46  2 82.66 0.0782\n#&gt; 47  2 82.66 0.0713\n#&gt; 48  2 82.66 0.0649\n#&gt; 49  2 82.67 0.0592\n#&gt; 50  2 82.67 0.0539\n#&gt; 51  2 82.67 0.0491\n#&gt; 52  2 82.67 0.0448\n#&gt; 53  2 82.67 0.0408\n#&gt; 54  2 82.67 0.0372\n#&gt; 55  2 82.67 0.0339"
   },
   {
-    "objectID": "index.html#schedule",
-    "href": "index.html#schedule",
-    "title": "What They Didn’t Teach You About Data Science",
+    "objectID": "materials/03-targets.html#recipes",
+    "href": "materials/03-targets.html#recipes",
+    "title": "",
+    "section": "recipes",
+    "text": "recipes\nrecipes capture steps for preprocessing data prior to training a model.\n\na recipe is a type of preprocessor that can dynamically apply transformations (imputation, normalization, dummies) to the data we are using to model.\n\n\nwe create them with recipe(), typically specifying a formula and a dataset. we then add steps to recipe of the form step_ (step_mutate, step_impute, step_nzv, …)\n\n\n\nlibrary(splines2)\n\nrec  =\n  recipe(mpg ~ ., data = mtcars) |&gt;\n    step_spline_b(\"hp\", deg_free = 3) |&gt;\n    step_interact(terms = ~ gear:wt) |&gt;\n    step_normalize(all_numeric_predictors())\n\n\nrec$var_info\n\n#&gt; # A tibble: 11 × 4\n#&gt;    variable type      role      source  \n#&gt;    &lt;chr&gt;    &lt;list&gt;    &lt;chr&gt;     &lt;chr&gt;   \n#&gt;  1 cyl      &lt;chr [2]&gt; predictor original\n#&gt;  2 disp     &lt;chr [2]&gt; predictor original\n#&gt;  3 hp       &lt;chr [2]&gt; predictor original\n#&gt;  4 drat     &lt;chr [2]&gt; predictor original\n#&gt;  5 wt       &lt;chr [2]&gt; predictor original\n#&gt;  6 qsec     &lt;chr [2]&gt; predictor original\n#&gt;  7 vs       &lt;chr [2]&gt; predictor original\n#&gt;  8 am       &lt;chr [2]&gt; predictor original\n#&gt;  9 gear     &lt;chr [2]&gt; predictor original\n#&gt; 10 carb     &lt;chr [2]&gt; predictor original\n#&gt; 11 mpg      &lt;chr [2]&gt; outcome   original\n\nrec$steps\n\n#&gt; [[1]]\n#&gt; \n#&gt; [[2]]\n#&gt; \n#&gt; [[3]]"
+  },
+  {
+    "objectID": "materials/03-targets.html#recipes-1",
+    "href": "materials/03-targets.html#recipes-1",
+    "title": "",
+    "section": "recipes",
+    "text": "recipes\n\nusing recipes involves two main steps:\n\npreparing recipes on a dataset with prep()\napplying recipes to a dataset with bake()"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-53",
+    "href": "materials/03-targets.html#section-53",
+    "title": "",
     "section": "",
-    "text": "Intro\nGit + GitHub\nrenv\ntargets"
+    "text": "preparing recipes on a dataset with prep()\n\n\npreparing a recipe is kind of like training a model; it captures/estimates information on one dataset and will apply those same transformations to a new dataset\n\n\nThis is really important for things like normalization/imputation, as we want to apply the same transformations to unseen data that were used on the training set\n\nprepped =\n  rec |&gt;\n    prep()\n\nprepped$steps\n\n#&gt; [[1]]\n#&gt; \n#&gt; [[2]]\n#&gt; \n#&gt; [[3]]\n\nprepped$term_info\n\n#&gt; # A tibble: 14 × 4\n#&gt;    variable  type      role      source  \n#&gt;    &lt;chr&gt;     &lt;list&gt;    &lt;chr&gt;     &lt;chr&gt;   \n#&gt;  1 cyl       &lt;chr [2]&gt; predictor original\n#&gt;  2 disp      &lt;chr [2]&gt; predictor original\n#&gt;  3 drat      &lt;chr [2]&gt; predictor original\n#&gt;  4 wt        &lt;chr [2]&gt; predictor original\n#&gt;  5 qsec      &lt;chr [2]&gt; predictor original\n#&gt;  6 vs        &lt;chr [2]&gt; predictor original\n#&gt;  7 am        &lt;chr [2]&gt; predictor original\n#&gt;  8 gear      &lt;chr [2]&gt; predictor original\n#&gt;  9 carb      &lt;chr [2]&gt; predictor original\n#&gt; 10 mpg       &lt;chr [2]&gt; outcome   original\n#&gt; 11 hp_1      &lt;chr [2]&gt; predictor derived \n#&gt; 12 hp_2      &lt;chr [2]&gt; predictor derived \n#&gt; 13 hp_3      &lt;chr [2]&gt; predictor derived \n#&gt; 14 gear_x_wt &lt;chr [2]&gt; predictor derived"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-54",
+    "href": "materials/03-targets.html#section-54",
+    "title": "",
+    "section": "",
+    "text": "applying recipes to a dataset with bake()\n\n\nbaking a recipe produces the dataframe/matrix that will be used in modeling\n\nrec |&gt;\n  prep() |&gt;\n  bake(new_data = NULL) |&gt;\n  head(5) |&gt;\n  mutate_if(is.numeric, round, 3)\n\n#&gt; # A tibble: 5 × 14\n#&gt;      cyl   disp   drat     wt   qsec     vs     am   gear   carb   mpg  hp_1\n#&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;\n#&gt; 1 -0.105 -0.571  0.568 -0.61  -0.777 -0.868  1.19   0.424  0.735  21   0.627\n#&gt; 2 -0.105 -0.571  0.568 -0.35  -0.464 -0.868  1.19   0.424  0.735  21   0.627\n#&gt; 3 -1.23  -0.99   0.474 -0.917  0.426  1.12   1.19   0.424 -1.12   22.8 0.093\n#&gt; 4 -0.105  0.22  -0.966 -0.002  0.89   1.12  -0.814 -0.932 -1.12   21.4 0.627\n#&gt; 5  1.01   1.04  -0.835  0.228 -0.464 -0.868 -0.814 -0.932 -0.503  18.7 0.839\n#&gt; # ℹ 3 more variables: hp_2 &lt;dbl&gt;, hp_3 &lt;dbl&gt;, gear_x_wt &lt;dbl&gt;"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-55",
+    "href": "materials/03-targets.html#section-55",
+    "title": "",
+    "section": "",
+    "text": "recipes are especially helpful for handling categorical features, as we can create easily steps for handling novel levels or pooling infrequent levels.\n\ndata(ames, package = \"modeldata\")\n\names_rec &lt;-\n  recipe(\n    Sale_Price ~ Neighborhood,\n    data = ames\n  ) |&gt;\n  step_novel(Neighborhood) |&gt;\n  step_other(Neighborhood, threshold = 0.05, other = \"Other\") |&gt;\n  step_dummy(all_nominal_predictors())\n\names_rec |&gt;\n  prep() |&gt;\n  bake(new_data = NULL) |&gt;\n  head(15)\n\n#&gt; # A tibble: 15 × 9\n#&gt;    Sale_Price Neighborhood_College_…¹ Neighborhood_Old_Town Neighborhood_Edwards\n#&gt;         &lt;int&gt;                   &lt;dbl&gt;                 &lt;dbl&gt;                &lt;dbl&gt;\n#&gt;  1     215000                       0                     0                    0\n#&gt;  2     105000                       0                     0                    0\n#&gt;  3     172000                       0                     0                    0\n#&gt;  4     244000                       0                     0                    0\n#&gt;  5     189900                       0                     0                    0\n#&gt;  6     195500                       0                     0                    0\n#&gt;  7     213500                       0                     0                    0\n#&gt;  8     191500                       0                     0                    0\n#&gt;  9     236500                       0                     0                    0\n#&gt; 10     189000                       0                     0                    0\n#&gt; 11     175900                       0                     0                    0\n#&gt; 12     185000                       0                     0                    0\n#&gt; 13     180400                       0                     0                    0\n#&gt; 14     171500                       0                     0                    0\n#&gt; 15     212000                       0                     0                    0\n#&gt; # ℹ abbreviated name: ¹​Neighborhood_College_Creek\n#&gt; # ℹ 5 more variables: Neighborhood_Somerset &lt;dbl&gt;,\n#&gt; #   Neighborhood_Northridge_Heights &lt;dbl&gt;, Neighborhood_Gilbert &lt;dbl&gt;,\n#&gt; #   Neighborhood_Sawyer &lt;dbl&gt;, Neighborhood_Other &lt;dbl&gt;"
+  },
+  {
+    "objectID": "materials/03-targets.html#workflows",
+    "href": "materials/03-targets.html#workflows",
+    "title": "",
+    "section": "workflows",
+    "text": "workflows\nworkflows bundle models from parsnip and preprocessors from recipes into one object, which can then be trained/tuned/fit with a single call."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-56",
+    "href": "materials/03-targets.html#section-56",
+    "title": "",
+    "section": "",
+    "text": "combining a model and recipe into a workflow\n\nmod =\n  linear_reg(mode = \"regression\") |&gt;\n  set_engine(\"lm\")\n\nrec  =\n  recipe(mpg ~ ., data = mtcars) |&gt;\n    step_spline_b(\"hp\", deg_free = 3) |&gt;\n    step_interact(terms = ~ gear:wt) |&gt;\n    step_normalize(all_numeric_predictors())\n\nwflow =\n  workflow() |&gt;\n  add_recipe(rec) |&gt;\n  add_model(mod)\n\nwflow\n\n#&gt; ══ Workflow ════════════════════════════════════════════════════════════════════\n#&gt; Preprocessor: Recipe\n#&gt; Model: linear_reg()\n#&gt; \n#&gt; ── Preprocessor ────────────────────────────────────────────────────────────────\n#&gt; 3 Recipe Steps\n#&gt; \n#&gt; • step_spline_b()\n#&gt; • step_interact()\n#&gt; • step_normalize()\n#&gt; \n#&gt; ── Model ───────────────────────────────────────────────────────────────────────\n#&gt; Linear Regression Model Specification (regression)\n#&gt; \n#&gt; Computational engine: lm"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-57",
+    "href": "materials/03-targets.html#section-57",
+    "title": "",
+    "section": "",
+    "text": "fitting a workflow with fit() prepares our recipe and trains our model in one call\n\n# fitting workflow\nfit =\n  wflow |&gt;\n  fit(mtcars)\n\n# examining fit\nfit |&gt;\n  broom::tidy() |&gt;\n  mutate_if(is.numeric, round, 3)\n\n#&gt; # A tibble: 14 × 5\n#&gt;    term        estimate std.error statistic p.value\n#&gt;    &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;\n#&gt;  1 (Intercept)   20.1       0.402    50.0     0    \n#&gt;  2 cyl            1.92      1.76      1.09    0.29 \n#&gt;  3 disp          -0.563     2.02     -0.278   0.784\n#&gt;  4 drat           0.019     0.95      0.02    0.984\n#&gt;  5 wt             4.76      3.84      1.24    0.231\n#&gt;  6 qsec           1.63      1.21      1.34    0.196\n#&gt;  7 vs             0.133     0.932     0.143   0.888\n#&gt;  8 am             0.467     0.939     0.497   0.625\n#&gt;  9 gear           6.05      2.37      2.56    0.02 \n#&gt; 10 carb          -0.298     1.21     -0.247   0.808\n#&gt; 11 hp_1          -1.64      0.786    -2.08    0.052\n#&gt; 12 hp_2          -1.02      1.02     -1.00    0.328\n#&gt; 13 hp_3          -1.36      1.20     -1.13    0.272\n#&gt; 14 gear_x_wt     -6.69      2.91     -2.30    0.034"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-58",
+    "href": "materials/03-targets.html#section-58",
+    "title": "",
+    "section": "",
+    "text": "when we are using targets to train predictive models, a workflow will typically be the final step; it is the object we are trying to produce that can be used to predict new data\n\nworkflows make model deployment relatively straightforward, as we just need to export/share/deploy our finalized workflow\n\n\nwe’ll go over this in a bit with the vetiver package"
+  },
+  {
+    "objectID": "materials/03-targets.html#key-tidymodels-concepts-1",
+    "href": "materials/03-targets.html#key-tidymodels-concepts-1",
+    "title": "",
+    "section": "key tidymodels concepts",
+    "text": "key tidymodels concepts\n\nrecipes ✓\nmodels from parsnip ✓\nworkflows ✓\nsplits/resamples from rsample\nmetrics from yardstick and tune"
+  },
+  {
+    "objectID": "materials/03-targets.html#rsample",
+    "href": "materials/03-targets.html#rsample",
+    "title": "",
+    "section": "rsample",
+    "text": "rsample\nsplitting our data (train/valid, bootstraps, cross validation) is a standard part of training/assessing predictive models\n\nthe rsample package provides a standardized way to do this that works directly with workflows"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-59",
+    "href": "materials/03-targets.html#section-59",
+    "title": "",
+    "section": "",
+    "text": "creating a train/validation split\n\n\n# train/validation\nsplit = rsample::validation_split(mtcars, prop = 0.8)\nsplit\n\n#&gt; # Validation Set Split (0.8/0.2)  \n#&gt; # A tibble: 1 × 2\n#&gt;   splits         id        \n#&gt;   &lt;list&gt;         &lt;chr&gt;     \n#&gt; 1 &lt;split [25/7]&gt; validation"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-60",
+    "href": "materials/03-targets.html#section-60",
+    "title": "",
+    "section": "",
+    "text": "creating bootstraps\n\n# bootstrap\nboots = rsample::bootstraps(mtcars, times =10)\nboots\n\n#&gt; # Bootstrap sampling \n#&gt; # A tibble: 10 × 2\n#&gt;    splits          id         \n#&gt;    &lt;list&gt;          &lt;chr&gt;      \n#&gt;  1 &lt;split [32/11]&gt; Bootstrap01\n#&gt;  2 &lt;split [32/13]&gt; Bootstrap02\n#&gt;  3 &lt;split [32/12]&gt; Bootstrap03\n#&gt;  4 &lt;split [32/13]&gt; Bootstrap04\n#&gt;  5 &lt;split [32/13]&gt; Bootstrap05\n#&gt;  6 &lt;split [32/13]&gt; Bootstrap06\n#&gt;  7 &lt;split [32/12]&gt; Bootstrap07\n#&gt;  8 &lt;split [32/11]&gt; Bootstrap08\n#&gt;  9 &lt;split [32/9]&gt;  Bootstrap09\n#&gt; 10 &lt;split [32/15]&gt; Bootstrap10"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-61",
+    "href": "materials/03-targets.html#section-61",
+    "title": "",
+    "section": "",
+    "text": "creating cross validation folds\n\n# cross validation\nfolds = rsample::vfold_cv(mtcars, v = 5)\nfolds\n\n#&gt; #  5-fold cross-validation \n#&gt; # A tibble: 5 × 2\n#&gt;   splits         id   \n#&gt;   &lt;list&gt;         &lt;chr&gt;\n#&gt; 1 &lt;split [25/7]&gt; Fold1\n#&gt; 2 &lt;split [25/7]&gt; Fold2\n#&gt; 3 &lt;split [26/6]&gt; Fold3\n#&gt; 4 &lt;split [26/6]&gt; Fold4\n#&gt; 5 &lt;split [26/6]&gt; Fold5"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-62",
+    "href": "materials/03-targets.html#section-62",
+    "title": "",
+    "section": "",
+    "text": "each individual row contains an rsplit object, which has the original data stored as a single training/test split\n\n# grab one split\none_split =\nboots |&gt;\npluck(\"splits\", 1)\n\none_split\n\n#&gt; &lt;Analysis/Assess/Total&gt;\n#&gt; &lt;32/11/32&gt;"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-63",
+    "href": "materials/03-targets.html#section-63",
+    "title": "",
+    "section": "",
+    "text": "these sets can be extracted via the functions rsample::training() or rsample::testing()\n\n# extract training set\none_split |&gt;\nrsample::training()\n\n#&gt;                         mpg cyl  disp  hp drat    wt  qsec vs am gear carb\n#&gt; Valiant                18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1\n#&gt; Cadillac Fleetwood     10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4\n#&gt; Ferrari Dino           19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6\n#&gt; Camaro Z28             13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4\n#&gt; Volvo 142E             21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2\n#&gt; Mazda RX4 Wag...6      21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4\n#&gt; Ford Pantera L...7     15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4\n#&gt; Datsun 710...8         22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1\n#&gt; AMC Javelin...9        15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2\n#&gt; Lotus Europa...10      30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2\n#&gt; Duster 360...11        14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4\n#&gt; Lotus Europa...12      30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2\n#&gt; Hornet 4 Drive...13    21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1\n#&gt; Merc 280...14          19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4\n#&gt; Merc 230               22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2\n#&gt; Pontiac Firebird       19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2\n#&gt; Toyota Corona...17     21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1\n#&gt; Hornet 4 Drive...18    21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1\n#&gt; Merc 240D              24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2\n#&gt; Duster 360...20        14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4\n#&gt; Hornet 4 Drive...21    21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1\n#&gt; Chrysler Imperial...22 14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4\n#&gt; Chrysler Imperial...23 14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4\n#&gt; Ford Pantera L...24    15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4\n#&gt; Mazda RX4 Wag...25     21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4\n#&gt; Merc 280C              17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4\n#&gt; Fiat X1-9              27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1\n#&gt; Datsun 710...28        22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1\n#&gt; Toyota Corona...29     21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1\n#&gt; AMC Javelin...30       15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2\n#&gt; Merc 280...31          19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4\n#&gt; Toyota Corolla         33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1\n\n# extract test set\none_split |&gt;\nrsample::testing()\n\n#&gt;                      mpg cyl  disp  hp drat    wt  qsec vs am gear carb\n#&gt; Mazda RX4           21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4\n#&gt; Hornet Sportabout   18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2\n#&gt; Merc 450SE          16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3\n#&gt; Merc 450SL          17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3\n#&gt; Merc 450SLC         15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3\n#&gt; Lincoln Continental 10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4\n#&gt; Fiat 128            32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1\n#&gt; Honda Civic         30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2\n#&gt; Dodge Challenger    15.5   8 318.0 150 2.76 3.520 16.87  0  0    3    2\n#&gt; Porsche 914-2       26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2\n#&gt; Maserati Bora       15.0   8 301.0 335 3.54 3.570 14.60  0  1    5    8"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-64",
+    "href": "materials/03-targets.html#section-64",
+    "title": "",
+    "section": "",
+    "text": "nested rsplit objects make it easy to do tidy evaluation for models across resamples, such as estimate models/parameters\nCode\n\nfit_model = function(split) {\n\n  linear_reg(mode = \"regression\") |&gt;\n    fit(mpg ~ wt + hp + disp, data = training(split)) |&gt;\n    broom::tidy()\n}\n\n# fit model to 500 bootstraps and plot distribution of coefficients\nestimates =\n  mtcars |&gt;\n  rsample::bootstraps(times =500) |&gt;\n  mutate(results = map(splits, fit_model)) |&gt;\n  select(id, results)\n\nestimates\n\nOutput\n\n\n#&gt; # A tibble: 500 × 2\n#&gt;    id           results         \n#&gt;    &lt;chr&gt;        &lt;list&gt;          \n#&gt;  1 Bootstrap001 &lt;tibble [4 × 5]&gt;\n#&gt;  2 Bootstrap002 &lt;tibble [4 × 5]&gt;\n#&gt;  3 Bootstrap003 &lt;tibble [4 × 5]&gt;\n#&gt;  4 Bootstrap004 &lt;tibble [4 × 5]&gt;\n#&gt;  5 Bootstrap005 &lt;tibble [4 × 5]&gt;\n#&gt;  6 Bootstrap006 &lt;tibble [4 × 5]&gt;\n#&gt;  7 Bootstrap007 &lt;tibble [4 × 5]&gt;\n#&gt;  8 Bootstrap008 &lt;tibble [4 × 5]&gt;\n#&gt;  9 Bootstrap009 &lt;tibble [4 × 5]&gt;\n#&gt; 10 Bootstrap010 &lt;tibble [4 × 5]&gt;\n#&gt; # ℹ 490 more rows"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-65",
+    "href": "materials/03-targets.html#section-65",
+    "title": "",
+    "section": "",
+    "text": "estimates |&gt;\n  unnest(results) |&gt;\n  ggplot(aes(x=estimate))+\n  geom_histogram(bins = 50)+\n  facet_wrap(~term, ncol = 2, scales = \"free_x\")+\n  theme_light()+\n  xlab(\"coefficient\")+\n  geom_vline(xintercept = 0, linetype = 'dashed')"
+  },
+  {
+    "objectID": "materials/03-targets.html#metrics",
+    "href": "materials/03-targets.html#metrics",
+    "title": "",
+    "section": "metrics",
+    "text": "metrics\nfor predictive modeling workflows, rsample is typically used in conjunction with yardstick and tune to estimate model performance for a model or tune a model across parameters\n\nwe specify the type of metrics we want to use in a metric_set()\n\nmy_metrics = yardstick::metric_set(rmse, rsq, ccc)\n\nmy_metrics\n\n#&gt; A metric set, consisting of:\n#&gt; - `rmse()`, a numeric metric | direction: minimize\n#&gt; - `rsq()`, a numeric metric  | direction: maximize\n#&gt; - `ccc()`, a numeric metric  | direction: maximize"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-66",
+    "href": "materials/03-targets.html#section-66",
+    "title": "",
+    "section": "",
+    "text": "then we can fit our workflow across resamples and estimate its performance across these metrics\n\nwflow |&gt;\n  fit_resamples(\n    resamples = boots,\n    metrics = my_metrics\n  ) |&gt;\n  collect_metrics() |&gt;\n  mutate_if(is.numeric, round, 3)\n\n#&gt; # A tibble: 3 × 6\n#&gt;   .metric .estimator   mean     n std_err .config             \n#&gt;   &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;               \n#&gt; 1 ccc     standard    0.457    10   0.095 Preprocessor1_Model1\n#&gt; 2 rmse    standard   11.1      10   2.86  Preprocessor1_Model1\n#&gt; 3 rsq     standard    0.403    10   0.095 Preprocessor1_Model1"
+  },
+  {
+    "objectID": "materials/03-targets.html#key-tidymodels-concepts-2",
+    "href": "materials/03-targets.html#key-tidymodels-concepts-2",
+    "title": "",
+    "section": "key tidymodels concepts",
+    "text": "key tidymodels concepts\n\nrecipes ✓\nmodels from parsnip ✓\nworkflows ✓\nsplits/resamples from rsample ✓\nmetrics from yardstick and tune ✓"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-67",
+    "href": "materials/03-targets.html#section-67",
+    "title": "",
+    "section": "",
+    "text": "I realize this is a lot to take in, but once we are familiar with these concepts it becomes much, much easier to standardize our predictive modeling so that we can easily train/test/deploy different kinds of models within our pipeline\n\n\n\n\n\n\nflowchart LR\nraw[Raw Data] --&gt; clean[Clean Data]\nclean --&gt; train[Training Set]\nclean --&gt; valid[Validation Set]\ntrain --&gt; preprocessor(Preprocessor)\npreprocessor --&gt; resamples[Bootstraps]\nresamples --&gt; model(glmnet)\nmodel --&gt; features(Impute + Normalize)\nfeatures --&gt; tuning(Tuning)\ntuning --&gt; valid\npreprocessor --&gt; valid\nvalid --&gt; evaluation[Model Evaluation]\ntrain --&gt; final(Model)\nvalid --&gt; final\n\n\n\n\n\n\n\n\n\n\n\n\nflowchart LR\nraw[Raw Data] --&gt; clean[Clean Data]\nclean --&gt; train[Training Set]\nclean --&gt; valid[Validation Set]\ntrain --&gt; preprocessor(Preprocessor)\npreprocessor --&gt; resamples[Cross validation]\nresamples --&gt; model(lightgbm)\nmodel --&gt; features(Minimal)\nfeatures --&gt; tuning(Tuning)\ntuning --&gt; valid\npreprocessor --&gt; valid\nvalid --&gt; evaluation[Model Evaluation]\ntrain --&gt; final(Model)\nvalid --&gt; final"
+  },
+  {
+    "objectID": "materials/03-targets.html#targets-and-predictive-models-1",
+    "href": "materials/03-targets.html#targets-and-predictive-models-1",
+    "title": "",
+    "section": "targets and predictive models",
+    "text": "targets and predictive models\nLet’s walk through the process of building a targets pipeline for a predictive model that we will look to deploy."
+  },
+  {
+    "objectID": "materials/03-targets.html#flights",
+    "href": "materials/03-targets.html#flights",
+    "title": "",
+    "section": "flights",
+    "text": "flights\nSuppose we were working on the rather famous nycflights13 dataset to train a model to predict whether departed flights would arrive late or on time\n\n#|\nlibrary(nycflights13)\n\nflights =\n  nycflights13::flights |&gt;\n  mutate(arr_delay = case_when(arr_delay &gt;=30 ~ 'late',  TRUE ~ 'on_time'),\n  arr_delay = factor(arr_delay, levels = c(\"on_time\", \"late\")),\n        date = as.Date(time_hour)\n  )\n\nflights |&gt;\n  select(date, arr_delay, dep_time, arr_time, carrier, origin, dest, air_time, distance) |&gt;\n  head(5)\n\n#&gt; # A tibble: 5 × 9\n#&gt;   date       arr_delay dep_time arr_time carrier origin dest  air_time distance\n#&gt;   &lt;date&gt;     &lt;fct&gt;        &lt;int&gt;    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;\n#&gt; 1 2013-01-01 on_time        517      830 UA      EWR    IAH        227     1400\n#&gt; 2 2013-01-01 on_time        533      850 UA      LGA    IAH        227     1416\n#&gt; 3 2013-01-01 late           542      923 AA      JFK    MIA        160     1089\n#&gt; 4 2013-01-01 on_time        544     1004 B6      JFK    BQN        183     1576\n#&gt; 5 2013-01-01 on_time        554      812 DL      LGA    ATL        116      762"
+  },
+  {
+    "objectID": "materials/03-targets.html#flights-1",
+    "href": "materials/03-targets.html#flights-1",
+    "title": "",
+    "section": "flights",
+    "text": "flights\nWe have one year’s worth of flights to examine, with information about the carrier, the origin, the destination, the departure time, etc.\n\nour outcome is a binary variable arr_delay indicating whether the flight was on time or late."
+  },
+  {
+    "objectID": "materials/03-targets.html#flights-2",
+    "href": "materials/03-targets.html#flights-2",
+    "title": "",
+    "section": "flights",
+    "text": "flights\nOur end goal is to produce a model that can be used to predict new data in production.\n\nTo get to this point, we will need to split our data, train models, estimate their performance, and select the best performing model\n\n\nI have already started this process; I want you to now pick up where I left off."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-68",
+    "href": "materials/03-targets.html#section-68",
+    "title": "",
+    "section": "",
+    "text": "The split branch contains the following pipeline:\n\n\nWhat do we need to do next to get to our end goal of a finalized predictive model?"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-69",
+    "href": "materials/03-targets.html#section-69",
+    "title": "",
+    "section": "",
+    "text": "We can create a recipe in the following way:\n\nrec=\n  recipe(arr_delay ~ air_time + distance, data = flights) |&gt;\n  step_impute_median(all_numeric_predictors()) |&gt;\n  step_normalize(all_numeric_predictors())\n\n\nWe can then see how this recipe prepares data if we prep it on our training set and then use bake.\n\n\n#&gt; # A tibble: 15 × 3\n#&gt;    air_time distance arr_delay\n#&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt;    \n#&gt;  1  -1.07    -1.15   on_time  \n#&gt;  2  -0.726   -0.676  on_time  \n#&gt;  3  -0.163   -0.0435 on_time  \n#&gt;  4  -0.109   -0.0231 on_time  \n#&gt;  5  -1.16    -1.15   on_time  \n#&gt;  6   1.64     1.93   on_time  \n#&gt;  7   2.09     1.94   late     \n#&gt;  8  -0.434   -0.429  on_time  \n#&gt;  9  -0.455   -0.379  on_time  \n#&gt; 10  -0.682   -0.680  on_time  \n#&gt; 11  -1.24    -1.15   on_time  \n#&gt; 12  -1.20    -1.19   late     \n#&gt; 13  -0.228   -1.11   on_time  \n#&gt; 14  -0.0225   0.0342 on_time  \n#&gt; 15  -0.423   -0.376  on_time"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-70",
+    "href": "materials/03-targets.html#section-70",
+    "title": "",
+    "section": "",
+    "text": "Now, we want to train a workflow."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-71",
+    "href": "materials/03-targets.html#section-71",
+    "title": "",
+    "section": "",
+    "text": "The model/baseline branch added new steps to the pipeline; we added a workflow that we fit to the training set and assessed on the validation set."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-72",
+    "href": "materials/03-targets.html#section-72",
+    "title": "",
+    "section": "",
+    "text": "Notice that we directly wrote these metrics to a csv in our project (targets-runs/valid_metrics.csv), which we will then commit to our repository.\n\nThis will allow us to track model performance on our validation set using Git as we add new models/tinker with the original model."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-73",
+    "href": "materials/03-targets.html#section-73",
+    "title": "",
+    "section": "",
+    "text": "The model/glmnet branch added a more robust recipe to make use of more features, particularly categorical features. We then added a new workflow to the pipeline, which we trained and assess as before."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-74",
+    "href": "materials/03-targets.html#section-74",
+    "title": "",
+    "section": "",
+    "text": "At this point, we have a decent first candidate a for a model based on the validation set. What do we need to do to finalize this model?\n\nWe’ll want to refit the workflow on the training + validation data, then assess its performance on the test set.\n\n\nThen, we’ll refit to training + validation + test and prepare the model for deployment with vetiver."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-75",
+    "href": "materials/03-targets.html#section-75",
+    "title": "",
+    "section": "",
+    "text": "This pipeline produces a final workflow that we then turn into a vetiver_model for the purpose of using the model in a production setting.\nvetiver provides a standardized way for bundling workflows with the information needed to version, store, and deploy them.\n\n\nThis branch is stable in the sense we could run the code from this branch to produce a model object that is ready to work in production.\n\n\nWe’ll talk about pinning a vetiver model to a model board in just a little bit, just bear with me.\n\n\nI’m slightly regretting the order in which I set this up but we must press onward."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-76",
+    "href": "materials/03-targets.html#section-76",
+    "title": "",
+    "section": "",
+    "text": "How would we then train and evaluate a different model?"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-77",
+    "href": "materials/03-targets.html#section-77",
+    "title": "",
+    "section": "",
+    "text": "I added a workflow using boosted trees with lightgbm and found it produced better results across the board than glmnet.\n\n\nNotice that I have this pipeline configured to use manual model selection; to update the final model you simply select your tuned model of choice to best_model, which is then refit and finalized."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-78",
+    "href": "materials/03-targets.html#section-78",
+    "title": "",
+    "section": "",
+    "text": "If we navigate to the main branch on the Github repository, we can see the following:\n\n. ."
+  },
+  {
+    "objectID": "materials/03-targets.html#section-80",
+    "href": "materials/03-targets.html#section-80",
+    "title": "",
+    "section": "",
+    "text": "Notice how it’s been kind of a pain to keep track of our model metrics? We have to checkout the branch, run the pipeline, and then read in the valid_metrics.csv file.\n\nWe can make our lives easier for viewing things like this using GitHub actions, which will automatically run based on a push or pull request.\n# name: updating the README\n#\n# on:\n#   workflow_dispatch:\n#   push:\n#     branches: [ \"main\", \"dev\"]\n#\n# jobs:\n#   build:\n#     runs-on: ubuntu-latest\n#     permissions:\n#       contents: write\n#\n#     strategy:\n#       matrix:\n#         r-version: ['4.4.1']\n#\n#     steps:\n#       - name: Checkout repository\n#         uses: actions/checkout@v4\n#\n#       - name: Set up Quarto\n#         uses: quarto-dev/quarto-actions/setup@v2\n#\n#       - name: Set up R ${{ matrix.r-version }}\n#         uses: r-lib/actions/setup-r@v2\n#         with:\n#           r-version: ${{ matrix.r-version }}\n#           use-public-rspm: true\n#\n#       - name: Install additional Linux dependencies\n#         if: runner.os == 'Linux'\n#         run: |\n#           sudo apt-get update -y\n#           sudo apt-get install -y libgit2-dev libglpk40\n#\n#       - name: Setup renv and install packages\n#         uses: r-lib/actions/setup-renv@v2\n#         with:\n#           cache-version: 1\n#         env:\n#           RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.rstudio.com/all/latest\n#           GITHUB_PAT: ${{ secrets.GH_PAT}}\n#\n#       - name: Render README\n#         shell: bash\n#         run: |\n#           git config --global user.name ${{ github.actor }}\n#           quarto render README.qmd\n#           git commit README.md -m 'Re-build README.qmd' || echo \"No changes to commit\"\n#           git push origin || echo \"No changes to commit\"\n#"
+  },
+  {
+    "objectID": "materials/03-targets.html#section-81",
+    "href": "materials/03-targets.html#section-81",
+    "title": "",
+    "section": "",
+    "text": "Currently, this just renders the README, which I have set to view the valid_metrics.csv and test_metrics.csv that are in the branch.\n\nIf we wanted to, for instance, see every committed version of valid_metrics.csv, we just have to configure it in the README.\nPhils Collection"
   },
   {
     "objectID": "materials/01-git.html#the-problem",
@@ -1246,192 +1428,696 @@
     "text": "Under the hood, this amounts to:\n\nChecking out the repository at the previous commit\nCreating a new branch revert-name-of-last-pr\nMerging revert-name-of-last-pr into main\n\n\nThis adds the pull request we made, then reverted, to the history of the project.\n\n\nWe could use rebase to try to “clean up” this history, but in practice I’d prefer to keep the lineage."
   },
   {
-    "objectID": "materials/03-targets.html#organizing-a-repo",
-    "href": "materials/03-targets.html#organizing-a-repo",
-    "title": "",
-    "section": "Organizing a Repo",
-    "text": "Organizing a Repo\nLet’s go back to my ‘template’ for organizing an R repo.\n\n├── _targets    &lt;- stores the metadata and objects of your pipeline\n├── renv        &lt;- information relating to your R packages and dependencies\n├── data        &lt;- data sources used as an input into the pipeline\n├── src         &lt;- functions used in project/targets pipeline\n|   ├── data    &lt;- functions relating to loading and cleaning data\n|   ├── models    &lt;- functions involved with training models\n|   ├── reports   &lt;- functions used in generating tables and visualizations for reports\n├── _targets.R    &lt;- script that runs the targets pipeline\n├── renv.lock     &lt;- lockfile detailing project requirements and dependencies\n\n\nNow that we’ve covered Git, GitHub, and renv, we can start talking about the third pillar here, which is the targets package."
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "What They Didn’t Teach You About Data Science",
+    "section": "",
+    "text": "This workshop focuses on using R/RStudio with Git, renv, and targets. This will be pretty hands on, so it will be helpful to configure as much as possible in advance. I can help debug if we have any issues on the day.\n\n\nThese are the following pieces to set up in advance:\n\nRegister a GitHub account\nInstall/update R and RStudio\nInstall Git\nInstall Quarto\n\n\n\n\nThe materials used in this workshop can be found in the ds-workshop repository.\n\n\n\n\nIntro\nGit + GitHub\nrenv\ntargets"
   },
   {
-    "objectID": "materials/03-targets.html#the-problem",
-    "href": "materials/03-targets.html#the-problem",
-    "title": "",
-    "section": "The Problem",
-    "text": "The Problem\nA predictive modeling workflow typically consists of a number of interconnected steps.\n\n\n\n\n\nflowchart LR\nraw[Raw Data] --&gt; clean[Clean Data]\nclean --&gt; train[Training Set]\nclean --&gt; valid[Validation Set]\ntrain --&gt; preprocessor(Preprocessor)\npreprocessor --&gt; resamples[Bootstraps]\nresamples --&gt; model(glmnet)\nmodel --&gt; features(Impute + Normalize)\nfeatures --&gt; tuning(Tuning)\ntuning --&gt; valid\npreprocessor --&gt; valid\nvalid --&gt; evaluation[Model Evaluation]\ntrain --&gt; final(Model)\nvalid --&gt; final\n\n\n\n\n\n\n\n\nWe typically build these pieces incrementally, starting from loading the data, preparing it, then ultimately training and assessing models.\n\n\nThe end result can look nice and tidy, and maybe you get really clever and assemble a series of scripts or notebooks that detail the steps in your project."
+    "objectID": "index.html#setup",
+    "href": "index.html#setup",
+    "title": "What They Didn’t Teach You About Data Science",
+    "section": "",
+    "text": "These are the following pieces to set up in advance:\n\nRegister a GitHub account\nInstall/update R and RStudio\nInstall Git\nInstall Quarto"
   },
   {
-    "objectID": "materials/03-targets.html#the-problem-1",
-    "href": "materials/03-targets.html#the-problem-1",
-    "title": "",
-    "section": "The Problem",
-    "text": "The Problem\nYour project might end up looking something like this:\n\n01-load.R\n02-tidy.R\n03-model.R\n04-evaluate.R\n05-deploy.R\n06-report.R\n\n\nAnd you might have some sort of meta script that runs them all.\n\n\nAnd this is working fine… until you discover an issue with a function in 02-tidy.R, or want to make a change to how you’re evaluating the model in 03-evalaute.R."
+    "objectID": "index.html#materials",
+    "href": "index.html#materials",
+    "title": "What They Didn’t Teach You About Data Science",
+    "section": "",
+    "text": "The materials used in this workshop can be found in the ds-workshop repository."
   },
   {
-    "objectID": "materials/03-targets.html#the-problem-2",
-    "href": "materials/03-targets.html#the-problem-2",
-    "title": "",
-    "section": "The Problem",
-    "text": "The Problem\nHow do you insert a change into this process? Like, if you make a change to a function, how do you know what needs to be re run?\n\nHow many times do you just end up rerunning everything to be safe?"
+    "objectID": "index.html#schedule",
+    "href": "index.html#schedule",
+    "title": "What They Didn’t Teach You About Data Science",
+    "section": "",
+    "text": "Intro\nGit + GitHub\nrenv\ntargets"
   },
   {
-    "objectID": "materials/03-targets.html#the-problem-3",
-    "href": "materials/03-targets.html#the-problem-3",
-    "title": "",
-    "section": "The Problem",
-    "text": "The Problem\nThis pattern of developing, changing, re-running can consume a lot of time, especially with time-consuming tasks like training models.\n\nThis is the basic motivation for the targets package:"
+    "objectID": "materials/00-intro.html#goals",
+    "href": "materials/00-intro.html#goals",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Goals",
+    "text": "Goals\nThe aim of this workshop is to gain familiarity and experience with tools that will enable collaborative open-source data science development.\n\nLearning a little bit about version control package/environment management, and pipelines will go a long way towards solving the headaches of modern data science projects.\n\n\nThis workshop leans heavily on R/RStudio and the Posit ecosystem, but the principles we will cover apply equally to Python and R."
   },
   {
-    "objectID": "materials/03-targets.html#the-problem-4",
-    "href": "materials/03-targets.html#the-problem-4",
-    "title": "",
-    "section": "The Problem",
-    "text": "The Problem\nIt might not be too bad when you’re actively working on a project, but suppose you’re coming back to something after a few months away.\n\nOr suppose you look at someone else’s repo for the first time, and you have to try to figure out how to put the pieces together to produce their result.\n\n\nWe’d like an easier way to keep track of dependencies so that we are only re-running things when necessary, as well as provide others with a clear path to reproduce our work."
+    "objectID": "materials/00-intro.html#topics",
+    "href": "materials/00-intro.html#topics",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Topics",
+    "text": "Topics\nOur goal is to create consistent, repeatable patterns for data science project development, iteration, and delivery. To this end, we are going to cover three main topics:\n\nGit (and Github)\nrenv\ntargets"
   },
   {
-    "objectID": "materials/03-targets.html#what-is-targets",
-    "href": "materials/03-targets.html#what-is-targets",
-    "title": "",
-    "section": "what is targets",
-    "text": "what is targets\n\nData analysis can be slow. A round of scientific computation can take several minutes, hours, or even days to complete. After it finishes, if you update your code or data, your hard-earned results may no longer be valid. Unchecked, this invalidation creates a chronic Sisyphean loop\n\n\n\nLaunch the code.\nWait while it runs\nDiscover an issue.\nRestart from scratch.\n\n\n\nhttps://books.ropensci.org/targets/"
+    "objectID": "materials/00-intro.html#references",
+    "href": "materials/00-intro.html#references",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "References",
+    "text": "References\nI am far from the first person to cover these topics. I highly recommend bookmarking each of the following resources, as we will be covering pieces of these throughout the workshop:\n\n\nCookiecutter Data Science - a flexible, standardized project structure for organizing data science repositories\nPro Git\nWhat They Forgot to Teach You About R\nHappy Git and GitHub for the useR\nFunctional Programming with R"
   },
   {
-    "objectID": "materials/03-targets.html#section-6",
-    "href": "materials/03-targets.html#section-6",
+    "objectID": "materials/00-intro.html#im-assuming",
+    "href": "materials/00-intro.html#im-assuming",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "I’m assuming",
+    "text": "I’m assuming\n You are familiar with R.\nYou have RStudio installed.\n You have a Github Account\n You have installed Quarto.\n\n\nWe’ll cover\n\nA crash course in version control and Git and its application to data science projects.\nProject and environment dependencies with renv\nBuilding pipelines with targets"
+  },
+  {
+    "objectID": "materials/00-intro.html#section-2",
+    "href": "materials/00-intro.html#section-2",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "",
+    "text": "CAVEATS\n\n\n\nI am NOT a software engineer.\n\n\n\n\nLike, at all. Everything we will cover in these workshops comes from my experiences, both good and bad, as a consultant in data science. I have seen some shit.\n\n\n\n\nWe will only be covering a small portion of these topics - our goal is not to become experts in Git, but to learn the little bit of Git that will help us be better data scientists."
+  },
+  {
+    "objectID": "materials/00-intro.html#section-3",
+    "href": "materials/00-intro.html#section-3",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "",
+    "text": "The DevOps folks will surely judge us all for not being experts in their craft. This is fine. We will accept this and move on. It’s fine.\n\n\n\nIt’s fine.\n\n\n\n\nIt’s fine."
+  },
+  {
+    "objectID": "materials/00-intro.html#a-reminder",
+    "href": "materials/00-intro.html#a-reminder",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "A reminder",
+    "text": "A reminder\n\nThere is no simple, you-won’t-believe-how-easy-it-is, experts-hate-him! trick that will make us experts in Git, CI/CD, DevOps, pipelines, etc.\n\n\nAs with most things in life, the only way to get better is through practice and repeated trial and error.\n\n\nBut, if maximum likelihood and gradient boosting have taught us anything about learning:\n\n\nstart somewhere\nmake mistakes\nlearn from those mistakes\ndo better the next time"
+  },
+  {
+    "objectID": "materials/00-intro.html#lets-start-at-the-end-a-ridiculous-data-science-project",
+    "href": "materials/00-intro.html#lets-start-at-the-end-a-ridiculous-data-science-project",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Let’s start at the end: a (ridiculous) data science project",
+    "text": "Let’s start at the end: a (ridiculous) data science project\n\nI have a ridiculous, ever-evolving personal project: predicting boardgames that I might want to add to my boardgame collection."
+  },
+  {
+    "objectID": "materials/00-intro.html#this-is-the-pipeline-that-scrapes-data-from-boardgamegeek-and-populates-a-cloud-data-warehouse-gcpbigquery",
+    "href": "materials/00-intro.html#this-is-the-pipeline-that-scrapes-data-from-boardgamegeek-and-populates-a-cloud-data-warehouse-gcpbigquery",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "This is the pipeline that scrapes data from BoardGameGeek and populates a cloud data warehouse (GCP/BigQuery)",
+    "text": "This is the pipeline that scrapes data from BoardGameGeek and populates a cloud data warehouse (GCP/BigQuery)"
+  },
+  {
+    "objectID": "materials/00-intro.html#this-is-the-pipeline-that-trains-models-to-predict-how-the-boardgamegeek-community-is-going-to-rate-games",
+    "href": "materials/00-intro.html#this-is-the-pipeline-that-trains-models-to-predict-how-the-boardgamegeek-community-is-going-to-rate-games",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "This is the pipeline that trains models to predict how the BoardGameGeek community is going to rate games",
+    "text": "This is the pipeline that trains models to predict how the BoardGameGeek community is going to rate games"
+  },
+  {
+    "objectID": "materials/00-intro.html#this-is-the-repo-for-training-a-user-specific-model-and-creating-a-user-report-to-predict-games-in-their-collection",
+    "href": "materials/00-intro.html#this-is-the-repo-for-training-a-user-specific-model-and-creating-a-user-report-to-predict-games-in-their-collection",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "This is the repo for training a user specific model and creating a user report to predict games in their collection",
+    "text": "This is the repo for training a user specific model and creating a user report to predict games in their collection"
+  },
+  {
+    "objectID": "materials/00-intro.html#motivation",
+    "href": "materials/00-intro.html#motivation",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Motivation",
+    "text": "Motivation\nDo these projects represent the height of data science maturity and sophistication?"
+  },
+  {
+    "objectID": "materials/00-intro.html#motivation-1",
+    "href": "materials/00-intro.html#motivation-1",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Motivation",
+    "text": "Motivation\nDo these projects represent the height of data science maturity and sophistication?\nNot at all. But it will help illustrate the typical setting of data science projects.\n\nSuppose I wanted you to take a look at something in my work and and see if you could write a more efficient function.\n\n\nOr maybe you could train a better model.\n\n\nOr maybe you could create a better report.\n\n\nOr maybe you could do the whole thing differently and save me a ton of time and/or make better predictions."
+  },
+  {
+    "objectID": "materials/00-intro.html#challenge",
+    "href": "materials/00-intro.html#challenge",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Challenge",
+    "text": "Challenge\nHow do I share my code with you, so that you can run my code, make changes, and let me know what you’ve changed?\n\nHow can a group of people work on the same project without getting in each other’s way?\n\n\nHow can we run experiments and test out changes without breaking the current project?\n\n\nHow do we ensure that we are running the same code and avoid conflicts from packages being out of date?"
+  },
+  {
+    "objectID": "materials/00-intro.html#challenge-1",
+    "href": "materials/00-intro.html#challenge-1",
+    "title": "What They Didn’t Teach You  About Data Science",
+    "section": "Challenge",
+    "text": "Challenge\nCan we predict which board games Phil wants to buy?\n\n\nFind out next week on Dragon Ball Z\n\n\n\nTo get to this point, we’ll need to cover:\n\nGit (and Github)\nrenv\ntargets"
+  },
+  {
+    "objectID": "materials/02-renv.html#section",
+    "href": "materials/02-renv.html#section",
     "title": "",
     "section": "",
-    "text": "The solution to this problem is to develop pipelines, which track dependencies between steps, or “targets”, of a workflow.\n\nWhen running the pipeline, it first checks to see if the upstream targets have changed since the previous run.\n\n\nIf the upstream targets are up to date, the pipeline will skip them and proceed to running the next step.\n\n\nIf everything is up to date, the pipeline will skip everything and inform you that nothing changed."
+    "text": "To this point, we haven’t really talked about how we should organize a repository. A repository is just a set of files to track over time, but how do we organize those files?\n\nI am arguably not the best guide for this, as I am generally a disorganized person and it shows in my older repos."
   },
   {
-    "objectID": "materials/03-targets.html#section-7",
-    "href": "materials/03-targets.html#section-7",
+    "objectID": "materials/02-renv.html#section-3",
+    "href": "materials/02-renv.html#section-3",
     "title": "",
     "section": "",
-    "text": "Most pipeline tools, such as Make, are either language agnostic or depend on using Python.\n\ntargets lets you build Make-style pipelines using R\n\n\n\n\n\n\n\n\n\n\n\n\n\n(a) api requests\n\n\n\n\n\n\n\n\n\n\n\n(b) training models\n\n\n\n\n\n\n\nFigure 1: pipeline examples"
+    "text": "On some level, this is to be expected with data analysis/data science - we rarely work in a linear progression with the same set of files from project to project.\n\nBut I’ve started to use a specific style for organization that seems to suit data science projects well."
   },
   {
-    "objectID": "materials/03-targets.html#section-10",
-    "href": "materials/03-targets.html#section-10",
+    "objectID": "materials/02-renv.html#cookiecutter-data-science-1",
+    "href": "materials/02-renv.html#cookiecutter-data-science-1",
+    "title": "",
+    "section": "CookieCutter Data Science",
+    "text": "CookieCutter Data Science\n\nIt’s no secret that good analyses are often the result of very scattershot and serendipitous explorations. Tentative experiments and rapidly testing approaches that might not work out are all part of the process for getting to the good stuff, and there is no magic bullet to turn data exploration into a simple, linear progression.\n\n\n\nA well-defined, standard project structure means that a newcomer can begin to understand an analysis without digging in to extensive documentation. It also means that they don’t necessarily have to read 100% of the code before knowing where to look for very specific things."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-5",
+    "href": "materials/02-renv.html#section-5",
     "title": "",
     "section": "",
-    "text": "├── _targets    &lt;- stores the metadata and objects of your pipeline\n├── renv        &lt;- information relating to your R packages and dependencies\n├── data        &lt;- data sources used as an input into the pipeline\n├── src         &lt;- functions used in project/targets pipeline\n|   ├── data   &lt;- functions relating to loading and cleaning data\n├── _targets.R    &lt;- script that runs the targets pipeline\n├── renv.lock     &lt;- lockfile detailing project requirements and dependencies\ntargets adds two main pieces to a project:\n\n\ntargets.R is the script that will implement our pipeline. This is what we will build and develop.\n\n\n\n\n_targets is a folder containing metadata for the steps defined in targets.R, as well as cached objects from the latest run of the pipeline\n\nNote: by default, _targets objects are stored locally. But you can configure targets to store objects in a cloud bucket (GCP/AWS)\n\n\nWhen you use targets locally, it will store objects from the latest run of the pipeline. If you use a cloud bucket for storage, you can enable versioning so that all runs are stored."
+    "text": "It’s less important to have the perfect organization for a given project than it is to have some sort of standard that everyone understands and uses.\n\nThe goal is to organize projects in a way that will make it easier for others and your future self to remember.\n\n\nThe CookieCutter Data Science approach is one such way. This might feel overwhelming to start.\n\n\nDon’t panic."
   },
   {
-    "objectID": "materials/03-targets.html#section-11",
-    "href": "materials/03-targets.html#section-11",
+    "objectID": "materials/02-renv.html#section-7",
+    "href": "materials/02-renv.html#section-7",
     "title": "",
     "section": "",
-    "text": "What is targets.R?\nRunning targets::use_targets() will create a template for the targets.R script, which all follow a similar structure.\n\n\n# Created by use_targets().\n# Follow the comments below to fill in this target script.\n# Then follow the manual to check and run the pipeline:\n#   https://books.ropensci.org/targets/walkthrough.html#inspect-the-pipeline\n\n# Load packages required to define the pipeline:\nlibrary(targets)\n# library(tarchetypes) # Load other packages as needed.\n\n# Set target options:\ntar_option_set(\n  packages = c(\"tibble\") # Packages that your targets need for their tasks.\n  # format = \"qs\", # Optionally set the default storage format. qs is fast.\n)\n\n# Run the R scripts in the R/ folder with your custom functions:\ntar_source()\n# tar_source(\"other_functions.R\") # Source other scripts as needed.\n\n# Replace the target list below with your own:\nlist(\n  tar_target(\n    name = data,\n    command = tibble(x = rnorm(100), y = rnorm(100))\n    # format = \"qs\" # Efficient storage for general data objects.\n  ),\n  tar_target(\n    name = model,\n    command = coefficients(lm(y ~ x, data = data))\n  )\n)"
+    "text": "Sadly, this template is intended for Python, but we can adapt it for R easily enough. Let’s zoom in a bit on specific pieces."
   },
   {
-    "objectID": "materials/03-targets.html#an-example---star-wars",
-    "href": "materials/03-targets.html#an-example---star-wars",
-    "title": "",
-    "section": "An Example - Star Wars",
-    "text": "An Example - Star Wars\nGoing back to our Star Wars sentiment analysis, we can build a simple targets pipeline to recreate what we did earlier. The basic steps of our pipeline will look something like this:\n\n\nLoad Star Wars text data\nClean and prepare dialogue\nGet sentences from dialogue\nCalculate sentiment"
-  },
-  {
-    "objectID": "materials/03-targets.html#section-12",
-    "href": "materials/03-targets.html#section-12",
+    "objectID": "materials/02-renv.html#section-8",
+    "href": "materials/02-renv.html#section-8",
     "title": "",
     "section": "",
-    "text": "This is what the resulting pipeline will look like:\n\nCodeOutput\n\n\n\nlibrary(targets)\n\n# set options\ntar_option_set(packages = c(\"readr\", \"dplyr\", \"sentimentr\", \"here\"))\n\n# functions to be used\n\n# load starwars data\nload_data = function(file = here::here('materials', 'data', 'starwars_text.csv')) {\n  \n  read_csv(file)\n  \n}\n\n# prepare data\nclean_data = function(data) {\n  \n  data |&gt;\n    mutate(episode = case_when(document == 'a new hope' ~ 'iv',\n                               document == 'the empire strikes back' ~ 'v',\n                               document == 'return of the jedi' ~ 'vi')) |&gt;\n    mutate(character = case_when(character == 'BERU' ~ 'AUNT BERU',\n                                 character == 'LURE' ~ 'LUKE',\n                                 TRUE ~ character)) |&gt;\n    select(episode, everything())\n}\n\n# calculate sentiment\ncalculate_sentiment = function(data,\n                               by = c(\"document\", \"character\", \"line_number\")) {\n  \n  data |&gt;\n    sentiment_by(by = by) |&gt;\n    sentimentr::uncombine()\n}\n\n# define targets\nlist(\n  tar_target(\n    name = starwars,\n    command = \n      load_data() |&gt;\n      clean_data()\n  ),\n  tar_target(\n    name = sentences,\n    command = \n      starwars |&gt;\n      get_sentences()\n  ),\n  tar_target(\n    name = sentiment,\n    command = \n      sentences |&gt;\n      calculate_sentiment()\n  )\n)\n\n\n\n\n\n#&gt; [[1]]\n#&gt; &lt;tar_stem&gt; \n#&gt;   name: starwars \n#&gt;   description:  \n#&gt;   command:\n#&gt;     clean_data(load_data()) \n#&gt;   format: rds \n#&gt;   repository: local \n#&gt;   iteration method: vector \n#&gt;   error mode: stop \n#&gt;   memory mode: persistent \n#&gt;   storage mode: main \n#&gt;   retrieval mode: main \n#&gt;   deployment mode: worker \n#&gt;   priority: 0 \n#&gt;   resources:\n#&gt;     list() \n#&gt;   cue:\n#&gt;     mode: thorough\n#&gt;     command: TRUE\n#&gt;     depend: TRUE\n#&gt;     format: TRUE\n#&gt;     repository: TRUE\n#&gt;     iteration: TRUE\n#&gt;     file: TRUE\n#&gt;     seed: TRUE \n#&gt;   packages:\n#&gt;     readr\n#&gt;     dplyr\n#&gt;     sentimentr\n#&gt;     here \n#&gt;   library:\n#&gt;     NULL\n#&gt; [[2]]\n#&gt; &lt;tar_stem&gt; \n#&gt;   name: sentences \n#&gt;   description:  \n#&gt;   command:\n#&gt;     get_sentences(starwars) \n#&gt;   format: rds \n#&gt;   repository: local \n#&gt;   iteration method: vector \n#&gt;   error mode: stop \n#&gt;   memory mode: persistent \n#&gt;   storage mode: main \n#&gt;   retrieval mode: main \n#&gt;   deployment mode: worker \n#&gt;   priority: 0 \n#&gt;   resources:\n#&gt;     list() \n#&gt;   cue:\n#&gt;     mode: thorough\n#&gt;     command: TRUE\n#&gt;     depend: TRUE\n#&gt;     format: TRUE\n#&gt;     repository: TRUE\n#&gt;     iteration: TRUE\n#&gt;     file: TRUE\n#&gt;     seed: TRUE \n#&gt;   packages:\n#&gt;     readr\n#&gt;     dplyr\n#&gt;     sentimentr\n#&gt;     here \n#&gt;   library:\n#&gt;     NULL\n#&gt; [[3]]\n#&gt; &lt;tar_stem&gt; \n#&gt;   name: sentiment \n#&gt;   description:  \n#&gt;   command:\n#&gt;     calculate_sentiment(sentences) \n#&gt;   format: rds \n#&gt;   repository: local \n#&gt;   iteration method: vector \n#&gt;   error mode: stop \n#&gt;   memory mode: persistent \n#&gt;   storage mode: main \n#&gt;   retrieval mode: main \n#&gt;   deployment mode: worker \n#&gt;   priority: 0 \n#&gt;   resources:\n#&gt;     list() \n#&gt;   cue:\n#&gt;     mode: thorough\n#&gt;     command: TRUE\n#&gt;     depend: TRUE\n#&gt;     format: TRUE\n#&gt;     repository: TRUE\n#&gt;     iteration: TRUE\n#&gt;     file: TRUE\n#&gt;     seed: TRUE \n#&gt;   packages:\n#&gt;     readr\n#&gt;     dplyr\n#&gt;     sentimentr\n#&gt;     here \n#&gt;   library:\n#&gt;     NULL"
+    "text": "├── Makefile        &lt;- Makefile with commands like `make data` or `make train`\n├── README.md       &lt;- The top-level README for developers\n├── data\n│   ├── external    &lt;- Data from third party sources.\n│   ├── interim     &lt;- Intermediate data that has been transformed.\n│   ├── processed   &lt;- The final, canonical data sets for modeling.\n│   └── raw         &lt;- The original, immutable data dump.\n\n\nWe will shortly discuss the R equivalent of a Makefile, with the aim that our project is organized to do one specific thing\nAlways include a README as an organizing guide\nData generally isn’t stored in repos, but if it is you can follow this organization that tracks the lineage of the data\nOne of the guiding principles for CookieCutter Data Science is to treat data as immutable. The point of a project is interact and work with data, but we never change it from its raw sources."
   },
   {
-    "objectID": "materials/03-targets.html#section-13",
-    "href": "materials/03-targets.html#section-13",
+    "objectID": "materials/02-renv.html#section-9",
+    "href": "materials/02-renv.html#section-9",
     "title": "",
     "section": "",
-    "text": "We can view the steps that will be carried out by pipeline using tar_manifest()\n\n\n#&gt;        name                        command\n#&gt; 1  starwars        clean_data(load_data())\n#&gt; 2 sentences        get_sentences(starwars)\n#&gt; 3 sentiment calculate_sentiment(sentences)\n\n\n\nOr, we can visualize the pipeline using tar_glimpse()."
+    "text": "├── models    &lt;- Trained and serialized models, model predictions, or model summaries\n│\n├── notebooks   &lt;- Jupyter notebooks. Naming convention is a number (for ordering),\n|                 the creator's initials, and a short `-` delimited description, e.g.\n|                 `1.0-jqp-initial-data-exploration`.\n│\n├── references    &lt;- Data dictionaries, manuals, and all other explanatory materials.\n│\n├── reports         &lt;- Generated analysis as HTML, PDF, LaTeX, etc.\n│   └── figures     &lt;- Generated graphics and figures to be used in reporting\n│\n\n\nSimilarly, models typically aren’t stored in a repo, but we might want to save summaries or model cards\nNotebooks are places for exploratory analysis and should be treated mostly as a sandbox\nStore all background documentation, project discussion, articles that has been used and discussed in references"
   },
   {
-    "objectID": "materials/03-targets.html#section-14",
-    "href": "materials/03-targets.html#section-14",
+    "objectID": "materials/02-renv.html#section-10",
+    "href": "materials/02-renv.html#section-10",
     "title": "",
     "section": "",
-    "text": "tar_visnetwork() provides a more detailed breakdown of the pipeline, including the status of individual targets, as well as the functions and where they are used."
+    "text": "├── requirements.txt    &lt;- The requirements file for reproducing  the analysis environment.\n│\n├── src                &lt;- Source code for use in this project.\n│   ├── data           &lt;- Scripts to download or generate data\n│   │   └── make_dataset.py\n│   │\n│   ├── features       &lt;- Scripts to turn raw data into features for modeling\n│   │   └── build_features.py\n│   │\n│   ├── models         &lt;- Scripts to train models and then use trained models to make\n│   │   │                 predictions\n│   │   ├── predict_model.py\n│   │   └── train_model.py\n│   │\n│   └── visualization  &lt;- Scripts to create exploratory and results oriented visualizations\n│       └── visualize.py\n\n\nThe repo must detail the requirements for someone to reproduce the project.\nIn Python this is requirements.txt; we will discuss the R equivalent via renv next.\nAll code used in the project is stored and organized in src. This could also be called R if you’re only planning to use R."
   },
   {
-    "objectID": "materials/03-targets.html#section-15",
-    "href": "materials/03-targets.html#section-15",
+    "objectID": "materials/02-renv.html#section-11",
+    "href": "materials/02-renv.html#section-11",
     "title": "",
     "section": "",
-    "text": "We then run the pipeline using tar_make(), which will detail the steps that are being carried out and whether they were re-run or skipped.\n\ntargets::tar_make()\n\n\n\n#&gt; v skipped target starwars\n#&gt; v skipped target sentences\n#&gt; v skipped target sentiment\n#&gt; v skipped pipeline [0.041 seconds]"
+    "text": "The CookieCutter approach has a few underlying principles that are worth discussing.\n\n\nData is Immutable\nAnalysis is a DAG\nNotebooks Are For Exploration, Not Production\nUse Functional Programming\nA Repo Should Be One Project"
   },
   {
-    "objectID": "materials/03-targets.html#section-16",
-    "href": "materials/03-targets.html#section-16",
+    "objectID": "materials/02-renv.html#data-is-immutable",
+    "href": "materials/02-renv.html#data-is-immutable",
+    "title": "",
+    "section": "Data is Immutable",
+    "text": "Data is Immutable\n\nDon’t ever edit your raw data, especially not manually, and especially not in Excel. Don’t overwrite your raw data. Don’t save multiple versions of the raw data. Treat the data (and its format) as immutable.\n\n\n\nThe code you write should move the raw data through a pipeline to your final analysis. You shouldn’t have to run all of the steps every time you want to make a new figure (see Analysis is a DAG), but anyone should be able to reproduce the final products with only the code in src and the data in data/raw.\n\n\n\n\nAlso, if data is immutable, it doesn’t need source control in the same way that code does. Therefore, by default, the data folder is included in the .gitignore file"
+  },
+  {
+    "objectID": "materials/02-renv.html#analysis-is-a-directed-acyclic-graph-dag",
+    "href": "materials/02-renv.html#analysis-is-a-directed-acyclic-graph-dag",
+    "title": "",
+    "section": "Analysis is a Directed Acyclic Graph (DAG)",
+    "text": "Analysis is a Directed Acyclic Graph (DAG)\n\nOften in an analysis you have long-running steps that preprocess data or train models. If these steps have been run already (and you have stored the output somewhere like the data/interim directory), you don’t want to wait to rerun them every time. We prefer make for managing steps that depend on each other, especially the long-running ones.\n\n\n\nThis will be the point of emphasis in using targets, bringing Make-like functionality to R.\nWe should aim to minimize repetition when possible, storing our code in a logical way that can reproduce the output for both ourselves and a newcomer."
+  },
+  {
+    "objectID": "materials/02-renv.html#notebooks-are-for-exploration-not-production",
+    "href": "materials/02-renv.html#notebooks-are-for-exploration-not-production",
+    "title": "",
+    "section": "Notebooks Are For Exploration, Not Production",
+    "text": "Notebooks Are For Exploration, Not Production\n\nLiterate programming tools like Jupyter notebooks, RMarkdown, Quarto are great for exploratory work and communicating results.\n\n\n\nBut, it is generally bad practice to rely on notebooks for putting our work into production; they are harder to version control and can facilitate bad coding practices."
+  },
+  {
+    "objectID": "materials/02-renv.html#use-functional-programming",
+    "href": "materials/02-renv.html#use-functional-programming",
+    "title": "",
+    "section": "Use Functional Programming",
+    "text": "Use Functional Programming\n\nIt’s hard to describe exactly what a functional style is, but generally I think it means decomposing a big problem into smaller pieces, then solving each piece with a function or combination of functions.\n\n\n\nWhen using a functional style, you strive to decompose components of the problem into isolated functions that operate independently. Each function taken by itself is simple and straightforward to understand; complexity is handled by composing functions in various ways.\n\n\n\n\nCookieCutter Data Science doesn’t go into much detail on what your src code should look like, but I have found it naturally suits a functional programming style.\nRather than writing scripts that execute tasks, it’s generally better to write a series of functions that are then called and used in a pipeline."
+  },
+  {
+    "objectID": "materials/02-renv.html#a-repo-should-be-one-project",
+    "href": "materials/02-renv.html#a-repo-should-be-one-project",
+    "title": "",
+    "section": "A Repo Should Be One Project",
+    "text": "A Repo Should Be One Project\nAnother thing that Cookie Cutter Data Science helps address: what should even be a repo? When we’re working on a project, how do we define and organize our code?\n\nDo we create one repository for all of our data science projects? Do we create one repository per project?\n\n\nThis more or less becomes an argument between monorepos vs multi-repos."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-12",
+    "href": "materials/02-renv.html#section-12",
     "title": "",
     "section": "",
-    "text": "We can then load the objects using tar_read() or tar_load().\n\ntar_load(sentiment)\n\nsentiment |&gt;\n  head(10) |&gt;\n  gt::gt()\n\n\n\n\n\n  \n  \n\n\n\nepisode\ndocument\nline_number\ncharacter\ndialogue\nelement_id\nsentence_id\nword_count\nsentiment\n\n\n\n\niv\na new hope\n1\nTHREEPIO\nDid you hear that?\n1\n1\n4\n0.00000000\n\n\niv\na new hope\n1\nTHREEPIO\nThey've shut down the main reactor.\n1\n2\n6\n-0.24494897\n\n\niv\na new hope\n1\nTHREEPIO\nWe'll be destroyed for sure.\n1\n3\n5\n-0.60373835\n\n\niv\na new hope\n1\nTHREEPIO\nThis is madness!\n1\n4\n3\n-0.57735027\n\n\niv\na new hope\n2\nTHREEPIO\nWe're doomed!\n2\n1\n2\n-0.70710678\n\n\niv\na new hope\n3\nTHREEPIO\nThere'll be no escape for the Princess this time.\n3\n1\n9\n-0.11666667\n\n\niv\na new hope\n4\nTHREEPIO\nWhat's that?\n4\n1\n2\n0.00000000\n\n\niv\na new hope\n5\nTHREEPIO\nI should have known better than to trust the logic of a half-sized thermocapsulary dehousing assister...\n5\n1\n17\n0.06063391\n\n\niv\na new hope\n6\nLUKE\nHurry up!\n6\n1\n2\n0.00000000\n\n\niv\na new hope\n6\nLUKE\nCome with me!\n6\n2\n3\n0.00000000"
+    "text": "Monorepo vs Multi-repo\nA monorepo is one repository that contains code for a lot of different projects and tasks.\nImagine you have one big project you’re working on, containing a lot of separate pieces and code. The monorepo approach says, throw it all in into the same repo."
   },
   {
-    "objectID": "materials/03-targets.html#section-17",
-    "href": "materials/03-targets.html#section-17",
+    "objectID": "materials/02-renv.html#section-13",
+    "href": "materials/02-renv.html#section-13",
     "title": "",
     "section": "",
-    "text": "This might seem like a lot of overhead for little gain; if re-running is relatively painless, then is the it worth the time to set up a pipeline?\n\nI, and the author of the package, will argue that yes, yes it is."
+    "text": "This was how I started with some of my boardgame data projects.\n\nI had one repo that contained code for API calls, writing to a data warehouse, training models for the bgg community, training models for collections, building Shiny dashboards…\n\n\nIt basically became a gigantic mess."
   },
   {
-    "objectID": "materials/03-targets.html#embracing-functions",
-    "href": "materials/03-targets.html#embracing-functions",
-    "title": "",
-    "section": "Embracing Functions",
-    "text": "Embracing Functions\n\ntargets expects users to adopt a function-oriented style of programming. User-defined R functions are essential to express the complexities of data generation, analysis, and reporting.\n\nhttps://books.ropensci.org/targets/functions.html"
-  },
-  {
-    "objectID": "materials/03-targets.html#section-18",
-    "href": "materials/03-targets.html#section-18",
+    "objectID": "materials/02-renv.html#section-14",
+    "href": "materials/02-renv.html#section-14",
     "title": "",
     "section": "",
-    "text": "Traditional data analysis projects consist of imperative scripts, often with with numeric prefixes.\n\n01-data.R\n02-model.R\n03-plot.R\n\nTo run the project, the user runs each of the scripts in order.\n\n\nsource(\"01-data.R\")\nsource(\"02-model.R\")\nsource(\"03-plot.R\")"
+    "text": "Monorepo vs Multi-repo\nAs opposed to a multi-repo, where aspects of a larger project are isolated and separated into individual repositories."
   },
   {
-    "objectID": "materials/03-targets.html#section-19",
-    "href": "materials/03-targets.html#section-19",
+    "objectID": "materials/02-renv.html#section-15",
+    "href": "materials/02-renv.html#section-15",
     "title": "",
     "section": "",
-    "text": "As we’ve previously discussed, this type of approach inherently creates problems with dependencies and trying to figure out which pieces need to be rerun.\n\nBut even more than that, this approach doesn’t do a great job explaining what exactly is happening with a project, and it can be a pain to test.\n\n\n\nEvery time you look at it, you need to read it carefully and relearn what it does. And test it, you need to copy the entire block into the R console."
+    "text": "I’ve ended up splitting the main pieces of these projects into separate repositories that encapsulate a specific task.\n\nAPI calls and creating a data warehouse? That’s a repo.\n\n\nTraining models for the BGG community? That’s a repo.\n\n\nTraining models for user collections? That’s a repo.\n\n\nBuilding Shiny dashboards to examine the data? That’s a repo.\n\n\nCreating a series of helper functions that can be used across all of these projects? That’s an R package.\n\n\nIn a repo."
   },
   {
-    "objectID": "materials/03-targets.html#section-20",
-    "href": "materials/03-targets.html#section-20",
+    "objectID": "materials/02-renv.html#a-repo-should-be-one-project-1",
+    "href": "materials/02-renv.html#a-repo-should-be-one-project-1",
+    "title": "",
+    "section": "A Repo Should Be One Project",
+    "text": "A Repo Should Be One Project\nThe Cookie Cutter Data Science approach is much more conducive towards the multi-repo approach:\n\nA repository exists for a specific task.\nThe code in the repository executes that task.\nThe requirements for running that code are defined in the repository.\n\n\nIt becomes a lot harder to define requirements and reproduce the environment to run code when you have a gigantic, monolithic repository."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-17",
+    "href": "materials/02-renv.html#section-17",
     "title": "",
     "section": "",
-    "text": "For example, rather than write a script that loads, cleans, and outputs the Star Wars data, I simply wrote two functions, which we can easily call and run as needed to get the data.\n\n\n…instead of invoking a whole block of text, all you need to do is type a small reusable command. The function name speaks for itself, so you can recall what it does without having to mentally process all the details again."
+    "text": "But what if we want to re-use code across multiple repositories!\n\nMore on this later, but basically this is where submodules might come into play. . . .\nOr, just create another repo in the form of a package that can be used across multiple projects."
   },
   {
-    "objectID": "materials/03-targets.html#section-21",
-    "href": "materials/03-targets.html#section-21",
+    "objectID": "materials/02-renv.html#cookiecutter-data-science-for-r",
+    "href": "materials/02-renv.html#cookiecutter-data-science-for-r",
+    "title": "",
+    "section": "CookieCutter Data Science (for R)",
+    "text": "CookieCutter Data Science (for R)\nGiven these principles, most of my repos end up being organized in the following way:\n\n├── _targets    &lt;- stores the metadata and objects of your pipeline\n├── renv        &lt;- information relating to your R packages and dependencies\n├── data        &lt;- data sources used as an input into the pipeline\n├── src         &lt;- functions used in project/targets pipeline\n|   ├── data    &lt;- functions relating to loading and cleaning data\n|   ├── models    &lt;- functions involved with training models\n|   ├── reports   &lt;- functions used in generating tables and visualizations for reports\n├── _targets.R    &lt;- script that runs the targets pipeline\n├── renv.lock     &lt;- lockfile detailing project requirements and dependencies\n\n\nAgain, I’m not saying that this is THE OBJECTIVELY CORRECT WAY TO ORGANIZE AN R PROJECT. But it’s been a useful starting point for me in my work.\n\n\nOne of the key pillars to this organization is renv."
+  },
+  {
+    "objectID": "materials/02-renv.html#renv-1",
+    "href": "materials/02-renv.html#renv-1",
+    "title": "",
+    "section": "renv",
+    "text": "renv\nLet’s go back to the issues we had in running certain files in the starwars or board_games repo.\n\nHow often do you want to run someone else’s code, only to find that you need to install additional packages?\n\n\nHow often do you try to run someone else’s code only to discover that they’re using a deprecated function?\n\n\nHow many times have you gotten a headache because dplyr can’t make up its mind between mutate_if, mutate_at, mutate_all, and mutate(across())?"
+  },
+  {
+    "objectID": "materials/02-renv.html#section-21",
+    "href": "materials/02-renv.html#section-21",
     "title": "",
     "section": "",
-    "text": "Embracing functions makes it easier for us to track dependencies, explain our work, and build in small pieces that can be tested and put together to complete the larger project.\n\nIt also can really help when we have time consuming steps."
+    "text": "The renv package aims to solve most of these problems by helping you to create reproducible environments for R projects.\n\nThe following figure shows how renv works, in a nutshell.\n\n\nI promise that this figure will make sense in a little bit."
   },
   {
-    "objectID": "materials/03-targets.html#targets-demo---college-football-and-elo-ratings",
-    "href": "materials/03-targets.html#targets-demo---college-football-and-elo-ratings",
-    "title": "",
-    "section": "targets demo - College Football and Elo Ratings",
-    "text": "targets demo - College Football and Elo Ratings\n\nView repo organization for https:://github.com/ds-workshop/cfb_elo\nExamine targets.R\nShow _targets metadata\nShow _targets objects"
-  },
-  {
-    "objectID": "materials/03-targets.html#section-22",
-    "href": "materials/03-targets.html#section-22",
+    "objectID": "materials/02-renv.html#section-23",
+    "href": "materials/02-renv.html#section-23",
     "title": "",
     "section": "",
-    "text": "Let’s revisit some of the original motivations for this workshop."
+    "text": "renv allows you to scan and find packages used in your project. This produces a list of packages with their current versions and dependencies.\nUsing renv with a project adds three pieces to your repo:\n\n\nrenv/library: a library that contains all packages currently used by your project.\n\n\n\n\nrenv.lock: a lockfile that records metadata about every package used in the project; this allows the project’s packages to be reinstalled on a new machine\n\n\n\n\n.Rprofile: adds a file that runs everytime you open up the project; this file runs renv::activate() and configures your project to use the renv/library"
   },
   {
-    "objectID": "materials/03-targets.html#section-23",
-    "href": "materials/03-targets.html#section-23",
+    "objectID": "materials/02-renv.html#section-24",
+    "href": "materials/02-renv.html#section-24",
     "title": "",
     "section": "",
-    "text": "How do I share my code with you, so that you can run my code, make changes, and let me know what you’ve changed?\n\nHow can a group of people work on the same project without getting in each other’s way?\n\n\nHow do we ensure that we are running the same code and avoid conflicts from packages being out of date?\n\n\nHow can we run experiments and test out changes without breaking the current project?"
+    "text": "We then add (pieces) of renv/library, renv.lock, and .Rprofile to our repository and commit them.\n\nIf we make a change to our code, we use renv to track whether that code has introduced, removed, or changed our dependencies.\n\n\nWhen we commit the change to our code, we will also commit a change to our renv.lock file.\n\n\nIn this way, using Git + renv allows us to store a history of how our project dependencies have changed with every commit."
   },
   {
-    "objectID": "materials/03-targets.html#section-24",
-    "href": "materials/03-targets.html#section-24",
+    "objectID": "materials/02-renv.html#section-26",
+    "href": "materials/02-renv.html#section-26",
     "title": "",
     "section": "",
-    "text": "Let’s talk about using targets to build predictive models."
+    "text": "Let’s dive into this picture."
+  },
+  {
+    "objectID": "materials/02-renv.html#renv-key-functions-1",
+    "href": "materials/02-renv.html#renv-key-functions-1",
+    "title": "",
+    "section": "renv key functions",
+    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-27",
+    "href": "materials/02-renv.html#section-27",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nThis is what our starwars project might look like before add renv to our project."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-28",
+    "href": "materials/02-renv.html#section-28",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nWe open up the project and run renv::init(), which tells us which packages and their versions are in use."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-30",
+    "href": "materials/02-renv.html#section-30",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nThis adds these packages to our renv/library, and stores information about the packages and version of R that are in use in renv.lock"
+  },
+  {
+    "objectID": "materials/02-renv.html#section-32",
+    "href": "materials/02-renv.html#section-32",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nThis is what our project looks like afterwards, as we have now added a renv folder, a renv.lock file, and an .Rprofile (which is typically hidden)."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-33",
+    "href": "materials/02-renv.html#section-33",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nrenv.lock is what renv will use in order to restore dependencies and track changes in packages that are being used.\nThis file is generated by renv; don’t mess with it."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-35",
+    "href": "materials/02-renv.html#section-35",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nThe renv folder contains a library with all packages that are currently being used by the project."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-37",
+    "href": "materials/02-renv.html#section-37",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nThe renv folder contains a library with all packages that are currently being used by the project.\n\nThis is the key magic that makes renv work: instead of having one library containing the packages used in every project, renv gives you a separate library for each project.\n\n. . .\n\nThis gives you the benefits of isolation: different projects can use different versions of packages, and installing, updating, or removing packages in one project doesn’t affect any other project."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-38",
+    "href": "materials/02-renv.html#section-38",
+    "title": "",
+    "section": "",
+    "text": "renv::init()\nThere’s another nice bonus here with how renv uses a global cache for packages.\n. . .\n\nOne of renv’s primary features is the global package cache, which is shared across all projects.\n\n. . .\nThis means that even though projects are isolated, if you have installed tidyverse in one project, if you install the same version of tidyverse in another project it will install directly from the cache, saving time and space.\n. . .\nThis becomes really critical when using Github Actions and Docker builds."
+  },
+  {
+    "objectID": "materials/02-renv.html#renv-key-functions-2",
+    "href": "materials/02-renv.html#renv-key-functions-2",
+    "title": "",
+    "section": "renv key functions",
+    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages"
+  },
+  {
+    "objectID": "materials/02-renv.html#renv-key-functions-3",
+    "href": "materials/02-renv.html#renv-key-functions-3",
+    "title": "",
+    "section": "renv key functions",
+    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages\nrenv::status() compares the current dependencies of your project vs the dependencies detailed in the lockfile."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-41",
+    "href": "materials/02-renv.html#section-41",
+    "title": "",
+    "section": "",
+    "text": "renv::status()\nSuppose we just wrote a new function, or added a new piece of code that required installing some new packages."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-44",
+    "href": "materials/02-renv.html#section-44",
+    "title": "",
+    "section": "",
+    "text": "renv::status()\nRunning renv::status() will alert us to the fact that we are in an inconsistent state; we have have new packages in use in the project that are not recorded in the lockfile."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-45",
+    "href": "materials/02-renv.html#section-45",
+    "title": "",
+    "section": "",
+    "text": "renv::status()\nThis will only alert us to the fact that we are in an inconsistent state; it won’t actually change or modify our lockfile.\n. . .\nIf we want to update our lockfile to our new state, we need to take a snapshot of our new dependencies."
+  },
+  {
+    "objectID": "materials/02-renv.html#renv-key-functions-4",
+    "href": "materials/02-renv.html#renv-key-functions-4",
+    "title": "",
+    "section": "renv key functions",
+    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages\nrenv::status() compares the current dependencies of your project vs the dependencies detailed in the lockfile.\nrenv::snapshot() creates or updates a lockfile with the current state of packages used in the project"
+  },
+  {
+    "objectID": "materials/02-renv.html#section-46",
+    "href": "materials/02-renv.html#section-46",
+    "title": "",
+    "section": "",
+    "text": "renv::snapshot()\nrenv::snapshot() will update the lockfile with the new dependencies, adding new packages that are in use and removing any that are no longer in use."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-48",
+    "href": "materials/02-renv.html#section-48",
+    "title": "",
+    "section": "",
+    "text": "renv::snapshot()\nWe can then commit the change we made to our code, along with the change to the lockfile, which will allow us revert to prior commits and restore the dependencies that were in place."
+  },
+  {
+    "objectID": "materials/02-renv.html#renv-key-functions-5",
+    "href": "materials/02-renv.html#renv-key-functions-5",
+    "title": "",
+    "section": "renv key functions",
+    "text": "renv key functions\n\nrenv::init() initializes renv in a project. This will create a scan for dependencies, install them in a project library, and create a lockfile describing the current state of the project.\nrenv::dependencies() scans for dependencies and finds which scripts make use of packages\nrenv::status() compares the current dependencies of your project vs the dependencies detailed in the lockfile.\nrenv::snapshot() creates or updates a lockfile with the current state of packages used in the project\n\n\n\nrenv::restore() restores a project’s dependencies from a lockfile. This is typically the first command when working with a repo that has an existing lockfile."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-51",
+    "href": "materials/02-renv.html#section-51",
+    "title": "",
+    "section": "",
+    "text": "How are we feeling about this picture?"
+  },
+  {
+    "objectID": "materials/02-renv.html#section-52",
+    "href": "materials/02-renv.html#section-52",
+    "title": "",
+    "section": "",
+    "text": "renv is an excellent tool that should become mandatory for your projects.\n\nBut it isn’t going to solve every possible problem for reproducibility."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-53",
+    "href": "materials/02-renv.html#section-53",
+    "title": "",
+    "section": "",
+    "text": "Why isn’t my package being added to the lockfile?\nA package is only recorded in the lockfile if:\n. . .\n\nThe package is installed in your project library\nThe package is used in the project, as determined by renv::dependencies()\n\n. . .\nThere are some instances where renv will not detect dependencies completely; doublecheck to see how the package is being used. You might need to explicitly library the package, or change your snapshot settings from “implict” to “all”."
+  },
+  {
+    "objectID": "materials/02-renv.html#section-54",
+    "href": "materials/02-renv.html#section-54",
+    "title": "",
+    "section": "",
+    "text": "Where are packages being stored exactly?\nrenv installs packages in global cache, which can be shared across projects and across users.\nYou can find that location by running renv::paths$cache()\n. . .\nOne thing to consider for an organization is to set everyone to be pointed to the same global cache, which will speed up installations for everyone."
+  },
+  {
+    "objectID": "materials/04-production.html#section",
+    "href": "materials/04-production.html#section",
+    "title": "",
+    "section": "",
+    "text": "so far in this series we have covered:\n\nGit/GitHub for versioning and sharing our code\nrenv for reproducing our code’s dependencies\ntargets for running our project as a pipeline\n\n\nWhat do we need in order to put these pieces together for “production”?"
+  },
+  {
+    "objectID": "materials/04-production.html#references",
+    "href": "materials/04-production.html#references",
+    "title": "",
+    "section": "references",
+    "text": "references\nI highly recommend bookmarking the following as a reference, as much of the material in the following sections aligns with the lessons from this book:\n\nDevOps for Data Science"
+  },
+  {
+    "objectID": "materials/04-production.html#section-2",
+    "href": "materials/04-production.html#section-2",
+    "title": "",
+    "section": "",
+    "text": "Data science alone is pretty useless.\n\n\n\n[What matters] is whether your work is useful. That is, whether it affects decisions at your organization or in the broader world.\n\n\n\n\nThat means you must share your work by putting it in production.\n\nDevOps for Data Science - Introduction"
+  },
+  {
+    "objectID": "materials/04-production.html#section-3",
+    "href": "materials/04-production.html#section-3",
+    "title": "",
+    "section": "",
+    "text": "How do you currently share your work?\n\n(reminder to self: this isn’t a rhetorical question. put answers/typical patterns on the board)\n\n\nWhat does it mean to “put something into production”?\n\n\n\nMany data scientists think of in production as an exotic state where supercomputers run state-of-the-art machine learning models run over dozens of shards of data, terabytes each. There’s a misty mountaintop in the background, and there’s no Google Sheet, CSV file, or half-baked database query in sight."
+  },
+  {
+    "objectID": "materials/04-production.html#section-5",
+    "href": "materials/04-production.html#section-5",
+    "title": "",
+    "section": "",
+    "text": "But that’s a myth. If you’re a data scientist putting your work in front of someone else’s eyes, you are in production."
+  },
+  {
+    "objectID": "materials/04-production.html#section-6",
+    "href": "materials/04-production.html#section-6",
+    "title": "",
+    "section": "",
+    "text": "In my experiences as a consultant I have seen:\n\n\nSPSS jobs running on someone’s laptop writing business critical data to (very accessible) Google Sheets as their enterprise “data warehouse”.\n\n\n\n\nExcel spreadsheets printed out daily and taped to walls of offices for everyone to congregate over and examine.\n\n\n\n\nA Python model retraining (on the same data) everyday in a notebook for scoring data for customers. The script converted all numeric features into characters. The model was nonsense. It had been running without oversight for years."
+  },
+  {
+    "objectID": "materials/04-production.html#section-7",
+    "href": "materials/04-production.html#section-7",
+    "title": "",
+    "section": "",
+    "text": "Models “deployed” by storing linear model coefficients in SQL for analysts to do manual scoring (in order to allow them to “adjust” the coefficients to their liking).\n\n\n\nAlteryx workflows running nightly on Windows scheduler on someone’s laptop with a five minute delay between runs to read CSVs that would then be loaded to Snowflake. If any of those CSVs were ever left open, their entire data integration process collapsed. Don’t ask me how I know this.\n\n\n\n\nAlteryx. So much Alteryx.\n\n\n\nI could go on."
+  },
+  {
+    "objectID": "materials/04-production.html#section-8",
+    "href": "materials/04-production.html#section-8",
+    "title": "",
+    "section": "",
+    "text": "I mean, I’ve “put things into production” in ways that are, in retrospect, quite funny."
+  },
+  {
+    "objectID": "materials/04-production.html#section-11",
+    "href": "materials/04-production.html#section-11",
+    "title": "",
+    "section": "",
+    "text": "I ran these reports every week and shared them with other people (read: r/cfb) by directly committing html files to a GitHub repository, which then built and deployed them on GitHub Pages.\n\nThis meant I was version controlling ~130 pretty beefy html files weekly.\n\n\nGitHub Pages was really not intended for that.\n\n\nMy cfb repository is now like 11GB due to storing all of those versions.\n\n\nI still haven’t really figured out what do with that, and have instead punted to a new repository."
+  },
+  {
+    "objectID": "materials/04-production.html#section-12",
+    "href": "materials/04-production.html#section-12",
+    "title": "",
+    "section": "",
+    "text": "The better way to “deploy” a bunch of html pages, by the way, is to just render them to a cloud storage bucket and grant public access to that bucket."
+  },
+  {
+    "objectID": "materials/04-production.html#section-14",
+    "href": "materials/04-production.html#section-14",
+    "title": "",
+    "section": "",
+    "text": "Is this the most sophisticated and mature way to put the results of this project into production?"
+  },
+  {
+    "objectID": "materials/04-production.html#section-16",
+    "href": "materials/04-production.html#section-16",
+    "title": "",
+    "section": "",
+    "text": "Is this the most sophisticated and mature way to put the results of this project into production?\nNonetheless, this is result that I’m putting in front of other people; ergo, it’s in production."
+  },
+  {
+    "objectID": "materials/04-production.html#section-17",
+    "href": "materials/04-production.html#section-17",
+    "title": "",
+    "section": "",
+    "text": "For some organizations, in production means a report that gets rendered and emailed around. For others, it means hosting a live app or dashboard that people visit. For the most sophisticated, it means serving live predictions to another service from a machine learning model via an application programming interface (API).\n\n\n\nRegardless of the maturity or the form, every organization wants to know that the work is reliable, the environment is safe, and that the product will be available when people need it.\n\n\n\nSo, how do we do this? This is where the philosophy/idea of DevOops comes into play."
+  },
+  {
+    "objectID": "materials/04-production.html#section-18",
+    "href": "materials/04-production.html#section-18",
+    "title": "",
+    "section": "",
+    "text": "Consider what we have covered so far in these workshops.\n\nWe’ve discussed how to version our code and share it in an external repository so that it can be accessed, run, and edited by others.\n\n\nWe’ve discussed how to create reproducible environments with renv so that other people can restore the exact requirements needed to run our code.\n\n\nWe’ve discussed how to create pipelines with targets so that others can easily re-run our project and produce the same output that we did.\n\n\nWe’ve discussed how to use targets to train competing models and produce finalized models."
+  },
+  {
+    "objectID": "materials/04-production.html#section-20",
+    "href": "materials/04-production.html#section-20",
+    "title": "",
+    "section": "",
+    "text": "DevOps principles aim to create software that builds security, stability, and scalability into the software from the very beginning. The idea is to avoid building software that works locally, but doesn’t work well in collaboration or production.\n\n\nSo much of DevOps boils down to preventing the well-it-runs-on-my-machine problem."
+  },
+  {
+    "objectID": "materials/04-production.html#section-22",
+    "href": "materials/04-production.html#section-22",
+    "title": "",
+    "section": "",
+    "text": "DevOps principles aim to create software that builds security, stability, and scalability into the software from the very beginning. The idea is to avoid building software that works locally, but doesn’t work well in collaboration or production.\n\n\n\nThe code you’re writing relies on the environment in which it runs. While most data scientists have ways to share code, sharing environments isn’t always standard practice, but it should be.\n\n\n\n\nWe can take lessons from DevOps, where the solution is to create explicit linkages between the code and the environment so you can share both."
+  },
+  {
+    "objectID": "materials/04-production.html#section-23",
+    "href": "materials/04-production.html#section-23",
+    "title": "",
+    "section": "",
+    "text": "How close are we to creating fully reproducible environments via code? What are we missing?"
+  },
+  {
+    "objectID": "materials/04-production.html#section-25",
+    "href": "materials/04-production.html#section-25",
+    "title": "",
+    "section": "",
+    "text": "How close are we to creating fully reproducible environments via code? What are we missing?\nWe’ve only really covered one layer:\n\npackages: Python + R packages (dplyr, pandas)\n\nrenv and venv allow us to create isolated virtual environments in which to execute our code."
+  },
+  {
+    "objectID": "materials/04-production.html#section-26",
+    "href": "materials/04-production.html#section-26",
+    "title": "",
+    "section": "",
+    "text": "your data science environment is the stack of software and hardware below your code, from the R and Python packages you’re using right down to the physical hardware your code runs on.\n\n\nPackages are just one piece; we want to be able to make the entire environment reproducible.\n\n\nThis means we need to be comfortable with creating and using environments via code; this is the crux of DevOps that we need to apply to our data science practice.\n..\n\nThe DevOps term for this is that environments are stateless or in the phrase that environments should be “cattle, not pets”. That means that you can use standardized tooling to create and destroy functionally identical copies of the environment without secret state being left behind."
+  },
+  {
+    "objectID": "materials/04-production.html#section-27",
+    "href": "materials/04-production.html#section-27",
+    "title": "",
+    "section": "",
+    "text": "We’ve covered creating and taking down one layer:\n\npackages: Python + R packages (dplyr, pandas)\n\nrenv and venv allow us to create isolated virtual environments in which to execute our code."
+  },
+  {
+    "objectID": "materials/04-production.html#section-28",
+    "href": "materials/04-production.html#section-28",
+    "title": "",
+    "section": "",
+    "text": "But there are three main layers to think about:\n\npackages: R + Python packages (dplyr, pandas)\n\n\n\nsystem: R; Python; Quarto; Git; Libraries (Fortran, C/C++), …\n\nThink about everything needed to run the work we’ve covered so far.R/RStudio, Quarto, Git, all of the underlying libraries that are used in the background when you’re installing a package from source and you’re praying that the installation is okay.\n\n\nAPI keys, database credentials, ODBC drivers…"
+  },
+  {
+    "objectID": "materials/04-production.html#section-29",
+    "href": "materials/04-production.html#section-29",
+    "title": "",
+    "section": "",
+    "text": "But there are three main layers to think about:\n\npackages: R + Python packages (dplyr, pandas)\nsystem: R; Python; Quarto; Git; Libraries (Fortran, C/C++)\nhardware: physical/virtual hardware on which your code runs\n\n\nYour code has to actually run on something. Even if it’s in the cloud it’s still running on a physical machine somewhere."
+  },
+  {
+    "objectID": "materials/04-production.html#section-30",
+    "href": "materials/04-production.html#section-30",
+    "title": "",
+    "section": "",
+    "text": "So, putting things in production in a safe and reliable way starts with recognizing the different pieces we need to recreate our data science environment."
+  },
+  {
+    "objectID": "materials/04-production.html#section-32",
+    "href": "materials/04-production.html#section-32",
+    "title": "",
+    "section": "",
+    "text": "So, putting things in production in a safe and reliable way starts with recognizing the different pieces we need to recreate our data science environment.\nThen, it becomes a matter of reproducing each of these pieces via code. This part sounds super complicated, and it can be, but a lot of smart people have put a lot of time into making it easier."
+  },
+  {
+    "objectID": "materials/04-production.html#section-33",
+    "href": "materials/04-production.html#section-33",
+    "title": "",
+    "section": "",
+    "text": "Let’s revisit the GitHub action we saw earlier.\n# name: updating the README\n#\n# on:\n#   workflow_dispatch:\n#   push:\n#     branches: [ \"main\", \"dev\"]\n#\n# jobs:\n#   build:\n#     runs-on: ubuntu-latest\n#     permissions:\n#       contents: write\n#\n#     strategy:\n#       matrix:\n#         r-version: ['4.4.1']\n#\n#     steps:\n#       - name: Checkout repository\n#         uses: actions/checkout@v4\n#\n#       - name: Set up Quarto\n#         uses: quarto-dev/quarto-actions/setup@v2\n#\n#       - name: Set up R ${{ matrix.r-version }}\n#         uses: r-lib/actions/setup-r@v2\n#         with:\n#           r-version: ${{ matrix.r-version }}\n#           use-public-rspm: true\n#\n#       - name: Install additional Linux dependencies\n#         if: runner.os == 'Linux'\n#         run: |\n#           sudo apt-get update -y\n#           sudo apt-get install -y libgit2-dev libglpk40\n#\n#       - name: Setup renv and install packages\n#         uses: r-lib/actions/setup-renv@v2\n#         with:\n#           cache-version: 1\n#         env:\n#           RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.rstudio.com/all/latest\n#           GITHUB_PAT: ${{ secrets.GH_PAT}}\n#\n#       - name: Render README\n#         shell: bash\n#         run: |\n#           git config --global user.name ${{ github.actor }}\n#           quarto render README.qmd\n#           git commit README.md -m 'Re-build README.qmd' || echo \"No changes to commit\"\n#           git push origin || echo \"No changes to commit\"\n#"
+  },
+  {
+    "objectID": "materials/04-production.html#section-34",
+    "href": "materials/04-production.html#section-34",
+    "title": "",
+    "section": "",
+    "text": "This is essentially just a script that:\n\nSpecifies to run on a Linux machine (somewhere)\nChecks out a GitHub repository\nSets up Quarto\nSets up R\nInstalls additional Linux libs that were needed for installing R packages -&gt; this is the part that breaks and you have to fiddle with 9/10 times.\nUses renv to install packages based on renv.lock in the repository\nRenders the Quarto README and commits/pushes it to the repository"
+  },
+  {
+    "objectID": "materials/04-production.html#section-35",
+    "href": "materials/04-production.html#section-35",
+    "title": "",
+    "section": "",
+    "text": "Now, to be clear, this is a lot of work to just render a goddamn README.\n\nBut we use the same setup to do more elaborate work, such as running the whole dang pipeline via a Github Action."
+  },
+  {
+    "objectID": "materials/04-production.html#section-36",
+    "href": "materials/04-production.html#section-36",
+    "title": "",
+    "section": "",
+    "text": "We’ve been building pipelines with targets."
+  },
+  {
+    "objectID": "materials/04-production.html#section-37",
+    "href": "materials/04-production.html#section-37",
+    "title": "",
+    "section": "",
+    "text": "For instance, we’ve been building a pipelines with targets."
+  },
+  {
+    "objectID": "materials/04-production.html#environments-as-code",
+    "href": "materials/04-production.html#environments-as-code",
+    "title": "",
+    "section": "environments as code",
+    "text": "environments as code"
+  },
+  {
+    "objectID": "materials/04-production.html#project",
+    "href": "materials/04-production.html#project",
+    "title": "",
+    "section": "project",
+    "text": "project\nWhat would we need to\nwe have to date covered:\n\nGit/GitHub for versioning and sharing our code\nrenv for reproducing our code dependencies\ntargets for creating repeatable pipelines\n\nputting things into production is a matter of managing environments"
+  },
+  {
+    "objectID": "materials/04-production.html#project-architecture",
+    "href": "materials/04-production.html#project-architecture",
+    "title": "",
+    "section": "project architecture",
+    "text": "project architecture\nWhat is the typical output of a data science project?\n\n\na job: a script that trains a model, updates a dataset, writes to a database\nan app: created in Shiny, Streamlit, Dash,\na report: a presentation, book, article, that is rendered from code\nan API"
   }
 ]
