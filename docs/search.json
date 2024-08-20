@@ -123,7 +123,7 @@
     "href": "materials/03-targets.html#section-15",
     "title": "",
     "section": "",
-    "text": "We then run the pipeline using tar_make(), which will detail the steps that are being carried out and whether they were re-run or skipped.\n\ntargets::tar_make()\n\n\n\n#&gt; v skipped target starwars\n#&gt; v skipped target sentences\n#&gt; v skipped target sentiment\n#&gt; v skipped pipeline [0.043 seconds]"
+    "text": "We then run the pipeline using tar_make(), which will detail the steps that are being carried out and whether they were re-run or skipped.\n\ntargets::tar_make()\n\n\n\n#&gt; v skipped target starwars\n#&gt; v skipped target sentences\n#&gt; v skipped target sentiment\n#&gt; v skipped pipeline [0.044 seconds]"
   },
   {
     "objectID": "materials/03-targets.html#section-16",
@@ -480,7 +480,7 @@
     "href": "materials/03-targets.html#section-60",
     "title": "",
     "section": "",
-    "text": "creating bootstraps\n\n# bootstrap\nboots = rsample::bootstraps(mtcars, times =10)\nboots\n\n#&gt; # Bootstrap sampling \n#&gt; # A tibble: 10 × 2\n#&gt;    splits          id         \n#&gt;    &lt;list&gt;          &lt;chr&gt;      \n#&gt;  1 &lt;split [32/11]&gt; Bootstrap01\n#&gt;  2 &lt;split [32/13]&gt; Bootstrap02\n#&gt;  3 &lt;split [32/12]&gt; Bootstrap03\n#&gt;  4 &lt;split [32/13]&gt; Bootstrap04\n#&gt;  5 &lt;split [32/13]&gt; Bootstrap05\n#&gt;  6 &lt;split [32/13]&gt; Bootstrap06\n#&gt;  7 &lt;split [32/12]&gt; Bootstrap07\n#&gt;  8 &lt;split [32/11]&gt; Bootstrap08\n#&gt;  9 &lt;split [32/9]&gt;  Bootstrap09\n#&gt; 10 &lt;split [32/15]&gt; Bootstrap10"
+    "text": "creating bootstraps\n\n# bootstrap\nboots = rsample::bootstraps(mtcars, times =10)\nboots\n\n#&gt; # Bootstrap sampling \n#&gt; # A tibble: 10 × 2\n#&gt;    splits          id         \n#&gt;    &lt;list&gt;          &lt;chr&gt;      \n#&gt;  1 &lt;split [32/10]&gt; Bootstrap01\n#&gt;  2 &lt;split [32/9]&gt;  Bootstrap02\n#&gt;  3 &lt;split [32/10]&gt; Bootstrap03\n#&gt;  4 &lt;split [32/14]&gt; Bootstrap04\n#&gt;  5 &lt;split [32/8]&gt;  Bootstrap05\n#&gt;  6 &lt;split [32/12]&gt; Bootstrap06\n#&gt;  7 &lt;split [32/14]&gt; Bootstrap07\n#&gt;  8 &lt;split [32/10]&gt; Bootstrap08\n#&gt;  9 &lt;split [32/12]&gt; Bootstrap09\n#&gt; 10 &lt;split [32/13]&gt; Bootstrap10"
   },
   {
     "objectID": "materials/03-targets.html#section-61",
@@ -494,14 +494,14 @@
     "href": "materials/03-targets.html#section-62",
     "title": "",
     "section": "",
-    "text": "each individual row contains an rsplit object, which has the original data stored as a single training/test split\n\n# grab one split\none_split =\nboots |&gt;\npluck(\"splits\", 1)\n\none_split\n\n#&gt; &lt;Analysis/Assess/Total&gt;\n#&gt; &lt;32/11/32&gt;"
+    "text": "each individual row contains an rsplit object, which has the original data stored as a single training/test split\n\n# grab one split\none_split =\nboots |&gt;\npluck(\"splits\", 1)\n\none_split\n\n#&gt; &lt;Analysis/Assess/Total&gt;\n#&gt; &lt;32/10/32&gt;"
   },
   {
     "objectID": "materials/03-targets.html#section-63",
     "href": "materials/03-targets.html#section-63",
     "title": "",
     "section": "",
-    "text": "these sets can be extracted via the functions rsample::training() or rsample::testing()\n\n# extract training set\none_split |&gt;\nrsample::training()\n\n#&gt;                         mpg cyl  disp  hp drat    wt  qsec vs am gear carb\n#&gt; Valiant                18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1\n#&gt; Cadillac Fleetwood     10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4\n#&gt; Ferrari Dino           19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6\n#&gt; Camaro Z28             13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4\n#&gt; Volvo 142E             21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2\n#&gt; Mazda RX4 Wag...6      21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4\n#&gt; Ford Pantera L...7     15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4\n#&gt; Datsun 710...8         22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1\n#&gt; AMC Javelin...9        15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2\n#&gt; Lotus Europa...10      30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2\n#&gt; Duster 360...11        14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4\n#&gt; Lotus Europa...12      30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2\n#&gt; Hornet 4 Drive...13    21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1\n#&gt; Merc 280...14          19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4\n#&gt; Merc 230               22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2\n#&gt; Pontiac Firebird       19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2\n#&gt; Toyota Corona...17     21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1\n#&gt; Hornet 4 Drive...18    21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1\n#&gt; Merc 240D              24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2\n#&gt; Duster 360...20        14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4\n#&gt; Hornet 4 Drive...21    21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1\n#&gt; Chrysler Imperial...22 14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4\n#&gt; Chrysler Imperial...23 14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4\n#&gt; Ford Pantera L...24    15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4\n#&gt; Mazda RX4 Wag...25     21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4\n#&gt; Merc 280C              17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4\n#&gt; Fiat X1-9              27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1\n#&gt; Datsun 710...28        22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1\n#&gt; Toyota Corona...29     21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1\n#&gt; AMC Javelin...30       15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2\n#&gt; Merc 280...31          19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4\n#&gt; Toyota Corolla         33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1\n\n# extract test set\none_split |&gt;\nrsample::testing()\n\n#&gt;                      mpg cyl  disp  hp drat    wt  qsec vs am gear carb\n#&gt; Mazda RX4           21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4\n#&gt; Hornet Sportabout   18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2\n#&gt; Merc 450SE          16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3\n#&gt; Merc 450SL          17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3\n#&gt; Merc 450SLC         15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3\n#&gt; Lincoln Continental 10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4\n#&gt; Fiat 128            32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1\n#&gt; Honda Civic         30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2\n#&gt; Dodge Challenger    15.5   8 318.0 150 2.76 3.520 16.87  0  0    3    2\n#&gt; Porsche 914-2       26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2\n#&gt; Maserati Bora       15.0   8 301.0 335 3.54 3.570 14.60  0  1    5    8"
+    "text": "these sets can be extracted via the functions rsample::training() or rsample::testing()\n\n# extract training set\none_split |&gt;\nrsample::training()\n\n#&gt;                         mpg cyl  disp  hp drat    wt  qsec vs am gear carb\n#&gt; Hornet 4 Drive...1     21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1\n#&gt; Valiant...2            18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1\n#&gt; Hornet Sportabout...3  18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2\n#&gt; Mazda RX4 Wag          21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4\n#&gt; Fiat X1-9...5          27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1\n#&gt; Toyota Corolla...6     33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1\n#&gt; Lotus Europa...7       30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2\n#&gt; Lotus Europa...8       30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2\n#&gt; Valiant...9            18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1\n#&gt; Lincoln Continental    10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4\n#&gt; Merc 450SE             16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3\n#&gt; Pontiac Firebird       19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2\n#&gt; Fiat X1-9...13         27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1\n#&gt; Camaro Z28             13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4\n#&gt; Fiat 128               32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1\n#&gt; Toyota Corolla...16    33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1\n#&gt; Toyota Corolla...17    33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1\n#&gt; Merc 230               22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2\n#&gt; Dodge Challenger       15.5   8 318.0 150 2.76 3.520 16.87  0  0    3    2\n#&gt; Valiant...20           18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1\n#&gt; Ferrari Dino...21      19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6\n#&gt; Merc 280C              17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4\n#&gt; Cadillac Fleetwood     10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4\n#&gt; Porsche 914-2...24     26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2\n#&gt; Hornet 4 Drive...25    21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1\n#&gt; Duster 360             14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4\n#&gt; Merc 280               19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4\n#&gt; Ferrari Dino...28      19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6\n#&gt; Chrysler Imperial      14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4\n#&gt; Porsche 914-2...30     26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2\n#&gt; Hornet Sportabout...31 18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2\n#&gt; Merc 450SL             17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3\n\n# extract test set\none_split |&gt;\nrsample::testing()\n\n#&gt;                 mpg cyl  disp  hp drat    wt  qsec vs am gear carb\n#&gt; Mazda RX4      21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4\n#&gt; Datsun 710     22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1\n#&gt; Merc 240D      24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2\n#&gt; Merc 450SLC    15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3\n#&gt; Honda Civic    30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2\n#&gt; Toyota Corona  21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1\n#&gt; AMC Javelin    15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2\n#&gt; Ford Pantera L 15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4\n#&gt; Maserati Bora  15.0   8 301.0 335 3.54 3.570 14.60  0  1    5    8\n#&gt; Volvo 142E     21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2"
   },
   {
     "objectID": "materials/03-targets.html#section-64",
@@ -529,7 +529,7 @@
     "href": "materials/03-targets.html#section-66",
     "title": "",
     "section": "",
-    "text": "then we can fit our workflow across resamples and estimate its performance across these metrics\n\nwflow |&gt;\n  fit_resamples(\n    resamples = boots,\n    metrics = my_metrics\n  ) |&gt;\n  collect_metrics() |&gt;\n  mutate_if(is.numeric, round, 3)\n\n#&gt; # A tibble: 3 × 6\n#&gt;   .metric .estimator   mean     n std_err .config             \n#&gt;   &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;               \n#&gt; 1 ccc     standard    0.457    10   0.095 Preprocessor1_Model1\n#&gt; 2 rmse    standard   11.1      10   2.86  Preprocessor1_Model1\n#&gt; 3 rsq     standard    0.403    10   0.095 Preprocessor1_Model1"
+    "text": "then we can fit our workflow across resamples and estimate its performance across these metrics\n\nwflow |&gt;\n  fit_resamples(\n    resamples = boots,\n    metrics = my_metrics\n  ) |&gt;\n  collect_metrics() |&gt;\n  mutate_if(is.numeric, round, 3)\n\n#&gt; # A tibble: 3 × 6\n#&gt;   .metric .estimator  mean     n std_err .config             \n#&gt;   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;               \n#&gt; 1 ccc     standard   0.488    10   0.104 Preprocessor1_Model1\n#&gt; 2 rmse    standard   9.22     10   2.38  Preprocessor1_Model1\n#&gt; 3 rsq     standard   0.436    10   0.084 Preprocessor1_Model1"
   },
   {
     "objectID": "materials/03-targets.html#key-tidymodels-concepts-2",
@@ -585,7 +585,7 @@
     "href": "materials/03-targets.html#section-69",
     "title": "",
     "section": "",
-    "text": "We can create a recipe in the following way:\n\nrec=\n  recipe(arr_delay ~ air_time + distance, data = flights) |&gt;\n  step_impute_median(all_numeric_predictors()) |&gt;\n  step_normalize(all_numeric_predictors())\n\n\nWe can then see how this recipe prepares data if we prep it on our training set and then use bake.\n\n\n#&gt; # A tibble: 15 × 3\n#&gt;    air_time distance arr_delay\n#&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt;    \n#&gt;  1  -1.07    -1.15   on_time  \n#&gt;  2  -0.726   -0.676  on_time  \n#&gt;  3  -0.163   -0.0435 on_time  \n#&gt;  4  -0.109   -0.0231 on_time  \n#&gt;  5  -1.16    -1.15   on_time  \n#&gt;  6   1.64     1.93   on_time  \n#&gt;  7   2.09     1.94   late     \n#&gt;  8  -0.434   -0.429  on_time  \n#&gt;  9  -0.455   -0.379  on_time  \n#&gt; 10  -0.682   -0.680  on_time  \n#&gt; 11  -1.24    -1.15   on_time  \n#&gt; 12  -1.20    -1.19   late     \n#&gt; 13  -0.228   -1.11   on_time  \n#&gt; 14  -0.0225   0.0342 on_time  \n#&gt; 15  -0.423   -0.376  on_time"
+    "text": "We can create a recipe in the following way:\n\nrec=\n  recipe(arr_delay ~ air_time + distance, data = flights) |&gt;\n  step_impute_median(all_numeric_predictors()) |&gt;\n  step_normalize(all_numeric_predictors())\n\n\nWe can then see how this recipe prepares data if we prep it on our training set and then use bake.\n\n\n#&gt; # A tibble: 15 × 3\n#&gt;    air_time distance arr_delay\n#&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt;    \n#&gt;  1  -1.04    -1.01   late     \n#&gt;  2  -0.855   -0.830  on_time  \n#&gt;  3  -0.412   -0.409  on_time  \n#&gt;  4  -0.325   -0.229  on_time  \n#&gt;  5  -0.0225   0.0397 on_time  \n#&gt;  6   1.78     2.08   on_time  \n#&gt;  7   0.216    0.0465 on_time  \n#&gt;  8   0.107    0.0465 on_time  \n#&gt;  9  -0.542   -0.562  on_time  \n#&gt; 10  -0.509   -0.379  late     \n#&gt; 11  -0.423   -0.409  on_time  \n#&gt; 12  -0.131   -0.229  on_time  \n#&gt; 13   0.518    0.731  on_time  \n#&gt; 14   1.48     1.65   on_time  \n#&gt; 15  -0.855   -0.847  late"
   },
   {
     "objectID": "materials/03-targets.html#section-70",
@@ -1432,7 +1432,7 @@
     "href": "index.html",
     "title": "What They Didn’t Teach You About Data Science",
     "section": "",
-    "text": "This workshop focuses on using R/RStudio with Git, renv, and targets. This will be pretty hands on, so it will be helpful to configure as much as possible in advance. I can help debug if we have any issues on the day.\n\n\nThese are the following pieces to set up in advance:\n\nRegister a GitHub account\nInstall/update R and RStudio\nInstall Git\nInstall Quarto\n\n\n\n\nThe materials used in this workshop can be found in the ds-workshop repository.\n\n\n\n\nIntro\nGit + GitHub\nrenv\ntargets"
+    "text": "This workshop focuses on using R/RStudio with Git/GitHub, renv, and targets. This will be pretty hands on, so it will be helpful to configure as much as possible in advance. I can help debug if we have any issues on the day.\n\n\nThese are the following pieces to set up in advance:\n\nRegister a GitHub account\nInstall/update R and RStudio\nInstall Git\nInstall Quarto\n\n\n\n\nThe materials used in this workshop can be found in the ds-workshop repository.\n\n\n\n\nIntro\nGit + GitHub\nrenv\ntargets\nproduction"
   },
   {
     "objectID": "index.html#setup",
@@ -1453,7 +1453,7 @@
     "href": "index.html#schedule",
     "title": "What They Didn’t Teach You About Data Science",
     "section": "",
-    "text": "Intro\nGit + GitHub\nrenv\ntargets"
+    "text": "Intro\nGit + GitHub\nrenv\ntargets\nproduction"
   },
   {
     "objectID": "materials/00-intro.html#goals",
@@ -1995,129 +1995,143 @@
     "text": "Consider what we have covered so far in these workshops.\n\nWe’ve discussed how to version our code and share it in an external repository so that it can be accessed, run, and edited by others.\n\n\nWe’ve discussed how to create reproducible environments with renv so that other people can restore the exact requirements needed to run our code.\n\n\nWe’ve discussed how to create pipelines with targets so that others can easily re-run our project and produce the same output that we did.\n\n\nWe’ve discussed how to use targets to train competing models and produce finalized models."
   },
   {
-    "objectID": "materials/04-production.html#section-20",
-    "href": "materials/04-production.html#section-20",
+    "objectID": "materials/04-production.html#environments-as-code",
+    "href": "materials/04-production.html#environments-as-code",
+    "title": "",
+    "section": "environments as code",
+    "text": "environments as code\n\nDevOps principles aim to create software that builds security, stability, and scalability into the software from the very beginning. The idea is to avoid building software that works locally, but doesn’t work well in collaboration or production.\n\n\nSo much of DevOps boils down to preventing the well-it-runs-on-my-machine problem."
+  },
+  {
+    "objectID": "materials/04-production.html#section-21",
+    "href": "materials/04-production.html#section-21",
     "title": "",
     "section": "",
-    "text": "DevOps principles aim to create software that builds security, stability, and scalability into the software from the very beginning. The idea is to avoid building software that works locally, but doesn’t work well in collaboration or production.\n\n\nSo much of DevOps boils down to preventing the well-it-runs-on-my-machine problem."
+    "text": "DevOps principles aim to create software that builds security, stability, and scalability into the software from the very beginning. The idea is to avoid building software that works locally, but doesn’t work well in collaboration or production.\n\n\n\nThe code you’re writing relies on the environment in which it runs. While most data scientists have ways to share code, sharing environments isn’t always standard practice, but it should be.\n\n\n\n\nWe can take lessons from DevOps, where the solution is to create explicit linkages between the code and the environment so you can share both."
   },
   {
     "objectID": "materials/04-production.html#section-22",
     "href": "materials/04-production.html#section-22",
     "title": "",
     "section": "",
-    "text": "DevOps principles aim to create software that builds security, stability, and scalability into the software from the very beginning. The idea is to avoid building software that works locally, but doesn’t work well in collaboration or production.\n\n\n\nThe code you’re writing relies on the environment in which it runs. While most data scientists have ways to share code, sharing environments isn’t always standard practice, but it should be.\n\n\n\n\nWe can take lessons from DevOps, where the solution is to create explicit linkages between the code and the environment so you can share both."
+    "text": "How close are we to creating fully reproducible environments via code? What are we missing?"
   },
   {
-    "objectID": "materials/04-production.html#section-23",
-    "href": "materials/04-production.html#section-23",
+    "objectID": "materials/04-production.html#section-24",
+    "href": "materials/04-production.html#section-24",
     "title": "",
     "section": "",
-    "text": "How close are we to creating fully reproducible environments via code? What are we missing?"
+    "text": "How close are we to creating fully reproducible environments via code? What are we missing?\nWe’ve only really covered one layer:\n\npackages: Python + R packages (dplyr, pandas)\n\nrenv and venv allow us to create isolated virtual environments in which to execute our code."
   },
   {
     "objectID": "materials/04-production.html#section-25",
     "href": "materials/04-production.html#section-25",
     "title": "",
     "section": "",
-    "text": "How close are we to creating fully reproducible environments via code? What are we missing?\nWe’ve only really covered one layer:\n\npackages: Python + R packages (dplyr, pandas)\n\nrenv and venv allow us to create isolated virtual environments in which to execute our code."
+    "text": "your data science environment is the stack of software and hardware below your code, from the R and Python packages you’re using right down to the physical hardware your code runs on.\n\n\nPackages are just one piece; we want to be able to make the entire environment reproducible.\n\n\nThis means we need to be comfortable with creating and using environments via code; this is the crux of DevOps that we need to apply to our data science practice.\n..\n\nThe DevOps term for this is that environments are stateless or in the phrase that environments should be “cattle, not pets”. That means that you can use standardized tooling to create and destroy functionally identical copies of the environment without secret state being left behind."
   },
   {
     "objectID": "materials/04-production.html#section-26",
     "href": "materials/04-production.html#section-26",
     "title": "",
     "section": "",
-    "text": "your data science environment is the stack of software and hardware below your code, from the R and Python packages you’re using right down to the physical hardware your code runs on.\n\n\nPackages are just one piece; we want to be able to make the entire environment reproducible.\n\n\nThis means we need to be comfortable with creating and using environments via code; this is the crux of DevOps that we need to apply to our data science practice.\n..\n\nThe DevOps term for this is that environments are stateless or in the phrase that environments should be “cattle, not pets”. That means that you can use standardized tooling to create and destroy functionally identical copies of the environment without secret state being left behind."
+    "text": "We’ve covered creating and taking down one layer:\n\npackages: Python + R packages (dplyr, pandas)\n\nrenv and venv allow us to create isolated virtual environments in which to execute our code."
   },
   {
     "objectID": "materials/04-production.html#section-27",
     "href": "materials/04-production.html#section-27",
     "title": "",
     "section": "",
-    "text": "We’ve covered creating and taking down one layer:\n\npackages: Python + R packages (dplyr, pandas)\n\nrenv and venv allow us to create isolated virtual environments in which to execute our code."
+    "text": "But there are three main layers to think about:\n\npackages: R + Python packages (dplyr, pandas)\n\n\n\nsystem: R; Python; Quarto; Git; Libraries (Fortran, C/C++), …\n\nThink about everything needed to run the work we’ve covered so far.R/RStudio, Quarto, Git, all of the underlying libraries that are used in the background when you’re installing a package from source and you’re praying that the installation is okay.\n\n\nAPI keys, database credentials, ODBC drivers…"
   },
   {
     "objectID": "materials/04-production.html#section-28",
     "href": "materials/04-production.html#section-28",
     "title": "",
     "section": "",
-    "text": "But there are three main layers to think about:\n\npackages: R + Python packages (dplyr, pandas)\n\n\n\nsystem: R; Python; Quarto; Git; Libraries (Fortran, C/C++), …\n\nThink about everything needed to run the work we’ve covered so far.R/RStudio, Quarto, Git, all of the underlying libraries that are used in the background when you’re installing a package from source and you’re praying that the installation is okay.\n\n\nAPI keys, database credentials, ODBC drivers…"
+    "text": "But there are three main layers to think about:\n\npackages: R + Python packages (dplyr, pandas)\nsystem: R; Python; Quarto; Git; Libraries (Fortran, C/C++)\nhardware: physical/virtual hardware on which your code runs\n\n\nYour code has to actually run on something. Even if it’s in the cloud it’s still running on a physical machine somewhere."
   },
   {
     "objectID": "materials/04-production.html#section-29",
     "href": "materials/04-production.html#section-29",
     "title": "",
     "section": "",
-    "text": "But there are three main layers to think about:\n\npackages: R + Python packages (dplyr, pandas)\nsystem: R; Python; Quarto; Git; Libraries (Fortran, C/C++)\nhardware: physical/virtual hardware on which your code runs\n\n\nYour code has to actually run on something. Even if it’s in the cloud it’s still running on a physical machine somewhere."
+    "text": "So, putting things in production in a safe and reliable way starts with recognizing the different pieces we need to recreate our data science environment."
   },
   {
-    "objectID": "materials/04-production.html#section-30",
-    "href": "materials/04-production.html#section-30",
+    "objectID": "materials/04-production.html#section-31",
+    "href": "materials/04-production.html#section-31",
     "title": "",
     "section": "",
-    "text": "So, putting things in production in a safe and reliable way starts with recognizing the different pieces we need to recreate our data science environment."
+    "text": "So, putting things in production in a safe and reliable way starts with recognizing the different pieces we need to recreate our data science environment.\nThen, it becomes a matter of reproducing each of these pieces via code. This part sounds super complicated, and it can be, but a lot of smart people have put a lot of time into making it easier."
   },
   {
     "objectID": "materials/04-production.html#section-32",
     "href": "materials/04-production.html#section-32",
     "title": "",
     "section": "",
-    "text": "So, putting things in production in a safe and reliable way starts with recognizing the different pieces we need to recreate our data science environment.\nThen, it becomes a matter of reproducing each of these pieces via code. This part sounds super complicated, and it can be, but a lot of smart people have put a lot of time into making it easier."
+    "text": "Let’s revisit the GitHub action we saw earlier.\n# name: updating the README\n#\n# on:\n#   workflow_dispatch:\n#   push:\n#     branches: [ \"main\", \"dev\"]\n#\n# jobs:\n#   build:\n#     runs-on: ubuntu-latest\n#     permissions:\n#       contents: write\n#\n#     strategy:\n#       matrix:\n#         r-version: ['4.4.1']\n#\n#     steps:\n#       - name: Checkout repository\n#         uses: actions/checkout@v4\n#\n#       - name: Set up Quarto\n#         uses: quarto-dev/quarto-actions/setup@v2\n#\n#       - name: Set up R ${{ matrix.r-version }}\n#         uses: r-lib/actions/setup-r@v2\n#         with:\n#           r-version: ${{ matrix.r-version }}\n#           use-public-rspm: true\n#\n#       - name: Install additional Linux dependencies\n#         if: runner.os == 'Linux'\n#         run: |\n#           sudo apt-get update -y\n#           sudo apt-get install -y libgit2-dev libglpk40\n#\n#       - name: Setup renv and install packages\n#         uses: r-lib/actions/setup-renv@v2\n#         with:\n#           cache-version: 1\n#         env:\n#           RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.rstudio.com/all/latest\n#           GITHUB_PAT: ${{ secrets.GH_PAT}}\n#\n#       - name: Render README\n#         shell: bash\n#         run: |\n#           git config --global user.name ${{ github.actor }}\n#           quarto render README.qmd\n#           git commit README.md -m 'Re-build README.qmd' || echo \"No changes to commit\"\n#           git push origin || echo \"No changes to commit\"\n#"
   },
   {
     "objectID": "materials/04-production.html#section-33",
     "href": "materials/04-production.html#section-33",
     "title": "",
     "section": "",
-    "text": "Let’s revisit the GitHub action we saw earlier.\n# name: updating the README\n#\n# on:\n#   workflow_dispatch:\n#   push:\n#     branches: [ \"main\", \"dev\"]\n#\n# jobs:\n#   build:\n#     runs-on: ubuntu-latest\n#     permissions:\n#       contents: write\n#\n#     strategy:\n#       matrix:\n#         r-version: ['4.4.1']\n#\n#     steps:\n#       - name: Checkout repository\n#         uses: actions/checkout@v4\n#\n#       - name: Set up Quarto\n#         uses: quarto-dev/quarto-actions/setup@v2\n#\n#       - name: Set up R ${{ matrix.r-version }}\n#         uses: r-lib/actions/setup-r@v2\n#         with:\n#           r-version: ${{ matrix.r-version }}\n#           use-public-rspm: true\n#\n#       - name: Install additional Linux dependencies\n#         if: runner.os == 'Linux'\n#         run: |\n#           sudo apt-get update -y\n#           sudo apt-get install -y libgit2-dev libglpk40\n#\n#       - name: Setup renv and install packages\n#         uses: r-lib/actions/setup-renv@v2\n#         with:\n#           cache-version: 1\n#         env:\n#           RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.rstudio.com/all/latest\n#           GITHUB_PAT: ${{ secrets.GH_PAT}}\n#\n#       - name: Render README\n#         shell: bash\n#         run: |\n#           git config --global user.name ${{ github.actor }}\n#           quarto render README.qmd\n#           git commit README.md -m 'Re-build README.qmd' || echo \"No changes to commit\"\n#           git push origin || echo \"No changes to commit\"\n#"
+    "text": "This is essentially just a script that:\n\nSpecifies to run on a Linux machine (somewhere)\nChecks out a GitHub repository\nSets up Quarto\nSets up R\nInstalls additional Linux libs that were needed for installing R packages -&gt; this is the part that breaks and you have to fiddle with 9/10 times.\nUses renv to install packages based on renv.lock in the repository\nRenders the Quarto README and commits/pushes it to the repository"
   },
   {
     "objectID": "materials/04-production.html#section-34",
     "href": "materials/04-production.html#section-34",
     "title": "",
     "section": "",
-    "text": "This is essentially just a script that:\n\nSpecifies to run on a Linux machine (somewhere)\nChecks out a GitHub repository\nSets up Quarto\nSets up R\nInstalls additional Linux libs that were needed for installing R packages -&gt; this is the part that breaks and you have to fiddle with 9/10 times.\nUses renv to install packages based on renv.lock in the repository\nRenders the Quarto README and commits/pushes it to the repository"
+    "text": "Now, to be clear, this is a lot of work to just render a goddamn README.\n\nBut we use the same setup to do more elaborate work, such as running the whole dang pipeline via a Github Action."
   },
   {
     "objectID": "materials/04-production.html#section-35",
     "href": "materials/04-production.html#section-35",
     "title": "",
     "section": "",
-    "text": "Now, to be clear, this is a lot of work to just render a goddamn README.\n\nBut we use the same setup to do more elaborate work, such as running the whole dang pipeline via a Github Action."
+    "text": "We’ve been building pipelines with targets.\n\nIf you run targets::tar_github_actions(), you will notice a new file .github/workflows/targets.yaml appears in your project working directory\n\n\n\n# MIT License\n# Copyright (c) 2021 Eli Lilly and Company\n# Author: William Michael Landau (will.landau at gmail)\n# Written with help from public domain (CC0 1.0 Universal) workflow files by Jim Hester:\n# * https://github.com/r-lib/actions/blob/master/examples/check-full.yaml\n# * https://github.com/r-lib/actions/blob/master/examples/blogdown.yaml\n#\n# Permission is hereby granted, free of charge, to any person obtaining a copy\n# of this software and associated documentation files (the \"Software\"), to deal\n# in the Software without restriction, including without limitation the rights\n# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n# copies of the Software, and to permit persons to whom the Software is\n# furnished to do so, subject to the following conditions:\n#\n# The above copyright notice and this permission notice shall be included in all\n# copies or substantial portions of the Software.\n#\n# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n# SOFTWARE.\n\non:\n  push:\n    branches:\n      - main\n      - master\n\nname: targets\n\njobs:\n  targets:\n    runs-on: ubuntu-latest\n    env:\n      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}\n      RENV_PATHS_ROOT: ~/.local/share/renv\n    steps:\n      - uses: actions/checkout@v2\n      - uses: r-lib/actions/setup-r@v2\n      - uses: r-lib/actions/setup-pandoc@v2\n\n      - name: Install Mac system dependencies\n        if: runner.os == 'macOS'\n        run: brew install zeromq\n\n      - name: Install Linux system dependencies\n        if: runner.os == 'Linux'\n        run: |\n          sudo apt-get install libcurl4-openssl-dev\n          sudo apt-get install libssl-dev\n          sudo apt-get install libzmq3-dev\n\n      - name: Cache packages\n        uses: actions/cache@v1\n        with:\n          path: ${{ env.RENV_PATHS_ROOT }}\n          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}\n          restore-keys: ${{ runner.os }}-renv-\n\n      - name: Restore packages\n        shell: Rscript {0}\n        run: |\n          if (!requireNamespace(\"renv\", quietly = TRUE)) install.packages(\"renv\")\n          renv::restore()\n\n      - name: Check if previous runs exists\n        id: runs-exist\n        run: git ls-remote --exit-code --heads origin targets-runs\n        continue-on-error: true\n\n      - name: Checkout previous run\n        if: steps.runs-exist.outcome == 'success'\n        uses: actions/checkout@v2\n        with:\n          ref: targets-runs\n          fetch-depth: 1\n          path: .targets-runs\n\n      - name: Restore output files from the previous run\n        if: steps.runs-exist.outcome == 'success'\n        run: |\n          for (dest in scan(\".targets-runs/.targets-files\", what = character())) {\n            source &lt;- file.path(\".targets-runs\", dest)\n            if (!file.exists(dirname(dest))) dir.create(dirname(dest), recursive = TRUE)\n            if (file.exists(source)) file.rename(source, dest)\n          }\n        shell: Rscript {0}\n\n      - name: Run targets pipeline\n        run: targets::tar_make()\n        shell: Rscript {0}\n\n      - name: Identify files that the targets pipeline produced\n        run: git ls-files -mo --exclude=renv &gt; .targets-files\n\n      - name: Create the runs branch if it does not already exist\n        if: steps.runs-exist.outcome != 'success'\n        run: git checkout --orphan targets-runs\n\n      - name: Put the worktree in the runs branch if the latter already exists\n        if: steps.runs-exist.outcome == 'success'\n        run: |\n          rm -r .git\n          mv .targets-runs/.git .\n          rm -r .targets-runs\n\n      - name: Upload latest run\n        run: |\n          git config --local user.name \"GitHub Actions\"\n          git config --local user.email \"actions@github.com\"\n          rm -r .gitignore .github/workflows\n          git add --all -- ':!renv'\n          for file in $(git ls-files -mo --exclude=renv)\n          do\n            git add --force $file\n          done\n          git commit -am \"Run pipeline\"\n          git push origin targets-runs\n\n      - name: Prepare failure artifact\n        if: failure()\n        run: rm -rf .git .github .targets-files .targets-runs\n\n      - name: Post failure artifact\n        if: failure()\n        uses: actions/upload-artifact@main\n        with:\n          name: ${{ runner.os }}-r${{ matrix.config.r }}-results\n          path: ."
   },
   {
     "objectID": "materials/04-production.html#section-36",
     "href": "materials/04-production.html#section-36",
     "title": "",
     "section": "",
-    "text": "We’ve been building pipelines with targets."
+    "text": "This generates a GitHub Action template that will reproduce your project environment, run the pipeline, and output the results.\n\nNote: you will still need to configure things on which your environemnt depends, such as API keys, database credentials, etc.\n\n\nThis also relies on using GitHub runners for your compute and storage, which are both low by design - they are not intended for heavy workloads.\n\n\nBut these illustrate the steps for reproducing your data science environment via code."
   },
   {
     "objectID": "materials/04-production.html#section-37",
     "href": "materials/04-production.html#section-37",
     "title": "",
     "section": "",
-    "text": "For instance, we’ve been building a pipelines with targets."
+    "text": "How do"
   },
   {
-    "objectID": "materials/04-production.html#environments-as-code",
-    "href": "materials/04-production.html#environments-as-code",
+    "objectID": "materials/04-production.html#section-38",
+    "href": "materials/04-production.html#section-38",
     "title": "",
-    "section": "environments as code",
-    "text": "environments as code"
+    "section": "",
+    "text": "So, putting things in production in a safe and reliable way starts with recognizing the different pieces we need to recreate our data science environment.\nThen, it becomes a matter of reproducing each of these pieces via code. This part sounds super complicated, and it can be, but a lot of smart people have put a lot of time into making it easier.\nThis enables us to create separate environments in which we can do our development and testing before promoting code to production."
   },
   {
-    "objectID": "materials/04-production.html#project",
-    "href": "materials/04-production.html#project",
+    "objectID": "materials/04-production.html#section-40",
+    "href": "materials/04-production.html#section-40",
     "title": "",
-    "section": "project",
-    "text": "project\nWhat would we need to\nwe have to date covered:\n\nGit/GitHub for versioning and sharing our code\nrenv for reproducing our code dependencies\ntargets for creating repeatable pipelines\n\nputting things into production is a matter of managing environments"
+    "section": "",
+    "text": "This style of thinking is typically focused on things like software/applications, where different versions are incrementally developed, tested, and released as updates.\n\nHow does data science differ?"
   },
   {
-    "objectID": "materials/04-production.html#project-architecture",
-    "href": "materials/04-production.html#project-architecture",
+    "objectID": "materials/04-production.html#data-science-project-architecture",
+    "href": "materials/04-production.html#data-science-project-architecture",
     "title": "",
-    "section": "project architecture",
-    "text": "project architecture\nWhat is the typical output of a data science project?\n\n\na job: a script that trains a model, updates a dataset, writes to a database\nan app: created in Shiny, Streamlit, Dash,\na report: a presentation, book, article, that is rendered from code\nan API"
+    "section": "data science project architecture",
+    "text": "data science project architecture\nWhat is the typical output of a data science project?\n\n\na job: a script that trains a model, updates a dataset, writes to a database\n\n\n\n\nan app: created in Shiny, Streamlit, Dash,\n\n\n\n\na report: a presentation, book, article, that is rendered from code\n\n\n\n\nan API"
+  },
+  {
+    "objectID": "materials/04-production.html#section-41",
+    "href": "materials/04-production.html#section-41",
+    "title": "",
+    "section": "",
+    "text": "thing back to where we left our flights project."
   }
 ]
