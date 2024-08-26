@@ -574,10 +574,6 @@ But these illustrate the steps for *reproducing your data science environment vi
 
 ##
 
-How do 
-
-##
-
 [So, putting things *in production* in a safe and reliable way starts with recognizing the different pieces we need to recreate our data science environment.]{.semi-transparent}
 
 [Then, it becomes a matter of reproducing each of these pieces *via code*. This part sounds super complicated, and it can be, but a lot of smart people have put a lot of time into making it easier.]{.semi-transparent}

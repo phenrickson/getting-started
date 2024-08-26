@@ -1405,9 +1405,6 @@ estimates
 ```
 
 
-
-
-
 ##
 
 ```{r}
@@ -1718,7 +1715,7 @@ Then, we'll refit to training + validation + test and prepare the model for depl
 
 ##
 
-![](images/flights_stable.png)
+![](images/flights_stable.png){fig-align="center"}
 
 . . .
 
